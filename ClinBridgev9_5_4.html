@@ -1994,13 +1994,23 @@ return (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
 
 function logBP(){
 var presetFluid=pendingEventFluid; pendingEventFluid=0; // consume — prevents double-log
+// If active event has a dedicated Log Fluid action, hide fluid field to prevent double-logging
+var hasFluidAction=activeReminderEvt&&activeReminderEvt.actions&&activeReminderEvt.actions.indexOf('logFluid')!==-1;
 var html='<div class="modal-title">Log Blood Pressure</div>';
 html+='<input type="number" id="sys" class="modal-input" placeholder="Systolic (top number)" />';
 html+='<input type="number" id="dia" class="modal-input" placeholder="Diastolic (bottom number)" />';
 html+='<input type="number" id="hr" class="modal-input" placeholder="Heart Rate (BPM)" />';
+if(!hasFluidAction){
 html+='<input type="number" id="bpFluid" class="modal-input" placeholder="Fluid with reading (oz, optional)"'+(presetFluid>0?' value="'+presetFluid+'"':'')+' />';
 if(presetFluid>0){
 html+='<div style="font-size:14px;color:#2563eb;margin:-4px 0 8px 4px;font-weight:600">📋 Pre-filled from event goal ('+presetFluid+' oz) — adjust if needed</div>';
+}
+if(eventFluidLogged&&activeReminderEvt){
+html+='<div style="font-size:13px;color:#92400e;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:8px;margin:-4px 0 8px 0">⚠️ Fluid already logged this event session. Only enter an amount here if this is <strong>additional</strong> fluid.</div>';
+}
+}else{
+html+='<input type="hidden" id="bpFluid" value="0" />';
+html+='<div style="font-size:13px;color:#6b7280;margin:4px 0 8px 4px">💧 Fluid will be logged via the Log Fluid action — no need to enter it here</div>';
 }
 
 // === PHASE 2: MEDICATION TRACKING ===
@@ -2735,15 +2745,24 @@ alert('✓ BP reading updated');
 
 function logMeal(){
   var presetFluid=pendingEventFluid; pendingEventFluid=0; // consume — prevents double-log
+  var hasFluidAction=activeReminderEvt&&activeReminderEvt.actions&&activeReminderEvt.actions.indexOf('logFluid')!==-1;
   var html='<div class="modal-title">Log Meal</div>';
   html+='<textarea id="meal" class="modal-input" placeholder="What did you eat?" style="min-height:150px;font-size:22px"></textarea>';
-  // New: fluid with this meal
+  // Only show fluid field if no dedicated Log Fluid action in this event
+  if(!hasFluidAction){
   html+='<input type="number" id="mealFluid" class="modal-input" ' +
         'placeholder="Log fluid with this meal (oz, optional)" ' +
         (presetFluid>0?'value="'+presetFluid+'" ':'')+
         'style="font-size:22px;margin-top:12px">';
   if(presetFluid>0){
   html+='<div style="font-size:14px;color:#2563eb;margin:-4px 0 8px 4px;font-weight:600">📋 Pre-filled from event goal ('+presetFluid+' oz) — adjust if needed</div>';
+  }
+  if(eventFluidLogged&&activeReminderEvt){
+  html+='<div style="font-size:13px;color:#92400e;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:8px;margin:-4px 0 8px 0">⚠️ Fluid already logged this event session. Only enter an amount here if this is <strong>additional</strong> fluid.</div>';
+  }
+  }else{
+  html+='<input type="hidden" id="mealFluid" value="0">';
+  html+='<div style="font-size:13px;color:#6b7280;margin:4px 0 8px 4px">💧 Fluid will be logged via the Log Fluid action — no need to enter it here</div>';
   }
   // Phase 6B: Add event dropdown
   html+=getEventDropdownHTML();
@@ -5634,6 +5653,7 @@ alert('✓ Note deleted');
 
 function logMedicine(){
 var presetFluid=pendingEventFluid; pendingEventFluid=0; // consume — prevents double-log
+var hasFluidAction=activeReminderEvt&&activeReminderEvt.actions&&activeReminderEvt.actions.indexOf('logFluid')!==-1;
 var html='<div class="modal-title">Log Medicine</div>';
 if(medicineList.length===0){
 html+='<div style="padding:20px;background:#fef3c7;border-radius:8px;margin-bottom:16px;text-align:center">';
@@ -5674,10 +5694,18 @@ html+='<button class="modal-btn" onclick="selectTiming(\'With Food\')">With Food
 html+='<button class="modal-btn" onclick="selectTiming(\'Anytime\')">Anytime</button>';
 html+='<input type="hidden" id="medTiming" value="" />';
 // Add fluid intake field
+if(!hasFluidAction){
 html+='<label style="display:block;font-size:18px;font-weight:600;margin:16px 0 8px 0">Fluid with medication (oz, optional):</label>';
 html+='<input type="number" id="medFluid" class="modal-input" placeholder="e.g., 8" min="0" step="0.5"'+(presetFluid>0?' value="'+presetFluid+'"':'')+' />';
 if(presetFluid>0){
 html+='<div style="font-size:14px;color:#2563eb;margin:-4px 0 8px 4px;font-weight:600">📋 Pre-filled from event goal ('+presetFluid+' oz) — adjust if needed</div>';
+}
+if(eventFluidLogged&&activeReminderEvt){
+html+='<div style="font-size:13px;color:#92400e;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:8px;margin:-4px 0 8px 0">⚠️ Fluid already logged this event session. Only enter an amount here if this is <strong>additional</strong> fluid.</div>';
+}
+}else{
+html+='<input type="hidden" id="medFluid" value="0">';
+html+='<div style="font-size:13px;color:#6b7280;margin:16px 0 8px 4px">💧 Fluid will be logged via the Log Fluid action — no need to enter it here</div>';
 }
 // Phase 6B: Add event dropdown
 html+=getEventDropdownHTML();
@@ -5736,7 +5764,7 @@ var currentTime=getTime();
 for(var i=0;i<selectedMeds.length;i++){
 var entry={medicine:selectedMeds[i],timing:timing,time:currentTime};
 if(eventId)entry.eventId=eventId;
-if(fluid)entry.fluid=fluid;
+if(fluid){entry.fluid=fluid; if(i===0&&activeReminderEvt)eventFluidLogged=true;}
 medLog.push(entry);
 }
 saveDailyData();
