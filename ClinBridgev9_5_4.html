@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.5, maximum-scale=3.0">
-<title>ClinBridge v9.5.3 – Medication Effectiveness</title>
+<title>ClinBridge v9.5.4</title>
+<link rel="apple-touch-icon" href="https://sommerstexan-lgtm.github.io/ClinBridge/ClinBridge-App-logo.JPG">
+<link rel="icon" type="image/jpeg" href="https://sommerstexan-lgtm.github.io/ClinBridge/ClinBridge-App-logo.JPG">
 <style>
 body{font-family:-apple-system,sans-serif;background:#f9fafb;padding:16px;margin:0;font-size:18px}
 .card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1);padding:24px;margin-bottom:16px}
@@ -642,7 +644,7 @@ body{font-family:-apple-system,sans-serif;background:#f9fafb;padding:16px;margin
 
   <div class="hdr" style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
     <div style="display:flex;flex-direction:column;align-items:flex-start;">
-      <span>v9.5.3: Medical Grade - Free</span>
+      <span>v9.5.4: Medical Grade - Free</span>
       <!-- VERSION UPDATE INSTRUCTION: When updating to a new version, ONLY change the date below. The version number is in the title above. Format: "Updated MMM DD, YYYY" -->
       <span style="font-size:14px;color:#6b7280;font-weight:normal;">Updated Feb 19, 2026</span>
     </div>
@@ -949,7 +951,7 @@ Custom Range
         <h3>About & Privacy</h3>
 
         <div style="background:linear-gradient(135deg,#10b981,#34d399);padding:20px;border-radius:12px;margin-bottom:20px;color:white">
-          <h3 style="margin:0 0 12px 0;font-size:22px">🚀 New in v9.5.3</h3>
+          <h3 style="margin:0 0 12px 0;font-size:22px">🚀 New in v9.5.4</h3>
           <ul style="margin:0;padding-left:20px;line-height:1.8">
             <li><strong>Doctor Appointment Tracking</strong> — Log, edit, and view all appointments with reminders and doctor notes</li>
             <li><strong>Medication Effectiveness Analysis</strong> — Before/after BP comparison with effectiveness scoring</li>
@@ -1543,13 +1545,14 @@ var M=[],B=[],W=[],S=[],A=[],notes=[],medLog=[],fluidLog=[],procedures=[],dailyF
 // Fluid goal injected from a notification — consumed (and cleared) by the FIRST
 // fluid-capable modal that opens. Zero after first use so it can never double-log.
 var pendingEventFluid=0;
+var eventFluidLogged=false; // prevents re-arming fluid goal on reminder reshow after it's been saved
 
 // Active Settings-event reminder — kept alive until user explicitly dismisses.
 // hideModal checks this and reshows the notification after every log save/cancel.
 var activeReminderEvt=null;
 
 // ============================================================
-// OS-LEVEL WEB NOTIFICATIONS (v9.5.3-WN)
+// OS-LEVEL WEB NOTIFICATIONS (v9.5.4-WN)
 // Sends system-level popup regardless of active tab or window.
 // Works on Chrome/Chromebook today; Android Chrome when tab is open.
 // ============================================================
@@ -1718,7 +1721,7 @@ function updateNotifPermissionUI(){
 }
 
 // ============================================================
-// EVENT ACTION BUTTONS — shared definition (v9.5.3-EA)
+// EVENT ACTION BUTTONS — shared definition (v9.5.4-EA)
 // ============================================================
 var EVENT_ACTIONS=[
   {id:'logBP',       label:'📊 Log Blood Pressure',     fn:'logBP()',               color:'#10b981'},
@@ -2324,6 +2327,7 @@ reading.medicationTiming='none';
 B.push(reading);
 if(f>0){
 dailyFluid+=f;
+if(activeReminderEvt) eventFluidLogged=true; // prevent fluid re-arming on reminder reshow
 }
 saveDailyData();
 completeAndCloseModal();
@@ -2756,7 +2760,7 @@ function saveMeal(){
     return;
   }
   var entry={m:m,t:getTime()};
-  if(fluid>0) entry.mealFluidOz=fluid;
+  if(fluid>0){ entry.mealFluidOz=fluid; if(activeReminderEvt) eventFluidLogged=true; }
   if(eventId) entry.eventId=eventId;
   M.push(entry);
   saveDailyData();
@@ -2801,6 +2805,7 @@ var entry={time:getTime(),amount:amount};
 if(eventId)entry.eventId=eventId;
 fluidLog.push(entry);
 saveDailyData();
+if(activeReminderEvt) eventFluidLogged=true; // prevent fluid re-arming on reminder reshow
 completeAndCloseModal();
 updateFluid();
 renderFluidChart();
@@ -5187,7 +5192,7 @@ function playMedicalAlertChime(){
 initializeAudioContext();
 if(!audioContext)return;
 
-// Senior-optimized audio (v9.5.3-SA):
+// Senior-optimized audio (v9.5.4-SA):
 // • C4/E4/G4 at 261–392 Hz — one octave lower than before.
 //   Age-related hearing loss (presbycusis) hits high frequencies first;
 //   the 250–500 Hz range is the most reliable for aging ears.
@@ -8535,9 +8540,12 @@ html+='<button onclick="dismissReminder()" style="width:100%;background:#6b7280;
 html+='</div>';
 
 // Arm the active reminder BEFORE showModal so hideModal can reshow if needed
+// Reset fluid-logged flag only on a fresh event fire (not a reshow)
+if(activeReminderEvt!==evt){ eventFluidLogged=false; }
 activeReminderEvt=evt;
-// Arm the fluid goal so the first fluid-capable modal that opens gets pre-populated
-pendingEventFluid=(evt.fluidGoal&&evt.fluidGoal>0)?evt.fluidGoal:0;
+// Arm the fluid goal — only if fluid hasn't already been saved this event session
+// (prevents duplicate fluid logging when event has multiple log actions)
+pendingEventFluid=(!eventFluidLogged&&evt.fluidGoal&&evt.fluidGoal>0)?evt.fluidGoal:0;
 // Fire OS-level notification — visible even on other tabs or during video playback
 fireOSNotification(
   '🔔 '+evt.name,
@@ -8558,8 +8566,9 @@ hideModal();
 // Use this instead of hideModal() in all save/complete actions so a pending
 // event reminder doesn't immediately hijack the close
 function completeAndCloseModal(){
-activeReminderEvt=null;
-pendingEventFluid=0;
+// Do NOT clear activeReminderEvt here — we want the event reminder to reshow
+// after each individual log action so multi-action events work correctly.
+// Only dismissReminder() should clear activeReminderEvt.
 hideModal();
 }
 
@@ -11552,7 +11561,7 @@ document.getElementById('doctorReportModal').style.display='none';
 }
 
 function generateDoctorReport(){
-// v9.5.3: Doctor's Report temporarily disabled — calculations under review
+// v9.5.4: Doctor's Report temporarily disabled — calculations under review
 var comingSoonHTML = '<div style="text-align:center;padding:60px 30px">';
 comingSoonHTML += '<div style="font-size:64px;margin-bottom:20px">🩺</div>';
 comingSoonHTML += '<h2 style="margin:0 0 16px 0;color:#1f2937;font-size:28px">Coming Soon in v9.6</h2>';
@@ -11808,7 +11817,7 @@ html+=`</ul>
 
 html+=`
 <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:2px solid #e5e7eb;color:#6b7280;font-size:14px">
-<p style="margin:0">ClinBridge v9.5.3 Medical Grade - Free</p>
+<p style="margin:0">ClinBridge v9.5.4 Medical Grade - Free</p>
 <p style="margin:4px 0 0 0">Report Generated: ${reportDate}</p>
 </div>`;
 
@@ -12015,7 +12024,7 @@ Note: This report is based on patient self-tracked data. Clinical correlation
 and examination are essential for diagnosis and treatment decisions.
 
 ---
-ClinBridge v9.5.3 Medical Grade - Free
+ClinBridge v9.5.4 Medical Grade - Free
 Report Generated: ${reportDate}`;
 
 return text;
@@ -13688,7 +13697,7 @@ report.push(notes);
 report.push('');
 }
 report.push('═══════════════════════════════════════════════════════════');
-report.push('This report was generated by ClinBridge v9.5.3 Medical Grade - Free');
+report.push('This report was generated by ClinBridge v9.5.4 Medical Grade - Free');
 report.push('Advanced Analytics Dashboard - Phase 3 Implementation');
 report.push('═══════════════════════════════════════════════════════════');
 const blob=new Blob([report.join('\n')],{type:'text/plain'});
@@ -13778,7 +13787,7 @@ ${periodHTML}
 <h2>Key Insights</h2>
 ${insightsHTML}
 <div style="margin-top:40px;padding:20px;background:#f0f9ff;border-left:4px solid #3b82f6;border-radius:8px">
-<strong>ClinBridge v9.5.3 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
+<strong>ClinBridge v9.5.4 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
 This report is not a substitute for professional medical advice.
 </div>
 </body>
@@ -15988,7 +15997,7 @@ setInterval(checkAppointmentReminders, 60000 * 60); // Check every hour
 setTimeout(function(){ requestOSNotificationPermission(false); }, 2000);
 
 // ============================================================
-// ANDROID TAB-RESUME FIX (v9.5.3-AR)
+// ANDROID TAB-RESUME FIX (v9.5.4-AR)
 // On Android Chrome, tabs are suspended in the background.
 // When the user returns, in-memory state can be stale (or the
 // date can have ticked over midnight).  Re-load from localStorage
@@ -16048,7 +16057,7 @@ setTimeout(function(){ requestOSNotificationPermission(false); }, 2000);
 })();
 
 // ============================================================
-// DATA MANAGEMENT — Reset Today / Delete All (v9.5.3-DM)
+// DATA MANAGEMENT — Reset Today / Delete All (v9.5.4-DM)
 // ============================================================
 
 // Identify which localStorage keys belong to this app
