@@ -673,8 +673,7 @@ body{font-family:-apple-system,sans-serif;background:#f9fafb;padding:16px;margin
 <button class="btn" style="background:#10b981" onclick="openMedicationEffectiveness()">💊 Medication Effectiveness</button>
 <button class="btn" style="background:#8b5cf6" onclick="openProcedureImpact()">🏥 Procedure Impact Analysis</button>
 <button class="btn" style="background:#6366f1" onclick="exportData()">📤 Export Today's Data</button>
-<button class="btn" style="background:#7c3aed" onclick="exportAllData()">💾 Export ALL Data</button>
-<button class="btn" style="background:#059669" onclick="importAllData()">📥 Import All Data</button>
+<button class="btn" style="background:#0ea5e9" onclick="openSyncBackup()">🔄 Device Sync & Backup</button>
 <button class="btn" style="background:#6b7280" onclick="openHelpModal('welcome')">
   🆘 Help, About &amp; Privacy
 </button>
@@ -8602,48 +8601,62 @@ function completeAndCloseModal(){
 hideModal();
 }
 
+function openSyncBackup(){
+var html='<div class="modal-title">🔄 Device Sync & Backup</div>';
+html+='<div style="background:#f0f9ff;border:2px solid #0ea5e9;border-radius:12px;padding:16px;margin-bottom:16px">';
+html+='<div style="font-size:16px;color:#0369a1;margin-bottom:12px;font-weight:600">📱 Transfer data between devices</div>';
+html+='<div style="font-size:15px;color:#374151;line-height:1.6">Use <strong>Export ALL Data</strong> on this device to save a backup file, then use <strong>Import All Data</strong> on another device to restore it. All your history, settings, medications, and events will transfer.</div>';
+html+='</div>';
+html+='<button onclick="exportAllData()" style="width:100%;background:#7c3aed;color:#fff;border:none;padding:16px;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;margin-bottom:12px">💾 Export ALL Data<br><span style="font-size:13px;font-weight:400;opacity:0.85">Save a full backup of everything to your device</span></button>';
+html+='<button onclick="importAllData()" style="width:100%;background:#059669;color:#fff;border:none;padding:16px;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;margin-bottom:12px">📥 Import All Data<br><span style="font-size:13px;font-weight:400;opacity:0.85">Restore from a backup file — replaces current data</span></button>';
+html+='<div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:12px;font-size:13px;color:#92400e;margin-bottom:16px">⚠️ <strong>Tip:</strong> Export regularly to keep a backup. If you clear your browser data, your ClinBridge data will be lost without a backup.</div>';
+html+='<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Close</button></div>';
+showModal(html);
+}
+
 function exportAllData(){
-  var allData={};
-  for(var i=0;i<localStorage.length;i++){
-    var key=localStorage.key(i);
-    allData[key]=localStorage.getItem(key);
-  }
-  var json=JSON.stringify(allData,null,2);
-  var blob=new Blob([json],{type:'application/json'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url;
-  a.download='ClinBridge_ALL_Data_'+new Date().toISOString().slice(0,10)+'.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  alert('✅ All data exported! Transfer this file to any device and use "Import All Data" to restore.');
+var allData={};
+for(var i=0;i<localStorage.length;i++){
+var key=localStorage.key(i);
+allData[key]=localStorage.getItem(key);
+}
+var json=JSON.stringify(allData,null,2);
+var blob=new Blob([json],{type:'application/json'});
+var url=URL.createObjectURL(blob);
+var a=document.createElement('a');
+a.href=url;
+a.download='ClinBridge_Backup_'+new Date().toISOString().slice(0,10)+'.json';
+a.click();
+URL.revokeObjectURL(url);
+alert('✅ Backup saved!\n\nEmail this file to yourself, then open ClinBridge on your other device and tap "Device Sync & Backup" → "Import All Data".');
 }
 
 function importAllData(){
-  var input=document.createElement('input');
-  input.type='file';
-  input.accept='.json';
-  input.onchange=function(e){
-    var file=e.target.files[0];
-    if(!file)return;
-    var reader=new FileReader();
-    reader.onload=function(ev){
-      try{
-        var allData=JSON.parse(ev.target.result);
-        var count=0;
-        Object.keys(allData).forEach(function(k){
-          localStorage.setItem(k,allData[k]);
-          count++;
-        });
-        alert('✅ '+count+' items imported successfully! Refreshing now...');
-        location.reload();
-      }catch(err){
-        alert('❌ Error importing data. Make sure you selected a valid ClinBridge export file.');
-      }
-    };
-    reader.readAsText(file);
-  };
-  input.click();
+if(!confirm('⚠️ Import All Data\n\nThis will REPLACE all current data on this device with the data from your backup file.\n\nMake sure you are importing the correct file.\n\nDo you want to continue?')){return;}
+var input=document.createElement('input');
+input.type='file';
+input.accept='.json';
+input.onchange=function(e){
+var file=e.target.files[0];
+if(!file)return;
+var reader=new FileReader();
+reader.onload=function(ev){
+try{
+var allData=JSON.parse(ev.target.result);
+var count=0;
+Object.keys(allData).forEach(function(k){
+localStorage.setItem(k,allData[k]);
+count++;
+});
+alert('✅ '+count+' items imported successfully!\n\nClinBridge will now reload with your data.');
+location.reload();
+}catch(err){
+alert('❌ Import failed. Make sure you selected a valid ClinBridge backup file.');
+}
+};
+reader.readAsText(file);
+};
+input.click();
 }
 
 function exportData(){
