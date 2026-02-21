@@ -673,6 +673,8 @@ body{font-family:-apple-system,sans-serif;background:#f9fafb;padding:16px;margin
 <button class="btn" style="background:#10b981" onclick="openMedicationEffectiveness()">💊 Medication Effectiveness</button>
 <button class="btn" style="background:#8b5cf6" onclick="openProcedureImpact()">🏥 Procedure Impact Analysis</button>
 <button class="btn" style="background:#6366f1" onclick="exportData()">📤 Export Today's Data</button>
+<button class="btn" style="background:#7c3aed" onclick="exportAllData()">💾 Export ALL Data</button>
+<button class="btn" style="background:#059669" onclick="importAllData()">📥 Import All Data</button>
 <button class="btn" style="background:#6b7280" onclick="openHelpModal('welcome')">
   🆘 Help, About &amp; Privacy
 </button>
@@ -8570,6 +8572,50 @@ function completeAndCloseModal(){
 // after each individual log action so multi-action events work correctly.
 // Only dismissReminder() should clear activeReminderEvt.
 hideModal();
+}
+
+function exportAllData(){
+  var allData={};
+  for(var i=0;i<localStorage.length;i++){
+    var key=localStorage.key(i);
+    allData[key]=localStorage.getItem(key);
+  }
+  var json=JSON.stringify(allData,null,2);
+  var blob=new Blob([json],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='ClinBridge_ALL_Data_'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ All data exported! Transfer this file to any device and use "Import All Data" to restore.');
+}
+
+function importAllData(){
+  var input=document.createElement('input');
+  input.type='file';
+  input.accept='.json';
+  input.onchange=function(e){
+    var file=e.target.files[0];
+    if(!file)return;
+    var reader=new FileReader();
+    reader.onload=function(ev){
+      try{
+        var allData=JSON.parse(ev.target.result);
+        var count=0;
+        Object.keys(allData).forEach(function(k){
+          localStorage.setItem(k,allData[k]);
+          count++;
+        });
+        alert('✅ '+count+' items imported successfully! Refreshing now...');
+        location.reload();
+      }catch(err){
+        alert('❌ Error importing data. Make sure you selected a valid ClinBridge export file.');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 
 function exportData(){
