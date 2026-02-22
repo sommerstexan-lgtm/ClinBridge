@@ -5619,8 +5619,6 @@ updateMissedAlertBadge();
 }
 
 function checkScheduledAlerts(){
-if(dailyPlan.length===0)return;
-
 var now=new Date();
 var currentTime=getTime();
 var today=now.toDateString();
@@ -5631,8 +5629,38 @@ firedEvents={date:today};
 console.log('Reset fired events for new day:',today);
 }
 
-for(var i=0;i<dailyPlan.length;i++){
-  var event=dailyPlan[i];
+// Build unified list: Settings daily events + Plan My Day events
+var allEvents=[];
+
+// Settings.dailyEvents — permanent scheduled events (Fluid Bridge, etc.)
+if(settings.dailyEvents&&settings.dailyEvents.length>0){
+settings.dailyEvents.forEach(function(evt){
+if(!evt.time)return;
+if(evt.reminderEnabled===false)return; // only skip if explicitly disabled
+allEvents.push({
+name:evt.name,
+time:evt.time,
+amount:evt.fluidGoal||0,
+sound:true, // settings events always have sound unless explicitly off
+advanceMinutes:evt.advanceMinutes||0,
+remindAtTime:true,
+actions:evt.actions||['logFluid'],
+_source:'settings'
+});
+});
+}
+
+// dailyPlan — Plan My Day events
+if(dailyPlan&&dailyPlan.length>0){
+dailyPlan.forEach(function(evt){
+allEvents.push(Object.assign({},evt,{_source:'plan'}));
+});
+}
+
+if(allEvents.length===0)return;
+
+for(var i=0;i<allEvents.length;i++){
+  var event=allEvents[i];
   if(!event.time||event.sound===false)continue;
 
   // Normalize settings
@@ -5671,7 +5699,7 @@ for(var i=0;i<dailyPlan.length;i++){
 
   // At-time reminder
   if(remindAtTime && currentTime===event.time && !firedEvents[atTimeKey]){
-    console.log('Event triggered:',event.name,'at',event.time);
+    console.log('Event triggered ['+event._source+']:',event.name,'at',event.time);
     triggerAudioAlert(event.name,event.amount,event);
     firedEvents[atTimeKey]=true;
   }
