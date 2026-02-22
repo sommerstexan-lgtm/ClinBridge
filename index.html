@@ -1321,7 +1321,7 @@ Custom Range
 <h4 id="analyticsChartTitle" style="margin:0;color:#374151;font-size:20px"></h4>
 <button onclick="closeAnalyticsChart()" style="background:#e5e7eb;color:#374151;border:none;padding:8px 16px;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer">✕ Close</button>
 </div>
-<canvas id="analyticsChart" style="width:100%;max-height:350px;display:block"></canvas>
+<div id="analyticsChartScroller" style="overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;border-radius:8px;background:#f9fafb;"><canvas id="analyticsChart" style="display:block;height:350px;"></canvas></div><div style="text-align:center;margin-top:6px;font-size:12px;color:#9ca3af">&#8592; Swipe to pan &#8594;</div>
 <div id="analyticsChartNotes" style="margin-top:16px;padding:12px;background:#f9fafb;border-radius:8px;border-left:4px solid #3b82f6;display:none">
 <!-- Out-of-range summary will be inserted here -->
 </div>
@@ -13950,18 +13950,21 @@ function lttbDecimate(items, yFn, threshold){
 
 function renderAnalyticsChart(type){
 if(!currentAnalyticsData)return;
-// Destroy existing chart
-if(currentAnalyticsChart){
-currentAnalyticsChart.destroy();
-currentAnalyticsChart=null;
-}
+if(currentAnalyticsChart){currentAnalyticsChart.destroy();currentAnalyticsChart=null;}
 const canvas=document.getElementById('analyticsChart');
-// HiDPI / Retina fix
+const scroller=document.getElementById('analyticsChartScroller');
 const dpr=window.devicePixelRatio||1;
-const container=canvas.parentElement||document.getElementById('analyticsChartContainer');
-// iOS Safari sometimes still returns 0 — fall back to viewport minus modal padding
-const modalPadding=48;
-const logicalW=canvas.offsetWidth||container.clientWidth||Math.min(window.innerWidth-modalPadding,1136);
+const viewW=scroller.clientWidth||window.innerWidth-48;
+// Count data points to size canvas
+let pointCount=0;
+if(type==='bp')pointCount=currentAnalyticsData.bp.length;
+else if(type==='hr')pointCount=currentAnalyticsData.bp.filter(r=>r.h).length;
+else if(type==='weight')pointCount=currentAnalyticsData.weight.length;
+else if(type==='activity')pointCount=Object.keys(
+  currentAnalyticsData.activities.reduce((a,r)=>{a[r._date]=1;return a;},{})
+).length;
+// 8px per point minimum, never smaller than viewport, cap at 4000px
+const logicalW=Math.min(Math.max(pointCount*8+120,viewW),4000);
 const logicalH=350;
 canvas.width=logicalW*dpr;
 canvas.height=logicalH*dpr;
@@ -13969,24 +13972,16 @@ canvas.style.width=logicalW+'px';
 canvas.style.height=logicalH+'px';
 canvas._logW=logicalW;
 canvas._logH=logicalH;
-// Dynamic decimation threshold: 1 point per 4 CSS pixels (chart area minus padding)
-canvas._threshold=Math.max(50,Math.floor((logicalW-120)/4));
+canvas._threshold=pointCount+1;
 const ctx=canvas.getContext('2d');
 ctx.scale(dpr,dpr);
 switch(type){
-case 'bp':
-renderBPAnalyticsChart(ctx,canvas);
-break;
-case 'hr':
-renderHRAnalyticsChart(ctx,canvas);
-break;
-case 'weight':
-renderWeightAnalyticsChart(ctx,canvas);
-break;
-case 'activity':
-renderActivityAnalyticsChart(ctx,canvas);
-break;
+case 'bp': renderBPAnalyticsChart(ctx,canvas); break;
+case 'hr': renderHRAnalyticsChart(ctx,canvas); break;
+case 'weight': renderWeightAnalyticsChart(ctx,canvas); break;
+case 'activity': renderActivityAnalyticsChart(ctx,canvas); break;
 }
+requestAnimationFrame(()=>{scroller.scrollLeft=scroller.scrollWidth;});
 }
 
 function renderBPAnalyticsChart(ctx,canvas){
