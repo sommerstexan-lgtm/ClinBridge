@@ -1994,6 +1994,7 @@ var reminderCheckInterval=null;
 var settings={
 fluidMax:64,
 fluidMin:40,
+fluidMode:'range',
 systolicMin:90,
 systolicMax:140,
 diastolicMin:60,
@@ -3052,35 +3053,96 @@ function updateFluid(){
     if (M[k].mealFluidOz && M[k].mealFluidOz > 0) dailyFluid += M[k].mealFluidOz;
   }
 
-  var remaining = settings.fluidMax - dailyFluid;
-var percentUsed=Math.min((dailyFluid/settings.fluidMax)*100,100);
-// Check if below minimum, within range, or above maximum
-var isBelowMin=dailyFluid<settings.fluidMin;
-var isAboveMax=dailyFluid>settings.fluidMax;
-var barColor=isAboveMax?'#dc2626':isBelowMin?'#f59e0b':percentUsed>80?'#f59e0b':'#10b981';
-var textColor=isAboveMax?'#dc2626':isBelowMin?'#f59e0b':'#16a34a';
-var html='<div style="font-size:20px;margin-bottom:12px">💧 Total Today: <span style="color:'+textColor+';font-size:32px;font-weight:bold">'+dailyFluid+' oz</span></div>';
-// Show status message
-if(isBelowMin){
-html+='<div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px;border-radius:6px;margin-bottom:12px">';
-html+='<div style="font-weight:600;color:#92400e">⚠️ Below Minimum</div>';
-html+='<div style="font-size:14px;color:#92400e">Need '+(settings.fluidMin-dailyFluid)+' more oz to reach minimum hydration goal</div>';
+  var mode=settings.fluidMode||'range';
+// Pace projection: hours elapsed since midnight vs 24h day
+var now=new Date();
+var hoursElapsed=now.getHours()+(now.getMinutes()/60);
+var hoursRemaining=Math.max(24-hoursElapsed,0.1);
+var projectedTotal=hoursElapsed>0?Math.round((dailyFluid/hoursElapsed)*24):dailyFluid;
+var html='<div style="font-size:20px;margin-bottom:12px">💧 Total Today: <span style="font-size:32px;font-weight:bold;color:#1e3a5f">'+dailyFluid+' oz</span></div>';
+
+if(mode==='none'){
+// General tracking — just show total and pace
+html+='<div style="background:#f0f9ff;border-left:4px solid #3b82f6;padding:12px;border-radius:6px;margin-bottom:12px">';
+html+='<div style="font-weight:600;color:#1e40af">📊 General Tracking</div>';
+html+='<div style="font-size:14px;color:#1e40af;margin-top:4px">Projected daily total at current pace: <strong>'+projectedTotal+' oz</strong></div>';
+html+='<div style="font-size:13px;color:#6b7280;margin-top:4px">No doctor target set — tracking to establish your baseline</div>';
 html+='</div>';
-}else if(isAboveMax){
+var barColor='#3b82f6';
+var percentUsed=Math.min((dailyFluid/80)*100,100);
+html+='<div style="font-size:14px;color:#6b7280;margin-bottom:6px">Daily intake (general reference 80 oz)</div>';
+html+='<div style="width:100%;height:32px;background:#e5e7eb;border-radius:16px;overflow:hidden">';
+html+='<div style="width:'+percentUsed+'%;height:100%;background:'+barColor+';transition:width 0.3s ease"></div>';
+html+='</div>';
+
+}else if(mode==='maximum'){
+// Maximum only — track ceiling
+var remaining=settings.fluidMax-dailyFluid;
+var percentUsed=Math.min((dailyFluid/settings.fluidMax)*100,100);
+var isAboveMax=dailyFluid>settings.fluidMax;
+var isNearMax=percentUsed>=80&&!isAboveMax;
+var barColor=isAboveMax?'#dc2626':isNearMax?'#f59e0b':'#10b981';
+if(isAboveMax){
 html+='<div style="background:#fee2e2;border-left:4px solid #ef4444;padding:12px;border-radius:6px;margin-bottom:12px">';
-html+='<div style="font-weight:600;color:#991b1b">⚠️ Above Maximum</div>';
-html+='<div style="font-size:14px;color:#991b1b">Exceeded fluid limit by '+(dailyFluid-settings.fluidMax)+' oz</div>';
+html+='<div style="font-weight:700;color:#991b1b;font-size:17px">🚫 Fluid Limit Exceeded</div>';
+html+='<div style="font-size:14px;color:#991b1b;margin-top:4px">Exceeded your '+settings.fluidMax+' oz limit by <strong>'+(dailyFluid-settings.fluidMax)+' oz</strong>. Contact your care team if this happens regularly.</div>';
+html+='</div>';
+}else if(isNearMax){
+html+='<div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px;border-radius:6px;margin-bottom:12px">';
+html+='<div style="font-weight:600;color:#92400e">⚠️ Approaching Limit</div>';
+html+='<div style="font-size:14px;color:#92400e;margin-top:4px"><strong>'+remaining+' oz</strong> remaining before your '+settings.fluidMax+' oz limit. Pace carefully through the rest of the day.</div>';
 html+='</div>';
 }else{
 html+='<div style="background:#d1fae5;border-left:4px solid #10b981;padding:12px;border-radius:6px;margin-bottom:12px">';
-html+='<div style="font-weight:600;color:#065f46">✓ Within Healthy Range</div>';
-html+='<div style="font-size:14px;color:#065f46">'+remaining+' oz remaining before maximum</div>';
+html+='<div style="font-weight:600;color:#065f46">✓ Within Limit</div>';
+html+='<div style="font-size:14px;color:#065f46;margin-top:4px"><strong>'+remaining+' oz</strong> remaining of your '+settings.fluidMax+' oz daily maximum</div>';
 html+='</div>';
 }
-html+='<div style="font-size:16px;margin-bottom:8px">Range: <b>'+settings.fluidMin+' - '+settings.fluidMax+' oz</b></div>';
+// Pace warning for maximum mode
+if(!isAboveMax&&projectedTotal>settings.fluidMax){
+html+='<div style="background:#fef3c7;border:1px solid #f59e0b;padding:10px 12px;border-radius:6px;margin-bottom:10px;font-size:13px;color:#78350f">';
+html+='📈 At your current pace you will reach <strong>'+projectedTotal+' oz</strong> by end of day — above your '+settings.fluidMax+' oz limit. Consider slowing intake.';
+html+='</div>';
+}
+html+='<div style="font-size:14px;color:#6b7280;margin-bottom:6px">Daily maximum: '+settings.fluidMax+' oz</div>';
 html+='<div style="width:100%;height:32px;background:#e5e7eb;border-radius:16px;overflow:hidden;border:2px solid '+barColor+'">';
 html+='<div style="width:'+percentUsed+'%;height:100%;background:'+barColor+';transition:width 0.3s ease"></div>';
 html+='</div>';
+
+}else{
+// Range mode — track min and max
+var remaining=settings.fluidMax-dailyFluid;
+var percentUsed=Math.min((dailyFluid/settings.fluidMax)*100,100);
+var isBelowMin=dailyFluid<settings.fluidMin;
+var isAboveMax=dailyFluid>settings.fluidMax;
+var barColor=isAboveMax?'#dc2626':isBelowMin?'#f59e0b':'#10b981';
+if(isBelowMin){
+html+='<div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px;border-radius:6px;margin-bottom:12px">';
+html+='<div style="font-weight:600;color:#92400e">⚠️ Below Minimum</div>';
+html+='<div style="font-size:14px;color:#92400e;margin-top:4px">Need <strong>'+(settings.fluidMin-dailyFluid)+' more oz</strong> to reach your '+settings.fluidMin+' oz minimum goal</div>';
+html+='</div>';
+// Pace warning — will you make it?
+if(projectedTotal<settings.fluidMin){
+html+='<div style="background:#fee2e2;border:1px solid #ef4444;padding:10px 12px;border-radius:6px;margin-bottom:10px;font-size:13px;color:#7f1d1d">';
+html+='📉 At current pace you will reach only <strong>'+projectedTotal+' oz</strong> today — below your '+settings.fluidMin+' oz minimum. Consider drinking sooner.';
+html+='</div>';
+}
+}else if(isAboveMax){
+html+='<div style="background:#fee2e2;border-left:4px solid #ef4444;padding:12px;border-radius:6px;margin-bottom:12px">';
+html+='<div style="font-weight:700;color:#991b1b">🚫 Above Maximum</div>';
+html+='<div style="font-size:14px;color:#991b1b;margin-top:4px">Exceeded your '+settings.fluidMax+' oz limit by <strong>'+(dailyFluid-settings.fluidMax)+' oz</strong></div>';
+html+='</div>';
+}else{
+html+='<div style="background:#d1fae5;border-left:4px solid #10b981;padding:12px;border-radius:6px;margin-bottom:12px">';
+html+='<div style="font-weight:600;color:#065f46">✓ Within Target Range</div>';
+html+='<div style="font-size:14px;color:#065f46;margin-top:4px"><strong>'+remaining+' oz</strong> remaining before your '+settings.fluidMax+' oz maximum</div>';
+html+='</div>';
+}
+html+='<div style="font-size:14px;color:#6b7280;margin-bottom:6px">Target range: '+settings.fluidMin+' – '+settings.fluidMax+' oz</div>';
+html+='<div style="width:100%;height:32px;background:#e5e7eb;border-radius:16px;overflow:hidden;border:2px solid '+barColor+'">';
+html+='<div style="width:'+percentUsed+'%;height:100%;background:'+barColor+';transition:width 0.3s ease"></div>';
+html+='</div>';
+}
 updateRecentFluid();
 showFluidLog();
 document.getElementById('recent-fluid').innerHTML=html;
@@ -7820,15 +7882,33 @@ html+='</div>';
 html+='<div class="settings-section">';
 html+='<div class="settings-section-title"><span>⚙️</span><span>App Settings</span></div>';
 html+='<div style="margin-bottom:20px">';
-html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:8px">Daily Fluid Range (oz)</label>';
+html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:8px">💧 Daily Fluid Tracking Mode</label>';
+html+='<p style="font-size:14px;color:#6b7280;margin-bottom:12px">Select the mode your doctor has prescribed. If no recommendation has been made, choose General Tracking.</p>';
+var fMode=settings.fluidMode||'range';
+html+='<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">';
+html+='<label style="display:flex;align-items:flex-start;padding:14px;border:2px solid '+(fMode==='none'?'#3b82f6':'#e2e8f0')+';border-radius:10px;background:'+(fMode==='none'?'#eff6ff':'white')+';cursor:pointer;gap:12px">';
+html+='<input type="radio" name="fluidMode" value="none" '+(fMode==='none'?'checked':'')+' style="margin-top:3px;width:18px;height:18px" onchange="updateFluidModeUI()">';
+html+='<div><div style="font-size:17px;font-weight:600">📊 General Tracking Only</div><div style="font-size:13px;color:#6b7280;margin-top:2px">No daily target — just track what you drink. Good for establishing a baseline before your doctor sets a goal.</div></div>';
+html+='</label>';
+html+='<label style="display:flex;align-items:flex-start;padding:14px;border:2px solid '+(fMode==='maximum'?'#3b82f6':'#e2e8f0')+';border-radius:10px;background:'+(fMode==='maximum'?'#eff6ff':'white')+';cursor:pointer;gap:12px">';
+html+='<input type="radio" name="fluidMode" value="maximum" '+(fMode==='maximum'?'checked':'')+' style="margin-top:3px;width:18px;height:18px" onchange="updateFluidModeUI()">';
+html+='<div><div style="font-size:17px;font-weight:600">🚫 Daily Maximum (Do Not Exceed)</div><div style="font-size:13px;color:#6b7280;margin-top:2px">For CHF, kidney disease, or fluid overload history. App alerts you as you approach the ceiling.</div></div>';
+html+='</label>';
+html+='<label style="display:flex;align-items:flex-start;padding:14px;border:2px solid '+(fMode==='range'?'#3b82f6':'#e2e8f0')+';border-radius:10px;background:'+(fMode==='range'?'#eff6ff':'white')+';cursor:pointer;gap:12px">';
+html+='<input type="radio" name="fluidMode" value="range" '+(fMode==='range'?'checked':'')+' style="margin-top:3px;width:18px;height:18px" onchange="updateFluidModeUI()">';
+html+='<div><div style="font-size:17px;font-weight:600">↔️ Daily Range (Min & Max)</div><div style="font-size:13px;color:#6b7280;margin-top:2px">For PPH, dysautonomia, or when your doctor set both a minimum and maximum intake goal.</div></div>';
+html+='</label>';
+html+='</div>';
+html+='<div id="fluidMaxSection" style="display:'+(fMode==='none'?'none':'block')+'">';
 html+='<div style="display:flex;gap:12px">';
-html+='<div style="flex:1">';
-html+='<label style="display:block;font-size:14px;color:#6b7280;margin-bottom:4px">Minimum</label>';
+html+='<div id="fluidMinWrapper" style="flex:1;display:'+(fMode==='range'?'block':'none')+'">';
+html+='<label style="display:block;font-size:14px;color:#6b7280;margin-bottom:4px">Minimum (oz)</label>';
 html+='<input type="number" id="settingFluidMin" class="modal-input" value="'+settings.fluidMin+'" placeholder="Min" />';
 html+='</div>';
 html+='<div style="flex:1">';
-html+='<label style="display:block;font-size:14px;color:#6b7280;margin-bottom:4px">Maximum</label>';
+html+='<label style="display:block;font-size:14px;color:#6b7280;margin-bottom:4px">'+(fMode==='maximum'?'Maximum (oz) — Do Not Exceed':'Maximum (oz)')+'</label>';
 html+='<input type="number" id="settingFluidMax" class="modal-input" value="'+settings.fluidMax+'" placeholder="Max" />';
+html+='</div>';
 html+='</div>';
 html+='</div>';
 html+='</div>';
@@ -8047,6 +8127,8 @@ settings.weightAlertThreshold=parseFloat(document.getElementById('settingWeightT
 // Original settings
 settings.fluidMin=parseInt(document.getElementById('settingFluidMin').value)||40;
 settings.fluidMax=parseInt(document.getElementById('settingFluidMax').value)||64;
+var fluidModeEl=document.querySelector('input[name="fluidMode"]:checked');
+settings.fluidMode=fluidModeEl?fluidModeEl.value:'range';
 settings.systolicMin=parseInt(document.getElementById('settingSysMin').value)||90;
 settings.systolicMax=parseInt(document.getElementById('settingSysMax').value)||140;
 settings.diastolicMin=parseInt(document.getElementById('settingDiaMin').value)||60;
@@ -8138,6 +8220,7 @@ if(saved){
 var loaded=JSON.parse(saved);
 settings.fluidMin=loaded.fluidMin||40;
 settings.fluidMax=loaded.fluidMax||64;
+settings.fluidMode=loaded.fluidMode||'range';
 settings.systolicMin=loaded.systolicMin||90;
 settings.systolicMax=loaded.systolicMax||140;
 settings.diastolicMin=loaded.diastolicMin||60;
@@ -13108,6 +13191,24 @@ document.getElementById('patternContent').innerHTML=html;
 }
 
 // ================== PHASE 6D: EVENT ANALYSIS ==================
+function updateFluidModeUI(){
+var mode=document.querySelector('input[name="fluidMode"]:checked');
+if(!mode)return;
+var v=mode.value;
+var maxSection=document.getElementById('fluidMaxSection');
+var minWrapper=document.getElementById('fluidMinWrapper');
+var maxLabel=document.querySelector('#fluidMaxSection label');
+if(maxSection)maxSection.style.display=v==='none'?'none':'block';
+if(minWrapper)minWrapper.style.display=v==='range'?'block':'none';
+// Highlight selected radio card
+document.querySelectorAll('input[name="fluidMode"]').forEach(function(r){
+var card=r.closest('label');
+if(!card)return;
+if(r.checked){card.style.border='2px solid #3b82f6';card.style.background='#eff6ff';}
+else{card.style.border='2px solid #e2e8f0';card.style.background='white';}
+});
+}
+
 function timeToMins(t){
 if(!t)return 0;
 var parts=t.split(':');
