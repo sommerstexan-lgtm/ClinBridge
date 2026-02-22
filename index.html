@@ -13902,14 +13902,13 @@ if(currentChartType===type&&container.style.display==='block'){
 closeAnalyticsChart();
 return;
 }
-// Show container and render chart
+// Show container, wait for browser to paint so offsetWidth is valid
 currentChartType=type;
 container.style.display='block';
-renderAnalyticsChart(type);
-// Smooth scroll to chart
 setTimeout(()=>{
+renderAnalyticsChart(type);
 container.scrollIntoView({behavior:'smooth',block:'nearest'});
-},100);
+},50);
 }
 
 function closeAnalyticsChart(){
@@ -13966,6 +13965,8 @@ canvas.style.width=logicalW+'px';
 canvas.style.height=logicalH+'px';
 canvas._logW=logicalW;
 canvas._logH=logicalH;
+// Dynamic decimation threshold: 1 point per 4 CSS pixels (chart area minus padding)
+canvas._threshold=Math.max(50,Math.floor((logicalW-120)/4));
 const ctx=canvas.getContext('2d');
 ctx.scale(dpr,dpr);
 switch(type){
@@ -13990,7 +13991,7 @@ const data=currentAnalyticsData.bp;
 if(data.length===0)return;
 // Sort by date/time, then LTTB decimate to keep chart crisp
 const raw=[...data].sort((a,b)=>new Date(a._date+' '+a.t)-new Date(b._date+' '+b.t));
-const sorted=lttbDecimate(raw,r=>r.s,150);
+const sorted=lttbDecimate(raw,r=>r.s,canvas._threshold||150);
 const w=canvas._logW||canvas.width;
 const h=canvas._logH||canvas.height;
 const pad=80;
@@ -14301,7 +14302,7 @@ ctx.fillText('No heart rate data available',w/2,h/2);
 return;
 }
 const raw=[...data].sort((a,b)=>new Date(a._date+' '+a.t)-new Date(b._date+' '+b.t));
-const sorted=lttbDecimate(raw,r=>r.h,150);
+const sorted=lttbDecimate(raw,r=>r.h,canvas._threshold||150);
 const pad=80;
 const rightPad=40;
 const hrs=sorted.map(r=>r.h);
@@ -14520,7 +14521,7 @@ document.getElementById('analyticsChartTitle').textContent='⚖️ Weight Trajec
 const data=currentAnalyticsData.weight;
 if(data.length===0)return;
 const raw=[...data].sort((a,b)=>new Date(a._date)-new Date(b._date));
-const sorted=lttbDecimate(raw,r=>r.w,150);
+const sorted=lttbDecimate(raw,r=>r.w,canvas._threshold||150);
 const w=canvas._logW||canvas.width;
 const h=canvas._logH||canvas.height;
 const pad=80;
