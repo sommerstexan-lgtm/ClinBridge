@@ -76,7 +76,7 @@ body{font-family:-apple-system,sans-serif;background:#f9fafb;padding:16px;margin
 .modal-btn{width:100%;padding:18px;margin:8px 0;border:none;border-radius:12px;font-size:24px;font-weight:600;cursor:pointer;background:#e5e7eb;color:#000}
 .modal-btn:active{background:#d1d5db}
 .modal-btn.selected{background:#3b82f6;color:#fff}
-.modal-input{width:100%;padding:18px;margin:8px 0;border:2px solid #e5e7eb;border-radius:12px;font-size:22px;box-sizing:border-box}
+.modal-input{width:100%;padding:18px;margin:8px 0;border:2px solid #e5e7eb;border-radius:12px;font-size:22px;box-sizing:border-box;-webkit-appearance:none;appearance:none}
 .modal-actions{display:flex;gap:12px;margin-top:20px}
 .modal-cancel{background:#6b7280;color:#fff;flex:1;padding:18px;border:none;border-radius:12px;font-size:22px;font-weight:600;cursor:pointer}
 .modal-ok{background:#10b981;color:#fff;flex:1;padding:18px;border:none;border-radius:12px;font-size:22px;font-weight:600;cursor:pointer}
@@ -863,9 +863,17 @@ Custom Range
 </button>
 </div>
 
-<div class="custom-date-inputs" id="customDateInputs">
-<input type="date" id="reportStartDate" class="modal-input" placeholder="Start Date">
-<input type="date" id="reportEndDate" class="modal-input" placeholder="End Date">
+<div id="customDateInputs" style="display:none">
+<div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin:16px 0">
+<div style="flex:1;min-width:140px">
+<label style="display:block;font-size:14px;font-weight:600;color:#374151;margin-bottom:6px">📅 Start Date</label>
+<input type="date" id="reportStartDate" class="modal-input" style="width:100%;box-sizing:border-box">
+</div>
+<div style="flex:1;min-width:140px">
+<label style="display:block;font-size:14px;font-weight:600;color:#374151;margin-bottom:6px">📅 End Date</label>
+<input type="date" id="reportEndDate" class="modal-input" style="width:100%;box-sizing:border-box">
+</div>
+</div>
 </div>
 
 <div style="text-align:center;margin:24px 0">
@@ -1292,8 +1300,16 @@ Custom Range
 <button class="date-range-btn" data-range="custom" onclick="selectAnalyticsRange(this,'custom')">Custom Range</button>
 </div>
 <div class="custom-date-inputs" id="analyticsCustomDateInputs" style="display:none">
-<input type="date" id="analyticsStartDate" class="modal-input" placeholder="Start Date">
-<input type="date" id="analyticsEndDate" class="modal-input" placeholder="End Date">
+<div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+<div style="flex:1;min-width:140px">
+<label style="display:block;font-size:14px;font-weight:600;color:#374151;margin-bottom:6px">📅 Start Date</label>
+<input type="date" id="analyticsStartDate" class="modal-input" style="width:100%;box-sizing:border-box">
+</div>
+<div style="flex:1;min-width:140px">
+<label style="display:block;font-size:14px;font-weight:600;color:#374151;margin-bottom:6px">📅 End Date</label>
+<input type="date" id="analyticsEndDate" class="modal-input" style="width:100%;box-sizing:border-box">
+</div>
+</div>
 </div>
 <button onclick="generateAnalytics()" style="background:#8b5cf6;color:white;border:none;padding:14px 24px;border-radius:8px;font-size:18px;font-weight:600;cursor:pointer;width:100%;margin-top:12px">🔍 Generate Analysis</button>
 </div>
