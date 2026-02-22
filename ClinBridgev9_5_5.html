@@ -13902,13 +13902,15 @@ if(currentChartType===type&&container.style.display==='block'){
 closeAnalyticsChart();
 return;
 }
-// Show container, wait for browser to paint so offsetWidth is valid
+// Show container, wait for browser to fully paint (double-rAF works on iOS Safari)
 currentChartType=type;
 container.style.display='block';
-setTimeout(()=>{
+requestAnimationFrame(()=>{
+requestAnimationFrame(()=>{
 renderAnalyticsChart(type);
 container.scrollIntoView({behavior:'smooth',block:'nearest'});
-},50);
+});
+});
 }
 
 function closeAnalyticsChart(){
@@ -13957,7 +13959,9 @@ const canvas=document.getElementById('analyticsChart');
 // HiDPI / Retina fix
 const dpr=window.devicePixelRatio||1;
 const container=canvas.parentElement||document.getElementById('analyticsChartContainer');
-const logicalW=canvas.offsetWidth||container.clientWidth||Math.min(window.innerWidth-48,1136);
+// iOS Safari sometimes still returns 0 — fall back to viewport minus modal padding
+const modalPadding=48;
+const logicalW=canvas.offsetWidth||container.clientWidth||Math.min(window.innerWidth-modalPadding,1136);
 const logicalH=350;
 canvas.width=logicalW*dpr;
 canvas.height=logicalH*dpr;
