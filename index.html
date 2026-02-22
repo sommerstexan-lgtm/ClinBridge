@@ -917,6 +917,7 @@ Custom Range
       <button type="button" class="hr-tab" data-help-section="privacy">Privacy</button>
       <button type="button" class="hr-tab" data-help-section="data-management">Data Mgmt</button>
       <button type="button" class="hr-tab" data-help-section="known-issues">Known Issues</button>
+      <button type="button" class="hr-tab" data-help-section="planned-features">Planned Features</button>
     </div>
 
     <!-- Body -->
@@ -934,12 +935,99 @@ Custom Range
       </section>
 
       <section class="helpSection" data-section="getting-started" hidden>
-        <h3>Getting Started</h3>
-        <ol>
-          <li>Open the main screen and log your first blood pressure reading.</li>
-          <li>Add optional weight, symptoms, activity, meals, and notes as prescribed.</li>
-          <li>Use the Summary/Analytics views before appointments to review trends.</li>
-        </ol>
+        <h3>Getting Started — Why Settings Come First</h3>
+        <p style="font-size:16px;line-height:1.7;color:#374151;margin-bottom:16px">
+          ClinBridge is not a generic health app — it is a precision monitoring tool that
+          adapts to <em>your</em> specific conditions, your doctor's targets, and your daily
+          schedule. <strong>None of that happens automatically.</strong> Settings are where
+          you tell ClinBridge who you are and what you need. Until Settings are filled in,
+          the app operates on generic defaults that may not reflect your care plan at all.
+        </p>
+
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:16px;border-radius:8px;margin-bottom:20px">
+          <strong style="font-size:17px">⚙️ Step 1 — Open Settings before logging anything</strong>
+          <p style="margin:8px 0 0 0;font-size:15px;color:#1e40af">Tap <strong>Settings</strong> on the main screen. Work through each section top to bottom. This takes about 3 minutes and unlocks the full power of ClinBridge.</p>
+        </div>
+
+        <h4 style="font-size:18px;color:#1e3a5f;margin:20px 0 12px 0">👤 Patient Profile</h4>
+        <p style="font-size:15px;line-height:1.7;color:#374151;margin-bottom:8px">
+          Enter your <strong>name</strong> and <strong>date of birth</strong>. These appear on every exported report,
+          PDF, and spreadsheet — so your cardiologist, nephrologist, or any specialist can
+          immediately identify the record as yours. Without this, reports are anonymous and
+          may be rejected by a medical office.
+        </p>
+        <p style="font-size:15px;line-height:1.7;color:#374151;margin-bottom:8px">
+          Select your <strong>cardiac conditions</strong>. This is not just a label — ClinBridge uses
+          your condition profile to decide which warnings to surface, which patterns to flag
+          in Advanced Analytics, and how to frame your data in the Doctor's Report. For example,
+          if Postprandial Hypotension is selected, the app specifically tracks BP drops after meals
+          and calculates your improvement percentage over time. If AFib is selected, heart rate
+          variability and irregularity notes gain prominence in your reports.
+        </p>
+
+        <h4 style="font-size:18px;color:#1e3a5f;margin:20px 0 12px 0">⚙️ App Settings — Your Personal Target Ranges</h4>
+        <p style="font-size:15px;line-height:1.7;color:#374151;margin-bottom:8px">
+          These four ranges are the most important numbers in ClinBridge. Ask your cardiologist
+          for your personal targets — they differ from textbook normals for most cardiac patients.
+        </p>
+        <ul style="font-size:15px;line-height:1.8;color:#374151;margin-bottom:12px;padding-left:20px">
+          <li><strong>Systolic Range</strong> — Every BP reading is evaluated against this. Readings outside range are flagged with a ⚠️ warning dot on charts and counted in your out-of-range summary for doctor reports.</li>
+          <li><strong>Diastolic Range</strong> — Same as above for the lower number. Both are shown side by side in Advanced Analytics so your cardiologist sees the full picture at a glance.</li>
+          <li><strong>Heart Rate Range</strong> — Readings outside this window trigger alerts and are highlighted on the HR trend chart. Critical for patients on beta-blockers or with bradycardia/tachycardia history.</li>
+          <li><strong>Daily Fluid Range (oz)</strong> — ClinBridge tracks your cumulative fluid intake throughout the day and shows a progress bar. When you approach your maximum, the app warns you. For CHF and kidney patients this setting is as important as BP.</li>
+        </ul>
+
+        <h4 style="font-size:18px;color:#1e3a5f;margin:20px 0 12px 0">📋 Tracking Features</h4>
+        <p style="font-size:15px;line-height:1.7;color:#374151;margin-bottom:8px">
+          Turn on only the features your doctor has prescribed. Enabling all features when
+          you only need two creates noise. Each toggle you enable adds a tracking button on
+          the main screen and unlocks a corresponding chart in Advanced Analytics.
+        </p>
+        <ul style="font-size:15px;line-height:1.8;color:#374151;margin-bottom:12px;padding-left:20px">
+          <li><strong>⚖️ Weight Monitoring</strong> — Tracks daily weight with automatic change alerts. CHF patients typically weigh daily; a gain of 2–3 lbs in 24 hours can signal dangerous fluid retention before symptoms appear. Set your alert threshold to match your cardiologist's instructions.</li>
+          <li><strong>💊 Symptom Tracking</strong> — Log dizziness, fatigue, chest discomfort, shortness of breath, and more. Symptoms are timestamped and correlated with BP readings in the Doctor's Report — giving your cardiologist context they cannot get from numbers alone.</li>
+          <li><strong>🏃 Physical Activity</strong> — Log exercise type and duration. Activity directly affects BP readings; logging it lets the app and your doctor distinguish exertion-related readings from true trend changes.</li>
+        </ul>
+
+        <h4 style="font-size:18px;color:#1e3a5f;margin:20px 0 12px 0">📅 Daily Schedule & Events</h4>
+        <p style="font-size:15px;line-height:1.7;color:#374151;margin-bottom:8px">
+          This is where ClinBridge becomes proactive rather than reactive. Create events for
+          medication times, pre-meal BP checks, fluid targets, and any other recurring action
+          in your care plan. At the scheduled time, ClinBridge fires an alert — on screen,
+          with a chime, and with action buttons that let you log directly from the alert.
+          No more missed readings. No more forgotten medications.
+        </p>
+        <p style="font-size:15px;line-height:1.7;color:#374151;margin-bottom:8px">
+          For Postprandial Hypotension patients: set a pre-meal event 15 minutes before each
+          meal with a fluid reminder. ClinBridge will prompt you to hydrate, then prompt you
+          to take a BP reading before eating — the protocol that has been shown to reduce
+          PPH episode severity.
+        </p>
+
+        <h4 style="font-size:18px;color:#1e3a5f;margin:20px 0 12px 0">🔔 Notifications</h4>
+        <p style="font-size:15px;line-height:1.7;color:#374151;margin-bottom:16px">
+          Enable OS notifications so event alerts reach you even when ClinBridge is not
+          the active screen. On iPhone, the in-app alert always works when ClinBridge is
+          open. For background alerts, install ClinBridge to your Home Screen via the
+          Safari Share button.
+        </p>
+
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:16px;border-radius:8px;margin-bottom:20px">
+          <strong style="font-size:17px">📋 What your doctor gets from a well-configured ClinBridge</strong>
+          <ul style="font-size:15px;line-height:1.8;color:#065f46;margin:10px 0 0 0;padding-left:18px">
+            <li>A timestamped BP trend over weeks or months — not just the reading taken in the office</li>
+            <li>Out-of-range readings flagged with context: what you were doing, how you were feeling</li>
+            <li>Medication effectiveness scoring based on BP patterns before and after dose times</li>
+            <li>Fluid intake correlated with weight changes — critical for diuretic management</li>
+            <li>PPH episode frequency and severity over time with percentage improvement</li>
+            <li>A exportable PDF or spreadsheet formatted for a medical record</li>
+          </ul>
+        </div>
+
+        <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 16px;border-radius:8px">
+          <strong>The bottom line:</strong> A 3-minute investment in Settings transforms ClinBridge
+          from a log book into a clinical-grade monitoring tool that speaks your doctor's language.
+        </div>
       </section>
 
       <section class="helpSection" data-section="how-to-use" hidden>
@@ -1056,7 +1144,93 @@ Custom Range
       <!-- Add known-issues section if you plan to populate it -->
       <section class="helpSection" data-section="known-issues" hidden>
         <h3>Known Issues</h3>
-        <p>Content coming soon...</p>
+        <p style="font-size:15px;color:#6b7280;margin-bottom:16px">We track issues openly so you always know the current state of the app.</p>
+
+        <div style="background:#fee2e2;border-left:4px solid #ef4444;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">🔊 Audio Alerts — iPhone (Safari browser tab)</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#7f1d1d">iOS Safari blocks Web Audio until the screen is tapped. Alerts chime correctly when you interact with the app. For reliable background audio, install ClinBridge to your Home Screen. The on-screen visual alert always works regardless.</p>
+        </div>
+
+        <div style="background:#fee2e2;border-left:4px solid #ef4444;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">🔔 OS Notifications — iPhone (Safari browser tab)</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#7f1d1d">Apple restricts Web Notifications to apps installed on the Home Screen. In a browser tab, only the in-app alert fires. Install via Safari Share → "Add to Home Screen" to unlock full OS notifications.</p>
+        </div>
+
+        <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">📄 Doctor's Report</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#78350f">The Doctor's Report generation feature is temporarily disabled while calculations are being reviewed and validated for clinical accuracy. Export to Excel and Print are available in the meantime.</p>
+        </div>
+
+        <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">🏃 Activity Charts</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#78350f">Activity trend charts in the main Summary view are pending an enhancement for richer insights. Activity data in Advanced Analytics works fully.</p>
+        </div>
+
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:4px">
+          <strong style="font-size:16px">✅ Recently Fixed (v9.5.5)</strong>
+          <ul style="font-size:14px;margin:8px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
+            <li>Advanced Analytics charts now scroll horizontally — swipe to pan through all data</li>
+            <li>Charts render crisp on iPhone 16 and all Retina / HiDPI displays</li>
+            <li>Custom date range inputs now show labeled Start Date / End Date fields on iPhone</li>
+            <li>App no longer loads pre-zoomed — fits all mobile screens correctly on first open</li>
+            <li>Audio context unlocks on first touch so event chimes play on iPhone</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="helpSection" data-section="planned-features" hidden>
+        <h3>Planned Features</h3>
+        <p style="font-size:15px;color:#6b7280;margin-bottom:16px">Here is what is coming. Features are prioritized by clinical value and user feedback.</p>
+
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">📄 Doctor's Report — Full Restoration</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#1e40af">Clinically validated PDF report with trend summaries, out-of-range analysis, medication effectiveness scoring, and PPH episode data. Formatted for a medical record and designed to be handed directly to your cardiologist.</p>
+        </div>
+
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">💊 Medication Tracker</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#1e40af">Log medications with dose and time. Automatically correlate BP readings before and after each medication dose to generate an effectiveness score over weeks and months — data your cardiologist cannot easily get any other way.</p>
+        </div>
+
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">🌡️ Barometric Pressure Alerts</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#1e40af">Barometric pressure drops correlate with PPH episode severity. ClinBridge will detect significant pressure changes and issue a proactive heads-up so you can adjust hydration and activity before symptoms occur.</p>
+        </div>
+
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">📊 Pattern Intelligence</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#1e40af">Automatic detection of recurring patterns — morning BP spikes, post-meal drops, weekly cycles, and more. Presented as plain-English insights rather than raw data, with suggested questions to raise with your doctor.</p>
+        </div>
+
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">🔗 Caregiver / Family Sharing</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#1e40af">Optional read-only access for a spouse, adult child, or caregiver to view your dashboard and receive alerts — without being able to edit your data. Peace of mind for the people who care about you.</p>
+        </div>
+
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">📱 Native iPhone & Android Apps</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#1e40af">Full native apps with reliable background notifications, HealthKit / Google Fit integration, Apple Watch complications, and wrist-tap logging. No browser required.</p>
+        </div>
+
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">⌚ Wearable Integration</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#1e40af">Auto-import heart rate and activity data from Apple Watch, Fitbit, and Garmin — so you are not re-entering data that your devices already captured.</p>
+        </div>
+
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">🍽️ Meal Impact Analysis</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#1e40af">Correlate meal logs with post-meal BP readings to identify which foods or meal sizes consistently trigger PPH episodes. Over time, builds a personal map of your dietary BP triggers.</p>
+        </div>
+
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">🌙 Sleep & Recovery Tracking</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#1e40af">Log sleep quality and duration. Poor sleep is a major driver of next-day BP irregularities and OSA complications. Correlating sleep quality with BP trends gives your doctor a fuller clinical picture.</p>
+        </div>
+
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:4px">
+          <strong style="font-size:16px">💡 Have a feature idea?</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46">ClinBridge is built by a patient, for patients. If there is something your care plan requires that ClinBridge does not yet do, we want to know. Use the Contact & Feedback section in Settings to send a suggestion directly to the development team.</p>
+        </div>
       </section>
     </div> <!-- closes .modal-body -->
 
