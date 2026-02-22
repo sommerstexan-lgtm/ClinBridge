@@ -12510,7 +12510,7 @@ const customEndDate=new Date(ey,em-1,ed,23,59,59,999);
 return{startDate,endDate:customEndDate};
 }
 const days=parseInt(analyticsRange);
-startDate.setDate(endDate.getDate()-days);
+startDate.setDate(endDate.getDate()-(days-1));
 startDate.setHours(0,0,0,0);
 return{startDate,endDate};
 }
@@ -12520,7 +12520,7 @@ const allData={bp:[],weight:[],symptoms:[],activities:[],meals:[],medications:[]
 const todayKey=getTodayKey();
 // Get all stored daily data within date range
 for(let d=new Date(startDate);d<=endDate;d.setDate(d.getDate()+1)){
-const key=d.toISOString().split('T')[0];
+const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 // Check if this is today - if so, use current session data
 if(key===todayKey){
 // Include today's current data from global variables
@@ -14319,8 +14319,8 @@ else if(type==='weight')pointCount=currentAnalyticsData.weight.length;
 else if(type==='activity')pointCount=Object.keys(
   currentAnalyticsData.activities.reduce((a,r)=>{a[r._date]=1;return a;},{})
 ).length;
-// Line charts: 8px per point. Bar charts (activity): 30px per bar minimum
-const pxPerPoint=(type==='activity')?30:8;
+// BP/HR: 8px per point (many readings per day). Weight: 20px (once daily). Activity bars: 30px
+const pxPerPoint=(type==='activity')?30:(type==='weight')?20:8;
 const logicalW=Math.min(Math.max(pointCount*pxPerPoint+120,viewW),4000);
 const logicalH=350;
 canvas.width=logicalW*dpr;
@@ -14966,16 +14966,20 @@ ctx.moveTo(pad,y1);
 ctx.lineTo(w-rightPad,y2);
 ctx.stroke();
 ctx.setLineDash([]);
-// X-axis labels
+// X-axis labels — show every Nth point to avoid crowding
 ctx.fillStyle='#374151';
 ctx.font='11px sans-serif';
 ctx.textAlign='center';
-[0,Math.floor(sorted.length/2),sorted.length-1].forEach(i=>{
-if(i<sorted.length){
+const labelInterval=Math.max(1,Math.ceil(sorted.length/20));
+sorted.forEach((r,i)=>{
+if(i%labelInterval!==0&&i!==sorted.length-1)return;
 const x=pad+i*xStep;
-const dateStr=new Date(sorted[i]._date).toLocaleDateString('en-US',{month:'short',day:'numeric'});
-ctx.fillText(dateStr,x,h-rightPad+20);
-}
+const dateStr=new Date(r._date).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+ctx.save();
+ctx.translate(x,h-rightPad+10);
+ctx.rotate(-Math.PI/4);
+ctx.fillText(dateStr,0,0);
+ctx.restore();
 });
 // Stats summary
 const totalChange=sorted[sorted.length-1].w-sorted[0].w;
