@@ -1701,6 +1701,8 @@ function showNotifPrePrompt(){
  *  @param {string} tag   Unique key — prevents duplicate bubbles for same event
  */
 function fireOSNotification(title, body, tag){
+  // iOS Safari in a browser tab does not support Web Notifications API.
+  // The in-app visual alert (audioAlertBox) is the primary notification path on iOS.
   if(!('Notification' in window)||getNotifStatus()!=='granted') return;
   try{
     var n=new Notification(title,{
@@ -5217,16 +5219,32 @@ if(!audioContext){
 var AudioCtx=window.AudioContext||window.webkitAudioContext;
 if(AudioCtx){
 audioContext=new AudioCtx();
-console.log('Audio context initialized');
+console.log('Audio context initialized, state:',audioContext.state);
 }else{
 console.warn('Web Audio API not supported');
 }
 }
 }
 
+// iOS Safari suspends AudioContext until a user gesture — unlock it on first touch/click
+function unlockAudioContext(){
+if(!audioContext){initializeAudioContext();}
+if(audioContext&&audioContext.state==='suspended'){
+audioContext.resume().then(function(){
+console.log('AudioContext resumed by user gesture');
+});
+}
+}
+document.addEventListener('touchstart',unlockAudioContext,{once:false,passive:true});
+document.addEventListener('click',unlockAudioContext,{once:false,passive:true});
+
 function playMedicalAlertChime(){
 initializeAudioContext();
 if(!audioContext)return;
+// iOS: always resume before scheduling notes — no-op on other platforms
+if(audioContext.state==='suspended'){
+audioContext.resume();
+}
 
 // Senior-optimized audio (v9.5.5-SA):
 // • C4/E4/G4 at 261–392 Hz — one octave lower than before.
@@ -5306,6 +5324,9 @@ fireOSNotification(
   (eventAmount>0?'💧 '+eventAmount+' oz  •  ':'')+'Tap to open ClinBridge',
   'clinbridge-audio-'+(eventName||'event').replace(/\s+/g,'_')
 );
+
+// Haptic feedback — iOS Taptic Engine (works even when audio is blocked)
+if(navigator.vibrate){navigator.vibrate([200,100,200,100,400]);}
 
 // Play audio
 playMedicalAlertChime();
@@ -7692,8 +7713,8 @@ html+='<p style="font-size:16px;color:#64748b;margin-bottom:12px">Enable system-
   var notifUnsupported=!('Notification' in window);
   if(isIOS&&(isSafari||notifUnsupported)){
     html+='<div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 16px;border-radius:8px;margin-bottom:14px;font-size:15px;line-height:1.6;color:#78350f">';
-    html+='<strong>📱 iPhone &amp; iPad Users:</strong> OS notifications require ClinBridge to be installed to your Home Screen. ';
-    html+='Tap the <strong>Share</strong> button in Safari (the box with an arrow pointing up), choose <strong>"Add to Home Screen"</strong>, then reopen ClinBridge from the icon on your Home Screen.';
+    html+='<strong>📱 iPhone &amp; iPad Users:</strong> When ClinBridge is open, event alerts will appear as a <strong>red pop-up on screen with a chime</strong> — this works now without any setup.';
+    html+='<br><br>For alerts when ClinBridge is in the background or another app is open, install to your Home Screen: tap the <strong>Share ⬆</strong> button in Safari → <strong>"Add to Home Screen"</strong> → reopen from the Home Screen icon.';
     html+='</div>';
   }
 })();
