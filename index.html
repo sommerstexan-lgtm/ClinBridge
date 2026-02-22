@@ -10026,9 +10026,9 @@ btn.classList.add('active');
 reportDateRange=range;
 const customInputs=document.getElementById('customDateInputs');
 if(range==='custom'){
-customInputs.classList.add('active');
+customInputs.style.display='block';
 }else{
-customInputs.classList.remove('active');
+customInputs.style.display='none';
 }
 
 // Reset preview and disable buttons when date range changes
@@ -12187,7 +12187,7 @@ btn.classList.add('active');
 analyticsRange=range;
 const customInputs=document.getElementById('analyticsCustomDateInputs');
 if(range==='custom'){
-customInputs.style.display='grid';
+customInputs.style.display='block';
 }else{
 customInputs.style.display='none';
 }
