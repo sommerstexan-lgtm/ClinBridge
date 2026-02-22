@@ -13108,6 +13108,11 @@ document.getElementById('patternContent').innerHTML=html;
 }
 
 // ================== PHASE 6D: EVENT ANALYSIS ==================
+function timeToMins(t){
+if(!t)return 0;
+var parts=t.split(':');
+return parseInt(parts[0]||0)*60+parseInt(parts[1]||0);
+}
 // Analyze health metrics grouped by daily events
 
 function generateEventAnalysis(data){
@@ -13137,13 +13142,32 @@ bpByEvent[reading.eventId].count++;
 }
 });
 }
-// Group fluid entries
-if(data.fluid&&Array.isArray(data.fluid)){
-data.fluid.forEach(entry=>{
+// Group fluid entries — match by eventId first, then fall back to time proximity (±30 min)
+const fluidSource=data.fluids||data.fluid||[];
+if(Array.isArray(fluidSource)){
+fluidSource.forEach(entry=>{
+// Primary match: explicit eventId
 if(entry.eventId&&fluidByEvent[entry.eventId]){
 fluidByEvent[entry.eventId].entries.push(entry);
 fluidByEvent[entry.eventId].totalOz+=entry.amount||0;
 fluidByEvent[entry.eventId].count++;
+return;
+}
+// Fallback: match to nearest event within ±30 minutes by time
+if(entry.time){
+const entryMins=timeToMins(entry.time);
+let bestEvt=null,bestDiff=31;
+settings.dailyEvents.forEach(evt=>{
+if(!evt.time)return;
+const evtMins=timeToMins(evt.time);
+const diff=Math.abs(entryMins-evtMins);
+if(diff<bestDiff){bestDiff=diff;bestEvt=evt;}
+});
+if(bestEvt&&fluidByEvent[bestEvt.id]){
+fluidByEvent[bestEvt.id].entries.push(entry);
+fluidByEvent[bestEvt.id].totalOz+=entry.amount||0;
+fluidByEvent[bestEvt.id].count++;
+}
 }
 });
 }
