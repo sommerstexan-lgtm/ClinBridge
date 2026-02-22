@@ -85,6 +85,7 @@ body{font-family:-apple-system,sans-serif;background:#f9fafb;padding:16px;margin
 .modal-btn:active{background:#d1d5db}
 .modal-btn.selected{background:#3b82f6;color:#fff}
 .modal-input{width:100%;padding:18px;margin:8px 0;border:2px solid #e5e7eb;border-radius:12px;font-size:22px;box-sizing:border-box;-webkit-appearance:none;appearance:none}
+input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appearance:auto}
 .modal-actions{display:flex;gap:12px;margin-top:20px}
 .modal-cancel{background:#6b7280;color:#fff;flex:1;padding:18px;border:none;border-radius:12px;font-size:22px;font-weight:600;cursor:pointer}
 .modal-ok{background:#10b981;color:#fff;flex:1;padding:18px;border:none;border-radius:12px;font-size:22px;font-weight:600;cursor:pointer}
@@ -5009,6 +5010,7 @@ function addEvent(){
 var html='<div class="modal-title">Add Event</div>';
 html+='<input type="text" id="eventName" class="modal-input" placeholder="Event name (e.g., Breakfast, Pre-meal Water)" />';
 html+='<input type="number" id="eventAmount" class="modal-input" placeholder="Fluid amount in oz (0 if none)" />';
+html+='<label style="display:block;font-size:14px;font-weight:600;color:#374151;margin:8px 0 4px 0">⏰ Event Time (optional)</label>';
 html+='<input type="time" id="eventTime" class="modal-input" placeholder="Time (optional)" />';
 html+='<div style="margin:16px 0;padding:12px;background:#f3f4f6;border-radius:8px">';
 html+='<label style="display:flex;align-items:center;margin-bottom:8px;font-size:16px;cursor:pointer">';
@@ -5091,6 +5093,7 @@ var event=dailyPlan[index];
 var html='<div class="modal-title">Edit Event</div>';
 html+='<input type="text" id="eventName" class="modal-input" placeholder="Event name (e.g., Breakfast, Pre-meal Water)" value="'+event.name+'" />';
 html+='<input type="number" id="eventAmount" class="modal-input" placeholder="Fluid amount in oz (0 if none)" value="'+event.amount+'" />';
+html+='<label style="display:block;font-size:14px;font-weight:600;color:#374151;margin:8px 0 4px 0">⏰ Event Time (optional)</label>';
 html+='<input type="time" id="eventTime" class="modal-input" placeholder="Time (optional)" value="'+(event.time||'')+'" />';
 html+='<div style="margin:16px 0;padding:12px;background:#f3f4f6;border-radius:8px">';
 html+='<label style="display:flex;align-items:center;margin-bottom:8px;font-size:16px;cursor:pointer">';
