@@ -3501,11 +3501,13 @@ return;
 document.getElementById('noChartDataWeight').style.display='none';
 document.getElementById('weightChart').style.display='block';
 var canvas=document.getElementById('weightChart');
-var ctx=canvas.getContext('2d');
-canvas.width=canvas.offsetWidth;
-canvas.height=400;
-var w=canvas.width;
-var h=canvas.height;
+var dpr=window.devicePixelRatio||1;
+var logW=canvas.offsetWidth||canvas.parentElement.clientWidth||300;
+var logH=400;
+canvas.width=logW*dpr;canvas.height=logH*dpr;
+canvas.style.width=logW+'px';canvas.style.height=logH+'px';
+var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+var w=logW;var h=logH;
 var pad=60;
 ctx.clearRect(0,0,w,h);
 // Sort by time
@@ -4150,11 +4152,13 @@ return;
 document.getElementById('noChartDataSymptom').style.display='none';
 document.getElementById('symptomChart').style.display='block';
 var canvas=document.getElementById('symptomChart');
-var ctx=canvas.getContext('2d');
-canvas.width=canvas.offsetWidth;
-canvas.height=400;
-var w=canvas.width;
-var h=canvas.height;
+var dpr=window.devicePixelRatio||1;
+var logW=canvas.offsetWidth||canvas.parentElement.clientWidth||300;
+var logH=400;
+canvas.width=logW*dpr;canvas.height=logH*dpr;
+canvas.style.width=logW+'px';canvas.style.height=logH+'px';
+var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+var w=logW;var h=logH;
 var pad=60;
 ctx.clearRect(0,0,w,h);
 // Sort by time
@@ -4797,11 +4801,13 @@ return;
 document.getElementById('activityChart').style.display='block';
 document.getElementById('noChartDataActivity').style.display='none';
 var canvas=document.getElementById('activityChart');
-var ctx=canvas.getContext('2d');
-canvas.width=canvas.offsetWidth;
-canvas.height=400;
-var w=canvas.width;
-var h=canvas.height;
+var dpr=window.devicePixelRatio||1;
+var logW=canvas.offsetWidth||canvas.parentElement.clientWidth||300;
+var logH=400;
+canvas.width=logW*dpr;canvas.height=logH*dpr;
+canvas.style.width=logW+'px';canvas.style.height=logH+'px';
+var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+var w=logW;var h=logH;
 var pad=60;
 ctx.clearRect(0,0,w,h);
 var sorted=activityData.slice().sort(function(a,b){
@@ -8981,6 +8987,7 @@ bpChart.destroy();
 }
 bpChart=new Chart(ctx,{
 type:'line',
+devicePixelRatio:window.devicePixelRatio||1,
 data:{
 labels:times,
 datasets:[
@@ -9408,6 +9415,7 @@ gradient.addColorStop(1,'rgba(20,184,166,0.05)');
 
 fluidChart=new Chart(ctx,{
 type:'line',
+devicePixelRatio:window.devicePixelRatio||1,
 data:{
 labels:times,
 datasets:[
@@ -10096,6 +10104,7 @@ maxTicksLimit:12
 }
 }
 };
+config.devicePixelRatio=window.devicePixelRatio||1;
 hrChart=new Chart(ctx,config);
 }
 
@@ -14182,8 +14191,9 @@ else if(type==='weight')pointCount=currentAnalyticsData.weight.length;
 else if(type==='activity')pointCount=Object.keys(
   currentAnalyticsData.activities.reduce((a,r)=>{a[r._date]=1;return a;},{})
 ).length;
-// 8px per point minimum, never smaller than viewport, cap at 4000px
-const logicalW=Math.min(Math.max(pointCount*8+120,viewW),4000);
+// Line charts: 8px per point. Bar charts (activity): 30px per bar minimum
+const pxPerPoint=(type==='activity')?30:8;
+const logicalW=Math.min(Math.max(pointCount*pxPerPoint+120,viewW),4000);
 const logicalH=350;
 canvas.width=logicalW*dpr;
 canvas.height=logicalH*dpr;
@@ -14951,7 +14961,7 @@ ctx.lineTo(pad,h-rightPad);
 ctx.lineTo(w-rightPad,h-rightPad);
 ctx.stroke();
 // Draw bars
-const barWidth=Math.min((w-pad-rightPad)/dates.length*0.7,60);
+const barWidth=Math.min((w-pad-rightPad)/dates.length*0.7,50);
 const barGap=(w-pad-rightPad)/dates.length*0.3;
 const bars=[];
 dates.forEach((date,i)=>{
