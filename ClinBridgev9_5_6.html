@@ -5449,7 +5449,7 @@ for(var i=0;i<Math.min(upcoming.length,4);i++){
 var e=upcoming[i].event;
 var minsDiff=upcoming[i].diff;
 var mapKey='u'+i;
-_wEvtMap[mapKey]=e._ref||e;
+_wEvtMap[mapKey]=e; // store normalized event, not raw _ref
 
 var timeStr='';
 if(minsDiff<0){
@@ -5488,7 +5488,7 @@ for(var mi=0;mi<Math.min(missed.length,4);mi++){
 var me=missed[mi].event;
 var mDiff=Math.abs(missed[mi].diff);
 var mMapKey='m'+mi;
-_wEvtMap[mMapKey]=me._ref||me;
+_wEvtMap[mMapKey]=me; // store normalized event, not raw _ref
 var agoStr=mDiff<60?Math.floor(mDiff)+' min ago':Math.floor(mDiff/60)+'h '+(mDiff%60)+'m ago';
 html+='<div style="padding:14px;background:#fef3c7;border-radius:10px;margin-bottom:10px;border:2px solid #f59e0b">';
 html+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">';
@@ -5758,20 +5758,14 @@ for(var i=0;i<allEvents.length;i++){
     }
   }
 
-  // Advance reminder
+  // Advance pre-warning only — fires the audioAlertBox BEFORE the event time
+  // At-time reminders are handled exclusively by checkEventReminders/showEventReminder
   if(advanceTime && currentTime===advanceTime && !firedEvents[advanceKey]){
     console.log('Advance reminder:',event.name,'at',currentTime,'(advance',advance,'min)');
     triggerAudioAlert(event.name,event.amount,event);
     firedEvents[advanceKey]=true;
-    continue; // avoid double-firing in same minute
   }
-
-  // At-time reminder
-  if(remindAtTime && currentTime===event.time && !firedEvents[atTimeKey]){
-    console.log('Event triggered ['+event._source+']:',event.name,'at',event.time);
-    triggerAudioAlert(event.name,event.amount,event);
-    firedEvents[atTimeKey]=true;
-  }
+  // at-time triggerAudioAlert removed — checkEventReminders fires showEventReminder instead
 }
 }
 
@@ -8933,7 +8927,6 @@ console.error('Failed to save fired reminders',e);
 }
 
 function checkEventReminders(){
-if(!settings.dailyEvents||settings.dailyEvents.length===0)return;
 var now=new Date();
 var currentTime=now.getHours()*60+now.getMinutes(); // Minutes since midnight
 var today=getTodayKey();
@@ -8941,12 +8934,44 @@ var today=getTodayKey();
 if(!firedReminders[today]){
 firedReminders[today]={};
 }
+
+// Build unified event list: settings.dailyEvents + dailyPlan
+var allReminders=[];
+
+// Settings events
+if(settings.dailyEvents&&settings.dailyEvents.length>0){
 settings.dailyEvents.forEach(function(evt){
-// Skip if reminder not enabled
-if(!evt.reminderEnabled)return;
-// Skip if no time set
-if(!evt.time)return;
-// Parse event time (HH:MM format)
+if(!evt.reminderEnabled||!evt.time)return;
+allReminders.push({
+id:evt.id,
+name:evt.name,
+icon:evt.icon||'📅',
+time:evt.time,
+fluidGoal:evt.fluidGoal||0,
+actions:evt.actions||['logBP','logFluid'],
+reminderEnabled:true
+});
+});
+}
+
+// Plan My Day events — normalize fields to match showEventReminder expectations
+if(dailyPlan&&dailyPlan.length>0){
+dailyPlan.forEach(function(pe,idx){
+if(!pe.time)return;
+if(pe.notify===false&&pe.sound===false)return; // explicitly disabled
+allReminders.push({
+id:'plan_'+idx+'_'+pe.name,
+name:pe.name,
+icon:pe.icon||'📋',
+time:pe.time,
+fluidGoal:pe.amount||pe.fluidGoal||0,
+actions:pe.actions||['logBP','logFluid'],
+reminderEnabled:true
+});
+});
+}
+
+allReminders.forEach(function(evt){
 var parts=evt.time.split(':');
 if(parts.length!==2)return;
 var eventHour=parseInt(parts[0]);
@@ -8956,7 +8981,7 @@ var eventTime=eventHour*60+eventMin;
 var timeDiff=currentTime-eventTime;
 if(timeDiff>=0&&timeDiff<1){
 // It's time! Check if we haven't fired this reminder yet
-var reminderKey=evt.id+'_'+eventHour+'_'+eventMin;
+var reminderKey=(evt.id||evt.name)+'_'+eventHour+'_'+eventMin;
 if(!firedReminders[today][reminderKey]){
 showEventReminder(evt);
 firedReminders[today][reminderKey]=true;
@@ -8968,6 +8993,9 @@ console.log('✓ Fired reminder for:',evt.name);
 }
 
 function showEventReminder(evt){
+// Ensure the legacy audioAlertBox is hidden — only one notification style at a time
+var alertBox=document.getElementById('audioAlertBox');
+if(alertBox)alertBox.style.display='none';
 // Build reminder content
 var reminderParts=[];
 if(evt.fluidGoal&&evt.fluidGoal>0){
