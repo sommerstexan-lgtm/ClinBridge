@@ -2,6 +2,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CRFJX46Y7Y"></script>
 <script>
@@ -1739,6 +1742,26 @@ Custom Range
 </div>
 
 <script>
+// ============================================================
+// VERSION-GATED CACHE BUSTER (runs before anything else)
+// If the browser loaded a stale cached page, this forces a
+// hard reload from the server so users always get the latest.
+// ============================================================
+(function(){
+  var CURRENT='v9.5.6';
+  var VKEY='CLINBRIDGE_APP_VERSION';
+  try{
+    var stored=localStorage.getItem(VKEY);
+    if(stored && stored!==CURRENT){
+      // Stored version is different — force hard reload to bypass cache
+      localStorage.setItem(VKEY,CURRENT);
+      window.location.reload(true);
+      return;
+    }
+    localStorage.setItem(VKEY,CURRENT);
+  }catch(e){}
+})();
+
 // Global variables
 var M=[],B=[],W=[],S=[],A=[],notes=[],medLog=[],fluidLog=[],procedures=[],dailyFluid=0,dailyPlan=[],medicineList=[],exportedToday=false,dismissedEvents=[];
 
