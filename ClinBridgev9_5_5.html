@@ -5636,12 +5636,13 @@ var allEvents=[];
 if(settings.dailyEvents&&settings.dailyEvents.length>0){
 settings.dailyEvents.forEach(function(evt){
 if(!evt.time)return;
-if(evt.reminderEnabled===false)return; // only skip if explicitly disabled
+// Only skip if EXPLICITLY disabled — undefined/null/missing = enabled by default
+if(evt.reminderEnabled===false&&evt.notify===false)return;
 allEvents.push({
 name:evt.name,
 time:evt.time,
 amount:evt.fluidGoal||0,
-sound:true, // settings events always have sound unless explicitly off
+sound:true,
 advanceMinutes:evt.advanceMinutes||0,
 remindAtTime:true,
 actions:evt.actions||['logFluid'],
@@ -8266,6 +8267,10 @@ settings.customConditions=loaded.customConditions||[];
 settings.features=loaded.features||settings.features;
 settings.reportPreferences=loaded.reportPreferences||settings.reportPreferences;
 settings.dailyEvents=loaded.dailyEvents||[];
+// Migrate: if reminderEnabled was never set (undefined), default it to true
+settings.dailyEvents.forEach(function(evt){
+  if(evt.reminderEnabled===undefined||evt.reminderEnabled===null){evt.reminderEnabled=true;}
+});
 settings.customSymptoms=loaded.customSymptoms||[];
 }
 }catch(e){
@@ -8587,8 +8592,8 @@ html+='<input type="number" id="eventFluidGoal" class="modal-input" value="'+(ev
 html+='</div>';
 html+='<div style="margin-bottom:16px">';
 html+='<label style="display:flex;align-items:center;cursor:pointer">';
-html+='<input type="checkbox" id="eventReminder" style="width:20px;height:20px;margin-right:10px;cursor:pointer" '+(evt.reminderEnabled?'checked':'')+' />';
-html+='<span style="font-size:16px;font-weight:600">Enable Reminder</span>';
+html+='<input type="checkbox" id="eventReminder" style="width:20px;height:20px;margin-right:10px;cursor:pointer" '+(evt.reminderEnabled===false?'':' checked')+' />';
+html+='<span style="font-size:16px;font-weight:600">🔔 Enable Reminder (sound + notification)</span>';
 html+='</label>';
 html+='</div>';
 html+=renderEventActionCheckboxes(evt.actions||['logFluid']);
