@@ -5416,11 +5416,15 @@ var eventTimeInMin=eventHour*60+eventMin;
 var diff=eventTimeInMin-currentTimeInMin;
 
 if(diff>=-15&&diff<=360){
-// Within normal display window
+// Within normal display window — skip if already dismissed today
+if(!isEventDismissed(event)){
 upcoming.push({event:event,diff:diff});
+}
 }else if(diff<-15&&diff>=-480){
-// Missed event (up to 8 hours ago) — show so user can run it manually
+// Missed event — skip if already dismissed today
+if(!isEventDismissed(event)){
 missed.push({event:event,diff:diff});
+}
 }
 }
 
@@ -9043,8 +9047,15 @@ playMedicalAlertChime();
 
 function dismissReminder(){
 pendingEventFluid=0;
+var evt=activeReminderEvt;
 activeReminderEvt=null; // clear BEFORE hideModal so it doesn't reshow
 hideModal();
+// Record this event as dismissed for the day so the widget removes it
+if(evt&&evt.time&&evt.name){
+  dismissOverdueEvent(evt.time,evt.name);
+}else{
+  updateUpcomingEventsWidget();
+}
 }
 
 // Use this instead of hideModal() in all save/complete actions so a pending
