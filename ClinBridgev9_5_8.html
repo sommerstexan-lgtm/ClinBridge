@@ -7960,7 +7960,7 @@ function openFluidBudgetDashboard(useCache){
   var fMode=settings.fluidMode||'range';
   var fMax=settings.fluidMax||64;
   var fMin=settings.fluidMin||40;
-  var inc=settings.fluidIncrement||8;
+  var inc=1; // Budget dashboard always uses 1 oz steps for precise allocation
 
   // Build unified list of ALL events (settings + plan) sorted by time
   // When re-rendering after an adjustment, preserve the user's edited values
@@ -8143,7 +8143,7 @@ function scaleBudgetToFit(){
   var currentTotal=fluidEvts.reduce(function(t,e){return t+e.fluidGoal;},0);
   if(currentTotal===0)return;
   var scale=budget/currentTotal;
-  var inc=settings.fluidIncrement||8;
+  var inc=1; // Scale to Fit rounds to nearest 1 oz for precise allocation
   var allocated=0;
   fluidEvts.forEach(function(e,i){
     if(i===fluidEvts.length-1){
