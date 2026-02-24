@@ -13775,7 +13775,7 @@ function _assistApply(){
   settings.fluidMode=mode;
   if(newMax>0) settings.fluidMax=newMax;
   if(newMin>0) settings.fluidMin=newMin;
-  saveSettingsToStorage();
+  try{localStorage.setItem('BP_TRACKER_SETTINGS',JSON.stringify(settings));}catch(e){}
   // If mode has a limit AND user has events, offer smart distribution next
   var hasEvents=(settings.dailyEvents&&settings.dailyEvents.length>0)||(dailyPlan&&dailyPlan.length>0);
   if(mode!=='none'&&hasEvents){
@@ -13941,11 +13941,11 @@ function saveDoctorFluidQuestion(){
   if(!settings.pendingDoctorQuestions) settings.pendingDoctorQuestions=[];
   if(settings.pendingDoctorQuestions.indexOf(question)<0){
     settings.pendingDoctorQuestions.push(question);
-    saveSettingsToStorage();
+    try{localStorage.setItem('BP_TRACKER_SETTINGS',JSON.stringify(settings));}catch(e){}
   }
   // Switch to General Tracking silently
   settings.fluidMode='none';
-  saveSettingsToStorage();
+  try{localStorage.setItem('BP_TRACKER_SETTINGS',JSON.stringify(settings));}catch(e){}
   var html='<div style="max-width:520px;margin:0 auto;text-align:center;padding:16px">';
   html+='<div style="font-size:44px;margin-bottom:12px">📋</div>';
   html+='<div style="font-size:20px;font-weight:700;color:#1e40af;margin-bottom:10px">Saved to your doctor questions</div>';
@@ -16529,7 +16529,7 @@ function saveAppointment() {
     // Clear pending doctor questions once they've been committed to an appointment
     if(settings.pendingDoctorQuestions && settings.pendingDoctorQuestions.length > 0){
         settings.pendingDoctorQuestions = [];
-        saveSettingsToStorage();
+        try{localStorage.setItem('BP_TRACKER_SETTINGS',JSON.stringify(settings));}catch(e){}
     }
     closeAppointmentModal();
     
