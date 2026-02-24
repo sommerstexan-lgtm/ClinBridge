@@ -13198,24 +13198,34 @@ html+=`<div class="stat-card clickable-stat" onclick="toggleAnalyticsChart('acti
 </div>`;
 html+=`<div class="stat-card"><div class="stat-value">${totalMinutes} min</div><div class="stat-label">Total Exercise</div></div>`;
 }
-// Daily fluid average
-if(data.fluids&&data.fluids.length>0){
+// Daily fluid average — sum all sources per day, divide by full period length
+{
 const fluidByDay={};
-data.fluids.forEach(function(r){
-  var d=r._date||'unknown';
-  fluidByDay[d]=(fluidByDay[d]||0)+(r.amount||0);
-});
-// Also include BP entries with fluid
-data.bp.forEach(function(r){
-  if(r.f&&r.f>0){var d=r._date||'unknown';fluidByDay[d]=(fluidByDay[d]||0)+r.f;}
-});
-const fluidDays=Object.keys(fluidByDay);
-if(fluidDays.length>0){
-  const fluidTotal=fluidDays.reduce(function(sum,d){return sum+fluidByDay[d];},0);
-  const fluidAvg=Math.round(fluidTotal/fluidDays.length);
-  const fluidLimit=settings.fluidMax||0;
-  const fluidAvgColor=fluidLimit>0?(fluidAvg>fluidLimit?'#ef4444':fluidAvg<(settings.fluidMin||0)?'#f59e0b':'#10b981'):'inherit';
-  html+=`<div class="stat-card"><div class="stat-value" style="color:${fluidAvgColor}">${fluidAvg} oz</div><div class="stat-label">💧 Avg Daily Fluid</div></div>`;
+// Source 1: standalone fluid log entries
+if(data.fluids){
+  data.fluids.forEach(function(r){
+    var d=r._date||'unknown';
+    fluidByDay[d]=(fluidByDay[d]||0)+(r.amount||0);
+  });
+}
+// Source 2: fluid recorded alongside BP readings
+if(data.bp){
+  data.bp.forEach(function(r){
+    if(r.f&&r.f>0){var d=r._date||'unknown';fluidByDay[d]=(fluidByDay[d]||0)+r.f;}
+  });
+}
+// Source 3: fluid from meals
+if(data.meals){
+  data.meals.forEach(function(r){
+    if(r.mealFluidOz&&r.mealFluidOz>0){var d=r._date||'unknown';fluidByDay[d]=(fluidByDay[d]||0)+r.mealFluidOz;}
+  });
+}
+const daysWithFluid=Object.keys(fluidByDay).filter(function(d){return d!=='unknown';});
+if(daysWithFluid.length>0){
+  const fluidTotal=daysWithFluid.reduce(function(sum,d){return sum+fluidByDay[d];},0);
+  // Divide by full period (days), not just days with data — gives true daily average
+  const fluidAvg=Math.round(fluidTotal/days);
+  html+=`<div class="stat-card"><div class="stat-value">${fluidAvg} oz</div><div class="stat-label">💧 Avg Daily Fluid</div></div>`;
 }
 }
 html+=`<div class="stat-card"><div class="stat-value">${days}</div><div class="stat-label">Days Analyzed</div></div>`;
