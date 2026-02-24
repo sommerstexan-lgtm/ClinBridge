@@ -2395,6 +2395,108 @@ return medLog[i]; // most recent entry
 return null;
 }
 
+// Count how many times a med has been logged today
+function getMedDosesToday(medName){
+var count=0;
+for(var i=0;i<medLog.length;i++){
+if(medLog[i].medicine===medName) count++;
+}
+return count;
+}
+
+// How many doses per day are expected for a given frequency
+function getMedExpectedDoses(med){
+var freq=typeof med==='object'?med.frequency:'';
+if(freq==='once') return 1;
+if(freq==='twice') return 2;
+if(freq==='three_times') return 3;
+if(freq==='four_times') return 4;
+return null; // non-daily: weekly/monthly/PRN handled separately
+}
+
+// Cache of last-taken dates, rebuilt once per session open
+// Use _medLastTakenCache to avoid repeated localStorage scans
+var _medLastTakenCache=null;
+
+function _buildMedLastTakenCache(){
+var cache={};
+// Scan all date-keyed localStorage entries once
+for(var i=0;i<localStorage.length;i++){
+var key=localStorage.key(i);
+if(!key||!key.startsWith('BP_TRACKER_2')) continue;
+try{
+var data=JSON.parse(localStorage.getItem(key));
+if(data&&data.medLog){
+var dateStr=key.replace('BP_TRACKER_','');
+for(var j=0;j<data.medLog.length;j++){
+var mName=data.medLog[j].medicine;
+if(mName&&(!cache[mName]||dateStr>cache[mName])){
+cache[mName]=dateStr;
+}
+}
+}
+}catch(e){}
+}
+// Overlay today's in-memory medLog (may not be flushed yet)
+if(medLog&&medLog.length>0){
+var todayStr=getTodayKey();
+for(var k=0;k<medLog.length;k++){
+var mn=medLog[k].medicine;
+if(mn&&(!cache[mn]||todayStr>cache[mn])) cache[mn]=todayStr;
+}
+}
+return cache;
+}
+
+// Scan historical localStorage keys to find when a med was last taken
+function getMedLastTakenDate(medName){
+// Build cache on first call; invalidated when medLog changes via saveDailyData
+if(!_medLastTakenCache) _medLastTakenCache=_buildMedLastTakenCache();
+return _medLastTakenCache[medName]||null;
+}
+
+// Invalidate cache after any med is logged so next call is fresh
+function _invalidateMedCache(){ _medLastTakenCache=null; }
+
+// Compute next due date string for non-daily meds
+function getMedNextDueDate(med){
+var medName=typeof med==='string'?med:med.name;
+var freq=typeof med==='object'?med.frequency:'';
+if(!freq||freq==='as_needed') return null;
+// Daily meds: always today
+if(freq==='once'||freq==='twice'||freq==='three_times'||freq==='four_times') return getTodayKey();
+var lastDate=getMedLastTakenDate(medName);
+if(!lastDate) return null; // never taken — can't compute
+var last=new Date(lastDate+'T12:00:00');
+var next=new Date(last);
+if(freq==='weekly') next.setDate(last.getDate()+7);
+else if(freq==='monthly') next.setMonth(last.getMonth()+1);
+else if(freq==='custom_months'){
+var months=typeof med==='object'&&med.monthInterval?med.monthInterval:1;
+next.setMonth(last.getMonth()+months);
+}
+return next.getFullYear()+'-'+('0'+(next.getMonth()+1)).slice(-2)+'-'+('0'+next.getDate()).slice(-2);
+}
+
+// Is a non-daily med due today?
+function isMedDueToday(med){
+var freq=typeof med==='object'?med.frequency:'';
+if(!freq) return false;
+if(freq==='once'||freq==='twice'||freq==='three_times'||freq==='four_times') return true;
+if(freq==='as_needed') return false;
+if(freq==='weekly'){
+// Check day of week matches
+var today=new Date().getDay(); // 0=Sun
+var medDay=typeof med==='object'&&med.dayOfWeek!=null?med.dayOfWeek:null;
+if(medDay===null) return false; // no day set yet
+return today===medDay;
+}
+// monthly / custom_months: check if nextDueDate is today or overdue
+var nextDue=getMedNextDueDate(med);
+if(!nextDue) return true; // never taken and has a schedule — show as due
+return nextDue<=getTodayKey();
+}
+
 function getElapsedHours(timeStr){
 // Calculate hours between timeStr (HH:MM) and now
 if(!timeStr)return 0;
@@ -2416,8 +2518,9 @@ var time=timeInput.value;
 if(!time){alert('Please enter the time you took the medication');return;}
 
 // Add to medLog
-var entry={medicine:medName,timing:'Anytime',time:time};
+var entry={medicine:medName,timing:'Anytime',time:time,date:getTodayKey()};
 medLog.push(entry);
+_invalidateMedCache();
 saveDailyData();
 
 // Refresh the medicines card on the main page and the status tile
@@ -6117,24 +6220,74 @@ return;
 }
 html+='<div style="margin-bottom:8px;font-size:16px;color:#6b7280">Select medications (you can select multiple):</div>';
 html+='<div id="selectedCount" style="margin-bottom:16px;padding:8px;background:#e0f2fe;border-radius:8px;font-size:16px;font-weight:600;color:#0369a1;text-align:center">0 selected</div>';
-html+='<div style="max-height:300px;overflow-y:auto;margin-bottom:16px;border:2px solid #e5e7eb;border-radius:8px;padding:8px">';
+html+='<div style="max-height:340px;overflow-y:auto;margin-bottom:16px;border:2px solid #e5e7eb;border-radius:8px;padding:8px">';
+var dayNames=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 for(var i=0;i<medicineList.length;i++){
 var med=medicineList[i];
 var medName=typeof med==='string'?med:med.name;
 var medFreq=typeof med==='object'&&med.frequency?med.frequency:'';
 var medMonthInterval=typeof med==='object'&&med.monthInterval?med.monthInterval:null;
+// Build schedule note
 var scheduleNote='';
-if(medFreq==='once')scheduleNote=' (Daily)';
-else if(medFreq==='twice')scheduleNote=' (2x daily)';
-else if(medFreq==='three_times')scheduleNote=' (3x daily)';
-else if(medFreq==='four_times')scheduleNote=' (4x daily)';
-else if(medFreq==='as_needed')scheduleNote=' (PRN)';
-else if(medFreq==='weekly')scheduleNote=' (Weekly)';
-else if(medFreq==='monthly')scheduleNote=' (Monthly)';
-else if(medFreq==='custom_months')scheduleNote=' (Every '+(medMonthInterval||'X')+' months)';
-html+='<label style="display:flex;align-items:center;padding:12px;margin:4px 0;background:#f9fafb;border-radius:8px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background=\'#f3f4f6\'" onmouseout="this.style.background=\'#f9fafb\'">';
-html+='<input type="checkbox" class="medCheckbox" value="'+medName+'" onchange="updateSelectedCount()" style="width:20px;height:20px;margin-right:12px;cursor:pointer">';
-html+='<span style="font-size:18px;font-weight:500">'+medName+'<span style="font-size:14px;color:#6b7280">'+scheduleNote+'</span></span>';
+if(medFreq==='once')scheduleNote='Daily';
+else if(medFreq==='twice')scheduleNote='2x daily';
+else if(medFreq==='three_times')scheduleNote='3x daily';
+else if(medFreq==='four_times')scheduleNote='4x daily';
+else if(medFreq==='as_needed')scheduleNote='As needed';
+else if(medFreq==='weekly'){
+var dow=typeof med==='object'&&med.dayOfWeek!=null?med.dayOfWeek:null;
+scheduleNote='Weekly'+(dow!=null?' — '+dayNames[dow]:'');
+}
+else if(medFreq==='monthly') scheduleNote='Monthly';
+else if(medFreq==='custom_months') scheduleNote='Every '+(medMonthInterval||'X')+' months';
+// Dose status for daily meds
+var dosesTaken=getMedDosesToday(medName);
+var expectedDoses=getMedExpectedDoses(med);
+var statusBadge='';
+var rowBg='#f9fafb';
+var borderColor='#e5e7eb';
+if(expectedDoses!==null){
+// Daily med — show dose count
+if(dosesTaken===0){
+statusBadge='<span style="font-size:12px;background:#f3f4f6;color:#6b7280;padding:3px 8px;border-radius:12px;margin-left:8px;font-weight:600">Not yet taken</span>';
+} else if(dosesTaken<expectedDoses){
+statusBadge='<span style="font-size:12px;background:#fef3c7;color:#92400e;padding:3px 8px;border-radius:12px;margin-left:8px;font-weight:600">'+dosesTaken+' of '+expectedDoses+' taken</span>';
+rowBg='#fffbeb'; borderColor='#fcd34d';
+} else {
+// Full dose taken — amber warning, still allow logging (could be a later dose or PRN)
+statusBadge='<span style="font-size:12px;background:#fee2e2;color:#991b1b;padding:3px 8px;border-radius:12px;margin-left:8px;font-weight:600">Already taken ('+dosesTaken+'x) — tap to log again if needed</span>';
+rowBg='#fff5f5'; borderColor='#fca5a5';
+}
+} else if(medFreq==='weekly'||medFreq==='monthly'||medFreq==='custom_months'){
+// Non-daily — show last taken + next due
+var lastDate=getMedLastTakenDate(medName);
+var nextDue=getMedNextDueDate(med);
+var dueToday=isMedDueToday(med);
+if(dosesTaken>0){
+statusBadge='<span style="font-size:12px;background:#d1fae5;color:#065f46;padding:3px 8px;border-radius:12px;margin-left:8px;font-weight:600">Taken today</span>';
+rowBg='#f0fdf4'; borderColor='#86efac';
+} else if(dueToday&&lastDate){
+// Has history AND is due today
+statusBadge='<span style="font-size:12px;background:#eff6ff;color:#1e40af;padding:3px 8px;border-radius:12px;margin-left:8px;font-weight:600">Due today</span>';
+rowBg='#eff6ff'; borderColor='#93c5fd';
+} else if(dueToday&&!lastDate){
+// Never taken — don't alarm user, just prompt them to log first dose
+statusBadge='<span style="font-size:12px;background:#f3f4f6;color:#374151;padding:3px 8px;border-radius:12px;margin-left:8px;font-weight:600">Log first dose to start tracking</span>';
+} else if(nextDue){
+statusBadge='<span style="font-size:12px;background:#f3f4f6;color:#6b7280;padding:3px 8px;border-radius:12px;margin-left:8px;font-weight:600">Next due: '+nextDue+'</span>';
+}
+} else if(medFreq==='as_needed'){
+statusBadge=dosesTaken>0?'<span style="font-size:12px;background:#d1fae5;color:#065f46;padding:3px 8px;border-radius:12px;margin-left:8px;font-weight:600">Logged '+dosesTaken+'x today</span>':'';
+} else if(!medFreq){
+// Legacy paste-imported med with no frequency set
+statusBadge='<span style="font-size:12px;background:#fef3c7;color:#92400e;padding:3px 8px;border-radius:12px;margin-left:8px;font-weight:600">⚙️ Tap Edit to set schedule</span>';
+}
+html+='<label style="display:flex;align-items:flex-start;padding:12px;margin:4px 0;background:'+rowBg+';border:2px solid '+borderColor+';border-radius:8px;cursor:pointer">';
+html+='<input type="checkbox" class="medCheckbox" value="'+medName+'" onchange="updateSelectedCount()" style="width:20px;height:20px;margin-right:12px;margin-top:2px;flex-shrink:0;cursor:pointer">';
+html+='<div style="flex:1">';
+html+='<div style="font-size:17px;font-weight:600;color:#111827">'+medName+statusBadge+'</div>';
+html+='<div style="font-size:13px;color:#6b7280;margin-top:2px">'+scheduleNote+'</div>';
+html+='</div>';
 html+='</label>';
 }
 html+='</div>';
@@ -6212,12 +6365,14 @@ alert('Please select timing');
 return;
 }
 var currentTime=getTime();
+var currentDate=getTodayKey();
 for(var i=0;i<selectedMeds.length;i++){
-var entry={medicine:selectedMeds[i],timing:timing,time:currentTime};
+var entry={medicine:selectedMeds[i],timing:timing,time:currentTime,date:currentDate};
 if(eventId)entry.eventId=eventId;
 if(fluid){entry.fluid=fluid; if(i===0&&activeReminderEvt)eventFluidLogged=true;}
 medLog.push(entry);
 }
+_invalidateMedCache(); // refresh last-taken cache after new log
 saveDailyData();
 completeAndCloseModal();
 showMedicines();
@@ -6317,8 +6472,21 @@ html+='<div style="padding:14px;background:#f9fafb;border:2px solid #e5e7eb;bord
 html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">';
 html+='<div style="flex:1">';
 html+='<div style="font-size:19px;font-weight:700;color:#111827;margin-bottom:4px">'+medName+'</div>';
+var nextDueStr='';
+var medObj2=typeof med==='object'?med:null;
+if(medObj2&&(medFreq==='weekly'||medFreq==='monthly'||medFreq==='custom_months')){
+var nextD=getMedNextDueDate(medObj2);
+var lastD=getMedLastTakenDate(medObj2.name);
+if(nextD) nextDueStr=' — Next: '+nextD;
+else if(lastD) nextDueStr=' — Last taken: '+lastD;
+else nextDueStr=' — Never taken';
+if(medFreq==='weekly'&&medObj2.dayOfWeek!=null){
+var dayN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+nextDueStr=' ('+dayN[medObj2.dayOfWeek]+'s)'+nextDueStr;
+}
+}
 html+='<div style="font-size:14px;color:#6b7280">';
-html+='<span style="font-weight:600">Schedule:</span> '+freqLabel;
+html+='<span style="font-weight:600">Schedule:</span> '+freqLabel+nextDueStr;
 if(medFreq!=='as_needed'&&medFreq!=='Not set'&&medFreq!=='weekly'&&medFreq!=='monthly'&&medFreq!=='custom_months'){
 html+=' ('+medTimes+')';
 }
@@ -6363,6 +6531,21 @@ html+='<div id="customMonthsInput" style="display:none;margin-top:12px">';
 html+='<label style="display:block;font-size:16px;font-weight:600;margin:8px 0;color:#374151">How many months between doses?</label>';
 html+='<input type="number" id="monthInterval" class="modal-input" min="1" max="12" placeholder="e.g., 3 for every 3 months" style="font-size:18px" />';
 html+='</div>';
+html+='<div id="weeklyDaySection" style="display:none;margin-top:12px">';
+html+='<label style="display:block;font-size:16px;font-weight:600;margin:8px 0;color:#374151">Which day of the week?</label>';
+html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">';
+var days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+for(var wd=0;wd<7;wd++){
+html+='<label style="display:flex;flex-direction:column;align-items:center;padding:10px 4px;border:2px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:15px;font-weight:600">';
+html+='<input type="radio" name="weeklyDay" value="'+wd+'" style="margin-bottom:4px;width:18px;height:18px;cursor:pointer"> '+days[wd];
+html+='</label>';
+}
+html+='</div></div>';
+html+='<div id="monthlyDaySection" style="display:none;margin-top:12px">';
+html+='<label style="display:block;font-size:16px;font-weight:600;margin:8px 0;color:#374151">Day of month (optional):</label>';
+html+='<input type="number" id="monthlyDay" class="modal-input" min="1" max="28" placeholder="e.g., 15 for the 15th of each month" style="font-size:18px" />';
+html+='<div style="font-size:13px;color:#6b7280;margin-top:4px">Leave blank if the day varies. Max 28 to work in all months.</div>';
+html+='</div>';
 html+='<div id="timesSection" style="display:none">';
 html+='<label style="display:block;font-size:16px;font-weight:600;margin:16px 0 8px 0;color:#374151">What time(s) of day?</label>';
 html+='<div id="timeCheckboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>';
@@ -6401,6 +6584,24 @@ html+='<div id="customMonthsInput" style="display:'+(medFreq==='custom_months'?'
 html+='<label style="display:block;font-size:16px;font-weight:600;margin:8px 0;color:#374151">How many months between doses?</label>';
 html+='<input type="number" id="monthInterval" class="modal-input" min="1" max="12" value="'+medMonthInterval+'" placeholder="e.g., 3 for every 3 months" style="font-size:18px" />';
 html+='</div>';
+html+='<div id="weeklyDaySection" style="display:'+(medFreq==='weekly'?'block':'none')+';margin-top:12px">';
+html+='<label style="display:block;font-size:16px;font-weight:600;margin:8px 0;color:#374151">Which day of the week?</label>';
+html+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">';
+var daysE=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+var medDayOfWeek=typeof med==='object'&&med.dayOfWeek!=null?med.dayOfWeek:null;
+for(var wd=0;wd<7;wd++){
+var wdChecked=(medDayOfWeek===wd)?'checked':'';
+html+='<label style="display:flex;flex-direction:column;align-items:center;padding:10px 4px;border:2px solid '+(medDayOfWeek===wd?'#3b82f6':'#e2e8f0')+';border-radius:8px;cursor:pointer;font-size:15px;font-weight:600">';
+html+='<input type="radio" name="weeklyDay" value="'+wd+'" '+wdChecked+' style="margin-bottom:4px;width:18px;height:18px;cursor:pointer"> '+daysE[wd];
+html+='</label>';
+}
+html+='</div></div>';
+var medDayOfMonth=typeof med==='object'&&med.dayOfMonth?med.dayOfMonth:'';
+html+='<div id="monthlyDaySection" style="display:'+((medFreq==='monthly'||medFreq==='custom_months')?'block':'none')+';margin-top:12px">';
+html+='<label style="display:block;font-size:16px;font-weight:600;margin:8px 0;color:#374151">Day of month (optional):</label>';
+html+='<input type="number" id="monthlyDay" class="modal-input" min="1" max="28" value="'+medDayOfMonth+'" placeholder="e.g., 15" style="font-size:18px" />';
+html+='<div style="font-size:13px;color:#6b7280;margin-top:4px">Leave blank if the day varies.</div>';
+html+='</div>';
 html+='<div id="timesSection" style="display:'+(medFreq&&medFreq!=='as_needed'&&medFreq!=='weekly'&&medFreq!=='monthly'&&medFreq!=='custom_months'?'block':'none')+'">';
 html+='<label style="display:block;font-size:16px;font-weight:600;margin:16px 0 8px 0;color:#374151">What time(s) of day?</label>';
 html+='<div id="timeCheckboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>';
@@ -6422,9 +6623,19 @@ var freq=document.getElementById('medFrequency').value;
 var timesSection=document.getElementById('timesSection');
 var checkboxesDiv=document.getElementById('timeCheckboxes');
 var customMonthsInput=document.getElementById('customMonthsInput');
+var weeklyDaySection=document.getElementById('weeklyDaySection');
+var monthlyDaySection=document.getElementById('monthlyDaySection');
 // Show/hide custom months input
 if(customMonthsInput){
 customMonthsInput.style.display=freq==='custom_months'?'block':'none';
+}
+// Show/hide weekly day picker
+if(weeklyDaySection){
+weeklyDaySection.style.display=freq==='weekly'?'block':'none';
+}
+// Show/hide monthly day picker
+if(monthlyDaySection){
+monthlyDaySection.style.display=(freq==='monthly'||freq==='custom_months')?'block':'none';
 }
 // Hide time selection for these frequencies
 if(!freq||freq==='as_needed'||freq==='weekly'||freq==='monthly'||freq==='custom_months'){
@@ -6499,8 +6710,17 @@ name:name,
 frequency:frequency,
 times:times
 };
-if(monthInterval){
-medObject.monthInterval=monthInterval;
+if(monthInterval) medObject.monthInterval=monthInterval;
+// Weekly day of week
+if(frequency==='weekly'){
+var wdRadio=document.querySelector('input[name="weeklyDay"]:checked');
+if(!wdRadio){alert('Please select which day of the week you take this medicine');return;}
+medObject.dayOfWeek=parseInt(wdRadio.value);
+}
+// Monthly day of month
+if(frequency==='monthly'||frequency==='custom_months'){
+var mdInput=document.getElementById('monthlyDay');
+if(mdInput&&mdInput.value) medObject.dayOfMonth=parseInt(mdInput.value)||null;
 }
 medicineList.push(medObject);
 medicineList.sort(function(a,b){
@@ -6552,8 +6772,25 @@ name:name,
 frequency:frequency,
 times:times
 };
-if(monthInterval){
-medObject.monthInterval=monthInterval;
+if(monthInterval) medObject.monthInterval=monthInterval;
+if(frequency==='weekly'){
+var wdRadio=document.querySelector('input[name="weeklyDay"]:checked');
+if(wdRadio){
+medObject.dayOfWeek=parseInt(wdRadio.value);
+} else {
+// Preserve existing dayOfWeek if already set; warn if not yet set
+var existingDow=typeof medicineList[index]==='object'?medicineList[index].dayOfWeek:null;
+if(existingDow!=null){
+medObject.dayOfWeek=existingDow; // keep existing — user did not change it
+} else {
+alert('Please select which day of the week you take this medicine');
+return;
+}
+}
+}
+if(frequency==='monthly'||frequency==='custom_months'){
+var mdInput=document.getElementById('monthlyDay');
+if(mdInput&&mdInput.value) medObject.dayOfMonth=parseInt(mdInput.value)||null;
 }
 medicineList[index]=medObject;
 saveMedicineList();
@@ -6562,7 +6799,9 @@ alert('✓ Medicine updated');
 }
 
 function deleteMedicine(index){
-if(confirm('Delete '+medicineList[index]+'?')){
+var medToDelete=medicineList[index];
+var medNameToDelete=typeof medToDelete==='string'?medToDelete:medToDelete.name;
+if(confirm('Delete '+medNameToDelete+'?')){
 medicineList.splice(index,1);
 saveMedicineList();
 manageMedicines();
@@ -7295,11 +7534,18 @@ medicineList.forEach(function(med){
 var medName=typeof med==='string'?med:med.name;
 var medTimes=typeof med==='object'&&med.times?med.times:[];
 var medFreq=typeof med==='object'&&med.frequency?med.frequency:'';
-// Skip as-needed, weekly, monthly (not tracked by daily adherence)
-if(medFreq==='as_needed'||medFreq==='weekly'||medFreq==='monthly'||medFreq==='custom_months'){
-return;
+// Skip as-needed (PRN has no adherence target)
+if(medFreq==='as_needed') return;
+// For weekly/monthly/custom — only count as due if today is the scheduled day
+if(medFreq==='weekly'||medFreq==='monthly'||medFreq==='custom_months'){
+var medObj=typeof med==='object'?med:null;
+if(!medObj||!isMedDueToday(medObj)) return; // not due today — skip adherence
+// It is due today — count as one dose due (non-daily meds have no specific time)
+medicinesDue++;
+medicinesDueList.push(medName);
+return; // skip the time-based check below
 }
-// Check if any scheduled time has passed
+// Daily meds: check if any scheduled time has passed
 if(medTimes&&medTimes.length>0){
 medTimes.forEach(function(medTime){
 var medMinutes=timeToMinutes(medTime);
@@ -9326,6 +9572,34 @@ fluidGoal:pe.amount||pe.fluidGoal||0,
 actions:pe.actions||['logBP','logFluid'],
 reminderEnabled:true
 });
+});
+}
+
+// Check non-daily meds due today — fire a morning reminder at 8:00 AM once
+if(medicineList&&medicineList.length>0){
+var todayKey=getTodayKey();
+medicineList.forEach(function(med){
+if(typeof med!=='object') return;
+var freq=med.frequency||'';
+if(freq==='as_needed'||!freq) return;
+if(freq==='once'||freq==='twice'||freq==='three_times'||freq==='four_times') return;
+if(!isMedDueToday(med)) return;
+// Fire reminder at 8:00 AM (480 min) if not already taken today
+var dosesTaken=getMedDosesToday(med.name);
+if(dosesTaken>0) return; // already logged today
+var reminderKey='med_nonDaily_'+med.name+'_'+todayKey;
+if(firedReminders[today]&&firedReminders[today][reminderKey]) return;
+// Check if it is 8:00 AM (480 min) within this minute
+if(currentTime>=480&&currentTime<481){
+if(!firedReminders[today]) firedReminders[today]={};
+firedReminders[today][reminderKey]=true;
+var freqLabel=freq==='weekly'?'weekly':freq==='monthly'?'monthly':'scheduled';
+fireOSNotification(
+'💊 '+med.name+' due today',
+'Your '+freqLabel+' dose is scheduled for today. Tap to open ClinBridge and log it.',
+'clinbridge-med-'+med.name.replace(/\s+/g,'_')
+);
+}
 });
 }
 
