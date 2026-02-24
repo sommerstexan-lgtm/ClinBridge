@@ -14,7 +14,7 @@
   gtag('config', 'G-CRFJX46Y7Y');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
-<title>ClinBridge v9.5.7</title>
+<title>ClinBridge</title>
 <link rel="apple-touch-icon" href="https://sommerstexan-lgtm.github.io/ClinBridge/ClinBridge-App-logo.JPG">
 <link rel="icon" type="image/jpeg" href="https://sommerstexan-lgtm.github.io/ClinBridge/ClinBridge-App-logo.JPG">
 <style>
@@ -658,7 +658,7 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
 
   <div class="hdr" style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
     <div style="display:flex;flex-direction:column;align-items:flex-start;">
-      <span>v9.5.7: Medical Grade - Free</span>
+      <span>v9.5.8 · Medical Grade - Free</span>
       <!-- VERSION UPDATE INSTRUCTION: When updating to a new version, ONLY change the date below. The version number is in the title above. Format: "Updated MMM DD, YYYY" -->
       <span style="font-size:14px;color:#6b7280;font-weight:normal;">Updated Feb 23, 2026</span>
     </div>
@@ -1062,13 +1062,15 @@ Custom Range
         <h3>About & Privacy</h3>
 
         <div style="background:linear-gradient(135deg,#10b981,#34d399);padding:20px;border-radius:12px;margin-bottom:20px;color:white">
-          <h3 style="margin:0 0 12px 0;font-size:22px">🚀 New in v9.5.7</h3>
+          <h3 style="margin:0 0 4px 0;font-size:22px">🚀 New in v9.5.8 <span style="font-size:14px;font-weight:400;opacity:0.85">— February 24, 2026</span></h3>
           <ul style="margin:0;padding-left:20px;line-height:1.8">
-            <li><strong>💧 Fluid Budget Dashboard</strong> — Distributes your daily fluid limit across all scheduled events. Adjust each event goal with +/− buttons, see a live budget ring, get a "Scale to Fit" one-tap option, and save all changes at once</li>
-            <li><strong>📊 Configurable Quick-Add Increments</strong> — Choose your preferred fluid logging unit (2, 4, 6, 8, 10, 12, or 16 oz) in Settings. For strict limits like 50 oz, 4 oz precision is recommended. Quick-add buttons update automatically and warn you when an amount approaches your remaining allowance</li>
-            <li><strong>💛 Senior Dehydration Awareness</strong> — Studies show up to 40% of seniors are chronically dehydrated without knowing it because thirst sensation weakens with age. ClinBridge now surfaces this in the Fluid Budget Dashboard with actionable guidance to drink on a schedule, not just when thirsty</li>
-            <li><strong>Next Fluid Event Callout</strong> — The fluid card on the main page now shows your next scheduled fluid event and how many minutes away it is so you always know when your next drink is due</li>
-            <li><strong>Sticky Buttons Fixed &amp; Extended</strong> — The iOS Safari caching bug that caused floating Save/Cancel buttons to disappear has been resolved. Sticky buttons now also appear in the Event Editor so you never have to scroll to find Save or Cancel</li>
+            <li><strong>🤔 Fluid Mode Smart Assistant</strong> — New guided wizard in Settings walks you through 3 plain-language questions to choose the right fluid tracking mode (General, Maximum, or Range). Knows when to say "I don't know — ask your doctor" and saves that question straight to your next appointment. After choosing, flows directly into distributing your oz across your daily events</li>
+            <li><strong>🧠 Smart Fluid Distribution</strong> — The Budget Dashboard now spreads your daily oz intelligently across all events using clinical weighting: more fluid at breakfast and meals, moderate at mid-day, less for medication events (just enough to take pills), minimal at bedtime. Replaces the old mechanical equal-split</li>
+            <li><strong>💧 Budget Dashboard Buttons Fixed</strong> — The +/− and "+ Add Fluid Goal" buttons now work correctly and preserve your edits when re-rendering. Previously all changes were silently discarded on each tap</li>
+            <li><strong>📊 Avg Daily Fluid in Advanced Analytics</strong> — New stat card next to Total Exercise showing your average daily fluid intake for the selected period, calculated across all three fluid sources (standalone log, BP readings, and meals)</li>
+            <li><strong>📐 Budget Dashboard Precision</strong> — +/− buttons now step by 1 oz for precise allocation. Previously locked to your 8 oz quick-add increment, making targets like 50 oz impossible to hit exactly</li>
+            <li><strong>🔔 Cleaner iPhone Notifications</strong> — Notification sender name no longer shows the version number. iOS now shows "ClinBridge" instead of "ClinBridge v9.5.x"</li>
+            <li><strong>⚙️ Settings Guidance</strong> — Every setting now has plain-English explanation of what it does and why it matters for cardiac patients — BP ranges, HR, weight threshold, and feature toggles</li>
           </ul>
         </div>
 
@@ -1180,13 +1182,27 @@ Custom Range
         </div>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:4px">
-          <strong style="font-size:16px">✅ Recently Fixed (v9.5.7)</strong>
+          <strong style="font-size:16px">✅ Fixed in v9.5.8 — February 24, 2026</strong>
+          <ul style="font-size:14px;margin:8px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
+            <li>Budget Dashboard +/− buttons did nothing — root cause was a re-render wiping edits on every tap; now fixed with edit cache</li>
+            <li>Budget Dashboard "Scale to Fit" only touched events that already had a fluid goal — now applies intelligent weighted distribution across all events</li>
+            <li>Budget Dashboard increment locked to 8 oz — now steps 1 oz at a time for precise targets like 50 oz</li>
+            <li>Fluid Mode Assistant "Apply" button did nothing — caused by a call to a non-existent saveSettingsToStorage() function; fixed throughout</li>
+            <li>All main page buttons broken after previous build — caused by unescaped apostrophes in JavaScript strings (don't, I'm, That's); resolved by rewriting assistant with named functions and no string args in onclick handlers</li>
+            <li>iPhone notifications showing old version number — page title stripped of version; iOS now shows "ClinBridge" as sender</li>
+            <li>Budget ring text partially hidden behind ring stroke — replaced negative margin hack with proper absolute-centered overlay</li>
+            <li>Avg Daily Fluid stat showing orange — color override removed; now displays in standard white like all other stat cards</li>
+            <li>Fluid average calculation dividing by days-with-data instead of full period — now correctly divides by total days in selected range</li>
+          </ul>
+        </div>
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:4px;margin-top:8px">
+          <strong style="font-size:16px">✅ Fixed in v9.5.7</strong>
           <ul style="font-size:14px;margin:8px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
             <li>Floating Save/Cancel buttons in Settings restored — iOS Safari sticky positioning bug resolved permanently</li>
             <li>Sticky Save/Cancel now also appears in the Event Editor form</li>
             <li>Plan My Day events showing "undefined" in notification title — now correctly displays event name and icon</li>
-            <li>Two different notification styles (red alert box + green modal) firing simultaneously for the same event — consolidated into one consistent green modal for all events</li>
-            <li>Dismissed missed events reappearing in the widget after tapping Done — now correctly removed from the list and remembered for the full day</li>
+            <li>Two different notification styles firing simultaneously — consolidated into one consistent green modal</li>
+            <li>Dismissed missed events reappearing in widget — now correctly removed for the full day</li>
           </ul>
         </div>
       </section>
@@ -1749,7 +1765,7 @@ Custom Range
 // hard reload from the server so users always get the latest.
 // ============================================================
 (function(){
-  var CURRENT='v9.5.7';
+  var CURRENT='v9.5.8';
   var VKEY='CLINBRIDGE_APP_VERSION';
   try{
     var stored=localStorage.getItem(VKEY);
@@ -1776,7 +1792,7 @@ var eventFluidLogged=false; // prevents re-arming fluid goal on reminder reshow 
 var activeReminderEvt=null;
 
 // ============================================================
-// OS-LEVEL WEB NOTIFICATIONS (v9.5.7-WN)
+// OS-LEVEL WEB NOTIFICATIONS (v9.5.8-WN)
 // Sends system-level popup regardless of active tab or window.
 // Works on Chrome/Chromebook today; Android Chrome when tab is open.
 // ============================================================
@@ -1947,7 +1963,7 @@ function updateNotifPermissionUI(){
 }
 
 // ============================================================
-// EVENT ACTION BUTTONS — shared definition (v9.5.7-EA)
+// EVENT ACTION BUTTONS — shared definition (v9.5.8-EA)
 // ============================================================
 var EVENT_ACTIONS=[
   {id:'logBP',       label:'📊 Log Blood Pressure',     fn:'logBP()',               color:'#10b981'},
@@ -3028,7 +3044,7 @@ html+='<div style="font-size:14px;color:#2563eb;margin:-4px 0 8px 4px;font-weigh
 }
 // Phase 6B: Add event dropdown
 html+=getEventDropdownHTML();
-// Dynamic quick-add buttons based on user's preferred increment (v9.5.7)
+// Dynamic quick-add buttons based on user's preferred increment (v9.5.8)
 var _inc=settings.fluidIncrement||8;
 var _remaining=(settings.fluidMode&&settings.fluidMode!=='none')?Math.max(0,settings.fluidMax-dailyFluid):999;
 var _quickAmts=[_inc,_inc*2,_inc*3].filter(function(v){return v<=96&&v>0;});
@@ -5622,7 +5638,7 @@ if(audioContext.state==='suspended'){
 audioContext.resume();
 }
 
-// Senior-optimized audio (v9.5.7-SA):
+// Senior-optimized audio (v9.5.8-SA):
 // • C4/E4/G4 at 261–392 Hz — one octave lower than before.
 //   Age-related hearing loss (presbycusis) hits high frequencies first;
 //   the 250–500 Hz range is the most reliable for aging ears.
@@ -7952,7 +7968,7 @@ showTodayZone(); // keep daily summary in sync
 
 
 // ============================================================
-// FLUID BUDGET DASHBOARD (v9.5.7-FBD)
+// FLUID BUDGET DASHBOARD (v9.5.8-FBD)
 // Distributes daily fluid limit across scheduled events.
 // ============================================================
 
@@ -12494,7 +12510,7 @@ document.getElementById('doctorReportModal').style.display='none';
 }
 
 function generateDoctorReport(){
-// v9.5.7: Doctor's Report temporarily disabled — calculations under review
+// v9.5.8: Doctor's Report temporarily disabled — calculations under review
 var comingSoonHTML = '<div style="text-align:center;padding:60px 30px">';
 comingSoonHTML += '<div style="font-size:64px;margin-bottom:20px">🩺</div>';
 comingSoonHTML += '<h2 style="margin:0 0 16px 0;color:#1f2937;font-size:28px">Coming Soon in v9.6</h2>';
@@ -12750,7 +12766,7 @@ html+=`</ul>
 
 html+=`
 <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:2px solid #e5e7eb;color:#6b7280;font-size:14px">
-<p style="margin:0">ClinBridge v9.5.7 Medical Grade - Free</p>
+<p style="margin:0">ClinBridge v9.5.8 Medical Grade - Free</p>
 <p style="margin:4px 0 0 0">Report Generated: ${reportDate}</p>
 </div>`;
 
@@ -12957,7 +12973,7 @@ Note: This report is based on patient self-tracked data. Clinical correlation
 and examination are essential for diagnosis and treatment decisions.
 
 ---
-ClinBridge v9.5.7 Medical Grade - Free
+ClinBridge v9.5.8 Medical Grade - Free
 Report Generated: ${reportDate}`;
 
 return text;
@@ -14909,7 +14925,7 @@ report.push(notes);
 report.push('');
 }
 report.push('═══════════════════════════════════════════════════════════');
-report.push('This report was generated by ClinBridge v9.5.7 Medical Grade - Free');
+report.push('This report was generated by ClinBridge v9.5.8 Medical Grade - Free');
 report.push('Advanced Analytics Dashboard - Phase 3 Implementation');
 report.push('═══════════════════════════════════════════════════════════');
 const blob=new Blob([report.join('\n')],{type:'text/plain'});
@@ -14999,7 +15015,7 @@ ${periodHTML}
 <h2>Key Insights</h2>
 ${insightsHTML}
 <div style="margin-top:40px;padding:20px;background:#f0f9ff;border-left:4px solid #3b82f6;border-radius:8px">
-<strong>ClinBridge v9.5.7 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
+<strong>ClinBridge v9.5.8 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
 This report is not a substitute for professional medical advice.
 </div>
 </body>
@@ -17274,7 +17290,7 @@ setInterval(checkAppointmentReminders, 60000 * 60); // Check every hour
 setTimeout(function(){ requestOSNotificationPermission(false); }, 2000);
 
 // ============================================================
-// ANDROID TAB-RESUME FIX (v9.5.7-AR)
+// ANDROID TAB-RESUME FIX (v9.5.8-AR)
 // On Android Chrome, tabs are suspended in the background.
 // When the user returns, in-memory state can be stale (or the
 // date can have ticked over midnight).  Re-load from localStorage
@@ -17334,7 +17350,7 @@ setTimeout(function(){ requestOSNotificationPermission(false); }, 2000);
 })();
 
 // ============================================================
-// DATA MANAGEMENT — Reset Today / Delete All (v9.5.7-DM)
+// DATA MANAGEMENT — Reset Today / Delete All (v9.5.8-DM)
 // ============================================================
 
 // Identify which localStorage keys belong to this app
