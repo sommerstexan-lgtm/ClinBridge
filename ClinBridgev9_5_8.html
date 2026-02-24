@@ -8044,8 +8044,8 @@ function openFluidBudgetDashboard(useCache){
 
   // Scale to Fit button
   var scaleBtnHtml='';
-  if(fMode!=='none'&&allEvts.some(function(e){return e.fluidGoal>0;})){
-    scaleBtnHtml='<button onclick="scaleBudgetToFit()" style="background:#6366f1;color:#fff;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;width:100%;margin-bottom:12px">⚡ Scale All to Fit '+budget+' oz</button>';
+  if(fMode!=='none'&&allEvts.length>0){
+    scaleBtnHtml='<button onclick="smartDistributeFluid()" style="background:#6366f1;color:#fff;border:none;padding:12px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;width:100%;margin-bottom:12px">🧠 Smart Distribute '+budget+' oz across all events</button>';
   }
 
   // Event list with +/- adjusters
@@ -8135,28 +8135,58 @@ function refreshBudgetTotals(){
   },50);
 }
 
-function scaleBudgetToFit(){
-  if(!window._fbdEvts)return;
+// Classify an event by its name+icon to assign a hydration weight
+function _fluidEventWeight(evt){
+  var n=(evt.name||'').toLowerCase();
+  var ic=(evt.icon||'');
+  // Bedtime / sleep — minimal fluid before bed for cardiac patients
+  if(/bed|sleep|night|lights out/.test(n)||ic==='🌙'||ic==='😴') return 0.3;
+  // Medication — small amount to swallow pills
+  if(/med|pill|tablet|dose|rx/.test(n)||ic==='💊') return 0.6;
+  // Breakfast / morning — highest priority, morning hydration matters most
+  if(/breakfast|wake|morning|rise/.test(n)||ic==='🌅'||ic==='☕') return 2.2;
+  // Lunch
+  if(/lunch|midday|noon/.test(n)||ic==='🥙'||ic==='🥗') return 1.8;
+  // Dinner / supper
+  if(/dinner|supper|evening meal/.test(n)||ic==='🍽️'||ic==='🍴'||ic==='🥘') return 1.6;
+  // Snack / meal generic
+  if(/snack|eat|meal|food/.test(n)||ic==='🍎'||ic==='🥪') return 1.2;
+  // Exercise — active hydration needed
+  if(/exercise|workout|walk|gym|run|sport|activity/.test(n)||ic==='🏃'||ic==='🚶') return 1.5;
+  // Fluid bridge / hydration event
+  if(/fluid|water|drink|bridge|hydrat/.test(n)||ic==='💧'||ic==='🥤') return 1.4;
+  // Plan My Day / scheduling placeholder — still gets fluid
+  if(/plan|schedule/.test(n)) return 0.8;
+  // Default — moderate
+  return 1.0;
+}
+
+function smartDistributeFluid(){
+  if(!window._fbdEvts||window._fbdEvts.length===0)return;
   var budget=settings.fluidMax||64;
-  var fluidEvts=window._fbdEvts.filter(function(e){return e.fluidGoal>0;});
-  if(fluidEvts.length===0)return;
-  var currentTotal=fluidEvts.reduce(function(t,e){return t+e.fluidGoal;},0);
-  if(currentTotal===0)return;
-  var scale=budget/currentTotal;
-  var inc=1; // Scale to Fit rounds to nearest 1 oz for precise allocation
+  if(settings.fluidMode==='range') budget=settings.fluidMax||64;
+  // Work across ALL events — assign weights
+  var evts=window._fbdEvts;
+  var weights=evts.map(function(e){ return _fluidEventWeight(e); });
+  var totalWeight=weights.reduce(function(s,w){return s+w;},0);
+  if(totalWeight===0)return;
+  // Proportional allocation rounded to 1 oz, last event absorbs rounding drift
   var allocated=0;
-  fluidEvts.forEach(function(e,i){
-    if(i===fluidEvts.length-1){
-      // Last event gets remainder to avoid rounding drift
+  evts.forEach(function(e,i){
+    if(i===evts.length-1){
       e.fluidGoal=Math.max(0,budget-allocated);
-    }else{
-      var scaled=Math.round((e.fluidGoal*scale)/inc)*inc;
-      e.fluidGoal=Math.max(0,scaled);
+    } else {
+      var raw=(budget*weights[i]/totalWeight);
+      var rounded=Math.round(raw);
+      e.fluidGoal=Math.max(0,rounded);
       allocated+=e.fluidGoal;
     }
   });
   openFluidBudgetDashboard(true);
 }
+
+// Keep old name as alias so existing button still works
+function scaleBudgetToFit(){ smartDistributeFluid(); }
 
 function saveBudgetDashboard(){
   if(!window._fbdEvts)return;
@@ -13739,28 +13769,75 @@ function _assistApply(){
   var mode=window._asstMode||'none';
   var minEl=document.getElementById('assistFluidMin');
   var maxEl=document.getElementById('assistFluidMax');
-  window._assistantMin=minEl?parseInt(minEl.value)||0:0;
-  window._assistantMax=maxEl?parseInt(maxEl.value)||0:0;
-  window._assistantMode=mode;
-  openSettings();
+  var newMin=minEl?parseInt(minEl.value)||0:0;
+  var newMax=maxEl?parseInt(maxEl.value)||0:0;
+  // Commit mode + values to settings immediately
+  settings.fluidMode=mode;
+  if(newMax>0) settings.fluidMax=newMax;
+  if(newMin>0) settings.fluidMin=newMin;
+  saveSettingsToStorage();
+  // If mode has a limit AND user has events, offer smart distribution next
+  var hasEvents=(settings.dailyEvents&&settings.dailyEvents.length>0)||(dailyPlan&&dailyPlan.length>0);
+  if(mode!=='none'&&hasEvents){
+    _assistShowDistributeOffer(mode, newMax||settings.fluidMax);
+  } else {
+    _assistShowFinalConfirm(mode, newMax||settings.fluidMax, false);
+  }
+}
+
+function _assistShowDistributeOffer(mode, budget){
+  var BG='background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:16px;font-size:16px;font-weight:600;cursor:pointer;text-align:left;width:100%;margin-bottom:10px;display:block';
+  var html='<div style="max-width:520px;margin:0 auto">';
+  html+='<div style="text-align:center;margin-bottom:20px">';
+  html+='<div style="font-size:44px;margin-bottom:8px">✅</div>';
+  html+='<div style="font-size:20px;font-weight:700;color:#065f46;margin-bottom:4px">Mode saved!</div>';
+  html+='<div style="font-size:15px;color:#6b7280">Your daily target is set to <strong>'+budget+' oz</strong></div>';
+  html+='</div>';
+  html+='<div style="background:#eff6ff;border:2px solid #bfdbfe;border-radius:12px;padding:16px;margin-bottom:16px">';
+  html+='<div style="font-size:17px;font-weight:700;color:#1e40af;margin-bottom:6px">One more step — distribute your oz</div>';
+  html+='<div style="font-size:14px;color:#1e40af;line-height:1.6">ClinBridge can automatically spread your <strong>'+budget+' oz</strong> across all your daily events — giving more to meals, moderate amounts to mid-day breaks, and less at bedtime. You can adjust any value before saving.</div>';
+  html+='</div>';
+  html+='<button onclick="_assistLaunchDistribute()" style="'+BG.replace('#e2e8f0','#3b82f6').replace('#fff','#1d4ed8').replace('color:#1e293b','color:#fff')+'">🧠 Yes — distribute '+budget+' oz across my events now</button>';
+  html+='<button onclick="_assistSkipDistribute()" style="'+BG+'">I will set amounts manually in the Budget Dashboard</button>';
+  html+='</div>';
+  showModal(html);
+  setTimeout(function(){var mc=document.getElementById('modalContent');if(mc)mc.scrollTop=0;},30);
+}
+
+function _assistSkipDistribute(){
+  var mode=settings.fluidMode||'none';
+  var budget=settings.fluidMax||64;
+  _assistShowFinalConfirm(mode, budget, false);
+}
+
+function _assistLaunchDistribute(){
+  // Build _fbdEvts fresh then run smart distribute, show result
+  window._fbdEvts=null; // force fresh load
+  openFluidBudgetDashboard(false);
   setTimeout(function(){
-    document.querySelectorAll('input[name="fluidMode"]').forEach(function(r){
-      if(r.value===mode) r.checked=true;
-    });
-    updateFluidModeUI();
-    var minInput=document.getElementById('settingFluidMin');
-    var maxInput=document.getElementById('settingFluidMax');
-    if(maxInput&&window._assistantMax>0) maxInput.value=window._assistantMax;
-    if(minInput&&window._assistantMin>0) minInput.value=window._assistantMin;
+    smartDistributeFluid();
+    // Scroll to top so user sees the ring
     var mc=document.getElementById('modalContent');
-    if(mc){var t=mc.querySelector('input[name="fluidMode"]');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});}
-    var banner=document.createElement('div');
-    banner.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#065f46;color:white;padding:14px 24px;border-radius:12px;font-size:16px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3)';
-    banner.textContent='Mode applied — tap Save Settings to confirm';
-    document.body.appendChild(banner);
-    setTimeout(function(){if(banner.parentNode)banner.parentNode.removeChild(banner);},4000);
-    window._assistantMode=null;window._assistantMin=0;window._assistantMax=0;
-  },250);
+    if(mc) mc.scrollTop=0;
+  },200);
+}
+
+function _assistShowFinalConfirm(mode, budget, distributed){
+  var html='<div style="max-width:520px;margin:0 auto;text-align:center;padding:16px">';
+  html+='<div style="font-size:44px;margin-bottom:12px">🎉</div>';
+  html+='<div style="font-size:21px;font-weight:700;color:#065f46;margin-bottom:10px">All set!</div>';
+  var modeLabel=mode==='maximum'?'Daily Maximum':mode==='range'?'Daily Range':'General Tracking';
+  html+='<div style="background:#d1fae5;border:2px solid #10b981;border-radius:12px;padding:14px;margin-bottom:16px">';
+  html+='<div style="font-size:15px;color:#065f46;line-height:1.6">';
+  html+='<strong>Mode:</strong> '+modeLabel+'<br>';
+  if(mode!=='none') html+='<strong>Target:</strong> '+budget+' oz per day';
+  html+='</div></div>';
+  if(!distributed){
+    html+='<div style="background:#fef3c7;border-left:3px solid #f59e0b;padding:12px;border-radius:8px;margin-bottom:16px;font-size:13px;color:#92400e;text-align:left">Tip: Open the Budget Dashboard from the main screen to distribute your oz across daily events and get pacing guidance throughout the day.</div>';
+  }
+  html+='<button onclick="openSettings()" style="width:100%;padding:15px;background:#1d4ed8;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer">Back to Settings</button>';
+  html+='</div>';
+  showModal(html);
 }
 
 function _showAssistantStep(step){
