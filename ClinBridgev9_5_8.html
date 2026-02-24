@@ -8257,21 +8257,22 @@ html+='</div>';
 html+='<div class="settings-section">';
 html+='<div class="settings-section-title"><span>⚙️</span><span>App Settings</span></div>';
 html+='<div style="margin-bottom:20px">';
-html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:8px">💧 Daily Fluid Tracking Mode</label>';
-html+='<p style="font-size:14px;color:#6b7280;margin-bottom:12px">Select the mode your doctor has prescribed. If no recommendation has been made, choose General Tracking.</p>';
+html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:4px">💧 Daily Fluid Tracking Mode</label>';
+html+='<p style="font-size:14px;color:#6b7280;margin-bottom:10px">Choose the mode that matches what your doctor has told you. Not sure? Use the assistant below.</p>';
+html+='<button type="button" onclick="openFluidModeAssistant()" style="width:100%;padding:13px;background:#8b5cf6;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px">🤔 Help me choose the right mode</button>';
 var fMode=settings.fluidMode||'range';
 html+='<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">';
 html+='<label style="display:flex;align-items:flex-start;padding:14px;border:2px solid '+(fMode==='none'?'#3b82f6':'#e2e8f0')+';border-radius:10px;background:'+(fMode==='none'?'#eff6ff':'white')+';cursor:pointer;gap:12px">';
 html+='<input type="radio" name="fluidMode" value="none" '+(fMode==='none'?'checked':'')+' style="margin-top:3px;width:18px;height:18px" onchange="updateFluidModeUI()">';
-html+='<div><div style="font-size:17px;font-weight:600">📊 General Tracking Only</div><div style="font-size:13px;color:#6b7280;margin-top:2px">No daily target — just track what you drink. Good for establishing a baseline before your doctor sets a goal.</div></div>';
+html+='<div><div style="font-size:17px;font-weight:600">📊 General Tracking Only</div><div style="font-size:13px;color:#6b7280;margin-top:2px">No daily target — just log what you drink and build a baseline. Good starting point before your doctor sets a goal.</div></div>';
 html+='</label>';
 html+='<label style="display:flex;align-items:flex-start;padding:14px;border:2px solid '+(fMode==='maximum'?'#3b82f6':'#e2e8f0')+';border-radius:10px;background:'+(fMode==='maximum'?'#eff6ff':'white')+';cursor:pointer;gap:12px">';
 html+='<input type="radio" name="fluidMode" value="maximum" '+(fMode==='maximum'?'checked':'')+' style="margin-top:3px;width:18px;height:18px" onchange="updateFluidModeUI()">';
-html+='<div><div style="font-size:17px;font-weight:600">🚫 Daily Maximum (Do Not Exceed)</div><div style="font-size:13px;color:#6b7280;margin-top:2px">For CHF, kidney disease, or fluid overload history. App alerts you as you approach the ceiling.</div></div>';
+html+='<div><div style="font-size:17px;font-weight:600">🚫 Daily Maximum (Do Not Exceed)</div><div style="font-size:13px;color:#6b7280;margin-top:2px">Your doctor gave you a ceiling — a number you must not go over. ClinBridge tracks toward it and warns you as you get close.</div></div>';
 html+='</label>';
 html+='<label style="display:flex;align-items:flex-start;padding:14px;border:2px solid '+(fMode==='range'?'#3b82f6':'#e2e8f0')+';border-radius:10px;background:'+(fMode==='range'?'#eff6ff':'white')+';cursor:pointer;gap:12px">';
 html+='<input type="radio" name="fluidMode" value="range" '+(fMode==='range'?'checked':'')+' style="margin-top:3px;width:18px;height:18px" onchange="updateFluidModeUI()">';
-html+='<div><div style="font-size:17px;font-weight:600">↔️ Daily Range (Min & Max)</div><div style="font-size:13px;color:#6b7280;margin-top:2px">For PPH, dysautonomia, or when your doctor set both a minimum and maximum intake goal.</div></div>';
+html+='<div><div style="font-size:17px;font-weight:600">↔️ Daily Range (Min & Max)</div><div style="font-size:13px;color:#6b7280;margin-top:2px">Your doctor gave you both a floor (drink at least this much) and a ceiling (don't exceed this). ClinBridge tracks both sides.</div></div>';
 html+='</label>';
 html+='</div>';
 html+='<div id="fluidMaxSection" style="display:'+(fMode==='none'?'none':'block')+'">';
@@ -8288,32 +8289,35 @@ html+='</div>';
 html+='</div>';
 html+='</div>';
 html+='<div style="margin-bottom:20px">';
-html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:8px">Systolic Range</label>';
+html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:4px">📈 Systolic Blood Pressure Range</label>';
+html+='<p style="font-size:13px;color:#6b7280;margin-bottom:8px">The top number in a reading. Readings outside this range are flagged with a ⚠️ on every chart and counted in your out-of-range summary — exactly what your cardiologist wants to see at your visit.</p>';
 html+='<div style="display:flex;gap:12px">';
-html+='<input type="number" id="settingSysMin" class="modal-input" placeholder="Min" value="'+settings.systolicMin+'" style="flex:1" />';
-html+='<input type="number" id="settingSysMax" class="modal-input" placeholder="Max" value="'+settings.systolicMax+'" style="flex:1" />';
+html+='<div style="flex:1"><label style="font-size:13px;color:#6b7280">Min (mmHg)</label><input type="number" id="settingSysMin" class="modal-input" placeholder="e.g. 90" value="'+settings.systolicMin+'" /></div>';
+html+='<div style="flex:1"><label style="font-size:13px;color:#6b7280">Max (mmHg)</label><input type="number" id="settingSysMax" class="modal-input" placeholder="e.g. 140" value="'+settings.systolicMax+'" /></div>';
 html+='</div>';
 html+='</div>';
 html+='<div style="margin-bottom:20px">';
-html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:8px">Diastolic Range</label>';
+html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:4px">📉 Diastolic Blood Pressure Range</label>';
+html+='<p style="font-size:13px;color:#6b7280;margin-bottom:8px">The bottom number. Tracked alongside systolic on all charts. Low diastolic can indicate poor circulation; high diastolic alongside high systolic is a key pattern your doctor watches for.</p>';
 html+='<div style="display:flex;gap:12px">';
-html+='<input type="number" id="settingDiaMin" class="modal-input" placeholder="Min" value="'+settings.diastolicMin+'" style="flex:1" />';
-html+='<input type="number" id="settingDiaMax" class="modal-input" placeholder="Max" value="'+settings.diastolicMax+'" style="flex:1" />';
+html+='<div style="flex:1"><label style="font-size:13px;color:#6b7280">Min (mmHg)</label><input type="number" id="settingDiaMin" class="modal-input" placeholder="e.g. 60" value="'+settings.diastolicMin+'" /></div>';
+html+='<div style="flex:1"><label style="font-size:13px;color:#6b7280">Max (mmHg)</label><input type="number" id="settingDiaMax" class="modal-input" placeholder="e.g. 90" value="'+settings.diastolicMax+'" /></div>';
 html+='</div>';
 html+='</div>';
 html+='<div style="margin-bottom:20px">';
-html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:8px">Heart Rate Range</label>';
+html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:4px">❤️ Heart Rate Range (BPM)</label>';
+html+='<p style="font-size:13px;color:#6b7280;margin-bottom:8px">Readings outside this range trigger alerts and are highlighted on the HR trend chart. Especially important for patients on beta-blockers, with AFib, or a history of bradycardia or tachycardia. Your doctor sets this target.</p>';
 html+='<div style="display:flex;gap:12px">';
-html+='<input type="number" id="settingHrMin" class="modal-input" placeholder="Min" value="'+settings.hrMin+'" style="flex:1" />';
-html+='<input type="number" id="settingHrMax" class="modal-input" placeholder="Max" value="'+settings.hrMax+'" style="flex:1" />';
+html+='<div style="flex:1"><label style="font-size:13px;color:#6b7280">Min (BPM)</label><input type="number" id="settingHrMin" class="modal-input" placeholder="e.g. 50" value="'+settings.hrMin+'" /></div>';
+html+='<div style="flex:1"><label style="font-size:13px;color:#6b7280">Max (BPM)</label><input type="number" id="settingHrMax" class="modal-input" placeholder="e.g. 100" value="'+settings.hrMax+'" /></div>';
 html+='</div>';
 html+='</div>';
 
 // Fluid increment picker
 var _finc=settings.fluidIncrement||8;
 html+='<div style="margin-top:20px">';
-html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:8px">💧 Quick-Add Increment</label>';
-html+='<p style="font-size:14px;color:#6b7280;margin-bottom:12px">Sets the default amount when you tap quick-add buttons in the fluid log. For strict fluid limits (50–60 oz), 4 oz gives better precision. 8 oz is standard for general tracking.</p>';
+html+='<label style="display:block;font-size:18px;font-weight:600;margin-bottom:4px">💧 Quick-Add Increment</label>';
+html+='<p style="font-size:13px;color:#6b7280;margin-bottom:12px">How much fluid each tap of the + button adds on the main screen. The Budget Dashboard always uses 1 oz for precise planning — this only affects your quick-log shortcuts. Smaller increments (4 oz) give you finer control when you have a tight daily limit.</p>';
 html+='<div style="display:flex;gap:8px;flex-wrap:wrap">';
 [2,4,6,8,10,12,16].forEach(function(v){
   html+='<label style="display:flex;align-items:center;gap:6px;padding:10px 14px;border:2px solid '+(_finc===v?'#3b82f6':'#e2e8f0')+';border-radius:8px;background:'+(_finc===v?'#eff6ff':'white')+';cursor:pointer;font-size:16px;font-weight:600">';
@@ -8337,33 +8341,34 @@ html+='</div>'; // Close App Settings section
 // Phase 2: Feature Toggles Section
 html+='<div class="settings-section">';
 html+='<div class="settings-section-title"><span>📋</span><span>Tracking Features</span></div>';
-html+='<p style="font-size:16px;color:#64748b;margin-bottom:16px">Enable features prescribed by your doctor:</p>';
-html+='<div style="display:flex;flex-direction:column;gap:12px">';
-html+='<label style="display:flex;align-items:center;padding:14px;border:2px solid #e2e8f0;border-radius:10px;background:white;cursor:pointer">';
-html+='<input type="checkbox" id="featureWeight" style="width:20px;height:20px;margin-right:12px;cursor:pointer" '+(settings.features&&settings.features.weight?'checked':'')+' />';
-html+='<span style="font-size:18px;font-weight:600">⚖️ Weight Monitoring</span>';
+html+='<p style="font-size:14px;color:#64748b;margin-bottom:4px">Enable or disable each tracking module. Only turn on what your doctor has asked you to monitor — it keeps the app focused and your data meaningful.</p>';
+html+='<div style="display:flex;flex-direction:column;gap:12px;margin-top:14px">';
+html+='<label style="display:flex;align-items:flex-start;padding:14px;border:2px solid #e2e8f0;border-radius:10px;background:white;cursor:pointer;gap:12px">';
+html+='<input type="checkbox" id="featureWeight" style="width:20px;height:20px;margin-top:2px;flex-shrink:0;cursor:pointer" '+(settings.features&&settings.features.weight?'checked':'')+' />';
+html+='<div><div style="font-size:17px;font-weight:600">⚖️ Weight Monitoring</div><div style="font-size:13px;color:#6b7280;margin-top:2px">Logs daily weight and flags sudden changes. Unexpected overnight weight gain is one of the earliest warning signs of fluid retention — something cardiologists and nephrologists track closely.</div></div>';
 html+='</label>';
-html+='<label style="display:flex;align-items:center;padding:14px;border:2px solid #e2e8f0;border-radius:10px;background:white;cursor:pointer">';
-html+='<input type="checkbox" id="featureSymptoms" style="width:20px;height:20px;margin-right:12px;cursor:pointer" '+(settings.features&&settings.features.symptoms?'checked':'')+' />';
-html+='<span style="font-size:18px;font-weight:600">💊 Symptom Tracking</span>';
+html+='<label style="display:flex;align-items:flex-start;padding:14px;border:2px solid #e2e8f0;border-radius:10px;background:white;cursor:pointer;gap:12px">';
+html+='<input type="checkbox" id="featureSymptoms" style="width:20px;height:20px;margin-top:2px;flex-shrink:0;cursor:pointer" '+(settings.features&&settings.features.symptoms?'checked':'')+' />';
+html+='<div><div style="font-size:17px;font-weight:600">💊 Symptom Tracking</div><div style="font-size:13px;color:#6b7280;margin-top:2px">Log symptoms with time, severity, and notes. Over time this builds a pattern log your doctor can use to correlate symptoms with BP readings, fluid intake, or medication timing.</div></div>';
 html+='</label>';
-html+='<label style="display:flex;align-items:center;padding:14px;border:2px solid #e2e8f0;border-radius:10px;background:white;cursor:pointer">';
-html+='<input type="checkbox" id="featureExercise" style="width:20px;height:20px;margin-right:12px;cursor:pointer" '+(settings.features&&settings.features.exercise?'checked':'')+' />';
-html+='<span style="font-size:18px;font-weight:600">🏃 Physical Activity/Exercise</span>';
+html+='<label style="display:flex;align-items:flex-start;padding:14px;border:2px solid #e2e8f0;border-radius:10px;background:white;cursor:pointer;gap:12px">';
+html+='<input type="checkbox" id="featureExercise" style="width:20px;height:20px;margin-top:2px;flex-shrink:0;cursor:pointer" '+(settings.features&&settings.features.exercise?'checked':'')+' />';
+html+='<div><div style="font-size:17px;font-weight:600">🏃 Physical Activity / Exercise</div><div style="font-size:13px;color:#6b7280;margin-top:2px">Tracks activity duration and type. Enables the Activity Impact panel in Advanced Analytics, which shows how exercise sessions correlate with your BP readings afterward — data cardiologists find very useful.</div></div>';
 html+='</label>';
 html+='</div>';
 
 // Weight Settings (only show if weight is enabled)
-html+='<div id="weightSettingsSection" style="margin-top:20px;display:'+(settings.features&&settings.features.weight?'block':'none')+'">';
+html+='<div id="weightSettingsSection" style="margin-top:20px;padding:16px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;display:'+(settings.features&&settings.features.weight?'block':'none')+'">';
 html+='<label style="display:block;font-size:16px;font-weight:600;margin-bottom:8px">Preferred Weight Unit</label>';
 html+='<div style="display:flex;gap:12px;margin-bottom:16px">';
 var weightUnit=settings.weightUnit||'lbs';
 html+='<button type="button" onclick="selectSettingWeightUnit(\'lbs\')" id="settingUnitLbs" class="modal-btn" style="flex:1;'+(weightUnit==='lbs'?'background:#3b82f6;color:#fff':'')+'">lbs</button>';
 html+='<button type="button" onclick="selectSettingWeightUnit(\'kg\')" id="settingUnitKg" class="modal-btn" style="flex:1;'+(weightUnit==='kg'?'background:#3b82f6;color:#fff':'')+'">kg</button>';
 html+='</div>';
-html+='<label style="display:block;font-size:16px;font-weight:600;margin-bottom:8px">Weight Change Alert Threshold (lbs)</label>';
+html+='<label style="display:block;font-size:16px;font-weight:600;margin-bottom:4px">⚠️ Weight Change Alert Threshold</label>';
+html+='<p style="font-size:13px;color:#6b7280;margin-bottom:8px">ClinBridge alerts you when your weight shifts by this amount compared to your recent baseline. A change of 2–3 lbs in a short window is a common indicator your doctor may want to know about — ask them what threshold is right for you.</p>';
 html+='<input type="number" id="settingWeightThreshold" class="modal-input" value="'+(settings.weightAlertThreshold||3)+'" step="0.5" placeholder="3.0" />';
-html+='<p style="font-size:14px;color:#64748b;margin-top:4px">Alert when weight changes by this amount or more</p>';
+html+='<p style="font-size:13px;color:#64748b;margin-top:4px">Enter value in '+(settings.weightUnit||'lbs')+'</p>';
 html+='</div>';
 
 html+='</div>';
@@ -13714,6 +13719,187 @@ document.getElementById('patternContent').innerHTML=html;
 }
 
 // ================== PHASE 6D: EVENT ANALYSIS ==================
+// ============================================================
+// FLUID MODE SMART SELECTION ASSISTANT
+// ============================================================
+
+function openFluidModeAssistant(){
+  renderFluidAssistantStep(1,{});
+}
+
+function renderFluidAssistantStep(step, answers){
+  var html='<div style="max-width:520px;margin:0 auto">';
+  html+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">';
+  html+='<div style="font-size:32px">🤔</div>';
+  html+='<div>';
+  html+='<div style="font-size:20px;font-weight:700;color:#1e40af">Fluid Mode Assistant</div>';
+  html+='<div style="font-size:14px;color:#6b7280">3 quick questions — takes under a minute</div>';
+  html+='</div>';
+  html+='</div>';
+
+  // Progress dots
+  html+='<div style="display:flex;gap:8px;margin-bottom:24px;justify-content:center">';
+  for(var d=1;d<=3;d++){
+    var isActive=(d===step);
+    var isDone=(d<step);
+    html+='<div style="width:12px;height:12px;border-radius:50%;background:'+(isActive?'#3b82f6':isDone?'#10b981':'#d1d5db')+';transition:all 0.2s"></div>';
+  }
+  html+='</div>';
+
+  if(step===1){
+    html+='<div style="background:#f0f9ff;border:2px solid #bfdbfe;border-radius:12px;padding:20px;margin-bottom:20px">';
+    html+='<div style="font-size:17px;font-weight:700;color:#1e3a8a;margin-bottom:6px">Question 1 of 3</div>';
+    html+='<div style="font-size:18px;font-weight:600;color:#1e293b;line-height:1.5">Has your doctor told you there is a specific daily fluid amount you must <em>not go over?</em></div>';
+    html+='<div style="font-size:14px;color:#6b7280;margin-top:8px">For example: "Keep it under 64 oz a day" or "No more than 2 liters."</div>';
+    html+='</div>';
+    html+='<div style="display:flex;flex-direction:column;gap:10px">';
+    html+='<button onclick="renderFluidAssistantStep(2,{q1:'yes'})" style="padding:16px;background:#fff;border:2px solid #e2e8f0;border-radius:10px;font-size:17px;font-weight:600;cursor:pointer;text-align:left;color:#1e293b" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#e2e8f0'">✅ Yes — my doctor gave me a fluid limit</button>';
+    html+='<button onclick="renderFluidAssistantStep(3,{q1:'no'})" style="padding:16px;background:#fff;border:2px solid #e2e8f0;border-radius:10px;font-size:17px;font-weight:600;cursor:pointer;text-align:left;color:#1e293b" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#e2e8f0'">📊 No fluid limit has been discussed with my doctor</button>';
+    html+='<button onclick="renderFluidAssistantStep('unsure',{q1:'unsure'})" style="padding:16px;background:#fff;border:2px solid #e2e8f0;border-radius:10px;font-size:17px;font-weight:600;cursor:pointer;text-align:left;color:#92400e" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#e2e8f0'">🤷 I'm not sure</button>';
+    html+='</div>';
+  }
+  else if(step===2){
+    html+='<div style="background:#f0f9ff;border:2px solid #bfdbfe;border-radius:12px;padding:20px;margin-bottom:20px">';
+    html+='<div style="font-size:17px;font-weight:700;color:#1e3a8a;margin-bottom:6px">Question 2 of 3</div>';
+    html+='<div style="font-size:18px;font-weight:600;color:#1e293b;line-height:1.5">Did your doctor also give you a <em>minimum</em> — a floor below which you should not go?</div>';
+    html+='<div style="font-size:14px;color:#6b7280;margin-top:8px">For example: "Drink at least 40 oz, but no more than 64 oz."</div>';
+    html+='</div>';
+    html+='<div style="display:flex;flex-direction:column;gap:10px">';
+    var a2yes=JSON.stringify(Object.assign({},answers,{q2:'yes'})).replace(/'/g,"\'");
+    var a2no=JSON.stringify(Object.assign({},answers,{q2:'no'})).replace(/'/g,"\'");
+    html+='<button onclick="renderFluidAssistantResult('range')" style="padding:16px;background:#fff;border:2px solid #e2e8f0;border-radius:10px;font-size:17px;font-weight:600;cursor:pointer;text-align:left;color:#1e293b" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#e2e8f0'">✅ Yes — I have both a minimum and a maximum</button>';
+    html+='<button onclick="renderFluidAssistantResult('maximum')" style="padding:16px;background:#fff;border:2px solid #e2e8f0;border-radius:10px;font-size:17px;font-weight:600;cursor:pointer;text-align:left;color:#1e293b" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#e2e8f0'">🚫 No — just a maximum I cannot exceed</button>';
+    html+='</div>';
+    html+='<button onclick="renderFluidAssistantStep(1,{})" style="margin-top:16px;padding:12px;background:none;border:none;color:#6b7280;font-size:15px;cursor:pointer;width:100%">← Back</button>';
+  }
+  else if(step===3){
+    html+='<div style="background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:20px;margin-bottom:20px">';
+    html+='<div style="font-size:17px;font-weight:700;color:#166534;margin-bottom:6px">Question 3 of 3</div>';
+    html+='<div style="font-size:18px;font-weight:600;color:#1e293b;line-height:1.5">Are you tracking fluid intake on your own, without a doctor-prescribed target yet?</div>';
+    html+='<div style="font-size:14px;color:#6b7280;margin-top:8px">This is completely fine — building a baseline is the right first step before your doctor sets a target.</div>';
+    html+='</div>';
+    html+='<div style="display:flex;flex-direction:column;gap:10px">';
+    html+='<button onclick="renderFluidAssistantResult('none')" style="padding:16px;background:#fff;border:2px solid #e2e8f0;border-radius:10px;font-size:17px;font-weight:600;cursor:pointer;text-align:left;color:#1e293b" onmouseover="this.style.borderColor='#10b981'" onmouseout="this.style.borderColor='#e2e8f0'">📊 Yes — I'm building a baseline for now</button>';
+    html+='<button onclick="renderFluidAssistantStep('unsure',{q1:'unsure'})" style="padding:16px;background:#fff;border:2px solid #e2e8f0;border-radius:10px;font-size:17px;font-weight:600;cursor:pointer;text-align:left;color:#92400e" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#e2e8f0'">🤷 I'm genuinely unsure what my doctor intended</button>';
+    html+='</div>';
+    html+='<button onclick="renderFluidAssistantStep(1,{})" style="margin-top:16px;padding:12px;background:none;border:none;color:#6b7280;font-size:15px;cursor:pointer;width:100%">← Back</button>';
+  }
+  else if(step==='unsure'){
+    html+='<div style="background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;padding:20px;margin-bottom:20px">';
+    html+='<div style="font-size:28px;margin-bottom:8px">💛</div>';
+    html+='<div style="font-size:18px;font-weight:700;color:#92400e;margin-bottom:8px">That's okay — don't guess</div>';
+    html+='<div style="font-size:15px;color:#78350f;line-height:1.6">The wrong fluid mode could mean tracking toward a target you weren't prescribed. It's better to track without a limit than to track against the wrong one.</div>';
+    html+='</div>';
+    html+='<div style="font-size:16px;font-weight:600;color:#1e293b;margin-bottom:12px">What would you like to do?</div>';
+    html+='<div style="display:flex;flex-direction:column;gap:10px">';
+    html+='<button onclick="applyFluidModeFromAssistant('none',0,0)" style="padding:16px;background:#fff;border:2px solid #e2e8f0;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;text-align:left;color:#1e293b" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#e2e8f0'">📊 Use General Tracking for now — I'll update this after my next appointment</button>';
+    html+='<button onclick="saveDoctorFluidQuestion()" style="padding:16px;background:#fff;border:2px solid #e2e8f0;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;text-align:left;color:#7c3aed" onmouseover="this.style.borderColor='#8b5cf6'" onmouseout="this.style.borderColor='#e2e8f0'">📋 Save this as a question for my next doctor appointment</button>';
+    html+='</div>';
+    html+='<button onclick="renderFluidAssistantStep(1,{})" style="margin-top:16px;padding:12px;background:none;border:none;color:#6b7280;font-size:15px;cursor:pointer;width:100%">← Start over</button>';
+  }
+
+  html+='</div>';
+  // Re-render modal content preserving scroll
+  var mc=document.getElementById('modalContent');
+  var scroll=mc?mc.scrollTop:0;
+  showModal(html);
+  setTimeout(function(){var mc2=document.getElementById('modalContent');if(mc2)mc2.scrollTop=0;},30);
+}
+
+function renderFluidAssistantResult(mode){
+  var modeInfo={
+    'none':  {icon:'📊',title:'General Tracking Only',color:'#065f46',bg:'#d1fae5',border:'#10b981',desc:'No target is set. ClinBridge will log everything you drink and build a historical baseline. Once your doctor gives you a target, come back here and switch modes — your history is preserved.'},
+    'maximum':{icon:'🚫',title:'Daily Maximum (Do Not Exceed)',color:'#991b1b',bg:'#fee2e2',border:'#ef4444',desc:'ClinBridge will track your fluid intake against a ceiling you set. As you get close to the limit, you'll see warnings and a progress bar. The app will not block you — it informs and alerts, the decisions are always yours.'},
+    'range':  {icon:'↔️',title:'Daily Range (Min & Max)',color:'#1e40af',bg:'#dbeafe',border:'#3b82f6',desc:'ClinBridge tracks both sides: it nudges you to drink more when you're below your minimum, and warns you when you're approaching your maximum. Enter both numbers on the next screen.'}
+  };
+  var info=modeInfo[mode]||modeInfo['none'];
+  var html='<div style="max-width:520px;margin:0 auto">';
+  html+='<div style="text-align:center;margin-bottom:24px">';
+  html+='<div style="font-size:48px;margin-bottom:8px">✅</div>';
+  html+='<div style="font-size:22px;font-weight:700;color:#065f46">Great — here's your recommendation</div>';
+  html+='</div>';
+  html+='<div style="background:'+info.bg+';border:2px solid '+info.border+';border-radius:14px;padding:20px;margin-bottom:20px">';
+  html+='<div style="font-size:24px;margin-bottom:8px">'+info.icon+'</div>';
+  html+='<div style="font-size:20px;font-weight:700;color:'+info.color+';margin-bottom:10px">'+info.title+'</div>';
+  html+='<div style="font-size:15px;color:'+info.color+';line-height:1.6">'+info.desc+'</div>';
+  html+='</div>';
+
+  if(mode==='maximum'||mode==='range'){
+    html+='<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px;margin-bottom:20px">';
+    html+='<div style="font-size:15px;font-weight:600;color:#374151;margin-bottom:12px">Enter the values your doctor gave you:</div>';
+    if(mode==='range'){
+      html+='<label style="display:block;font-size:14px;color:#6b7280;margin-bottom:4px">Minimum (oz) — drink at least this much</label>';
+      html+='<input type="number" id="assistFluidMin" class="modal-input" placeholder="e.g. 40" style="margin-bottom:10px" />';
+    }
+    html+='<label style="display:block;font-size:14px;color:#6b7280;margin-bottom:4px">'+(mode==='range'?'Maximum (oz) — do not exceed this':'Maximum (oz) — do not exceed this')+'</label>';
+    html+='<input type="number" id="assistFluidMax" class="modal-input" placeholder="e.g. 64" />';
+    html+='</div>';
+  }
+
+  html+='<button onclick="applyFluidModeFromAssistant(\''+mode+'\')" style="width:100%;padding:16px;background:#1d4ed8;color:#fff;border:none;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;margin-bottom:10px">Apply this mode to my settings</button>';
+  html+='<button onclick="renderFluidAssistantStep(1,{})" style="width:100%;padding:12px;background:none;border:none;color:#6b7280;font-size:15px;cursor:pointer">← Start over</button>';
+  html+='</div>';
+  showModal(html);
+  setTimeout(function(){var mc=document.getElementById('modalContent');if(mc)mc.scrollTop=0;},30);
+}
+
+function applyFluidModeFromAssistant(mode){
+  // Read min/max from assistant inputs if they exist
+  var minEl=document.getElementById('assistFluidMin');
+  var maxEl=document.getElementById('assistFluidMax');
+  var minVal=minEl?parseInt(minEl.value)||settings.fluidMin:settings.fluidMin;
+  var maxVal=maxEl?parseInt(maxEl.value)||settings.fluidMax:settings.fluidMax;
+  // Stash the chosen values so openSettings can pick them up
+  window._assistantMode=mode;
+  window._assistantMin=minVal;
+  window._assistantMax=maxVal;
+  // Reopen settings and apply
+  openSettings();
+  setTimeout(function(){
+    // Select the right radio
+    var radios=document.querySelectorAll('input[name="fluidMode"]');
+    radios.forEach(function(r){if(r.value===mode)r.checked=true;});
+    updateFluidModeUI();
+    // Fill in numbers if applicable
+    var minInput=document.getElementById('settingFluidMin');
+    var maxInput=document.getElementById('settingFluidMax');
+    if(maxInput&&window._assistantMax>0) maxInput.value=window._assistantMax;
+    if(minInput&&window._assistantMin>0) minInput.value=window._assistantMin;
+    // Scroll to fluid section
+    var mc=document.getElementById('modalContent');
+    if(mc){
+      var target=mc.querySelector('input[name="fluidMode"]');
+      if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    // Show confirmation banner
+    var banner=document.createElement('div');
+    banner.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#065f46;color:white;padding:14px 24px;border-radius:12px;font-size:16px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3)';
+    banner.textContent='✅ Mode applied — tap Save Settings to confirm';
+    document.body.appendChild(banner);
+    setTimeout(function(){if(banner.parentNode)banner.parentNode.removeChild(banner);},4000);
+    window._assistantMode=null;window._assistantMin=0;window._assistantMax=0;
+  },250);
+}
+
+function saveDoctorFluidQuestion(){
+  var question='Ask my doctor: What fluid tracking mode should I use, and what are my daily fluid targets?';
+  // Store in settings.pendingDoctorQuestions
+  if(!settings.pendingDoctorQuestions) settings.pendingDoctorQuestions=[];
+  if(settings.pendingDoctorQuestions.indexOf(question)<0){
+    settings.pendingDoctorQuestions.push(question);
+    saveSettingsToStorage();
+  }
+  // Confirmation screen
+  var html='<div style="max-width:520px;margin:0 auto;text-align:center;padding:20px">';
+  html+='<div style="font-size:48px;margin-bottom:16px">📋</div>';
+  html+='<div style="font-size:22px;font-weight:700;color:#1e40af;margin-bottom:12px">Saved to your doctor questions</div>';
+  html+='<div style="background:#eff6ff;border:2px solid #bfdbfe;border-radius:12px;padding:16px;margin-bottom:20px;font-size:15px;color:#1e40af;font-style:italic;line-height:1.6">"'+question+'"</div>';
+  html+='<div style="font-size:15px;color:#374151;margin-bottom:24px;line-height:1.6">This question will appear pre-filled when you open your next doctor appointment. ClinBridge has switched to <strong>General Tracking</strong> in the meantime so your data is still being recorded.</div>';
+  html+='<button onclick="applyFluidModeFromAssistant('none',0,0)" style="width:100%;padding:16px;background:#1d4ed8;color:#fff;border:none;border-radius:10px;font-size:17px;font-weight:600;cursor:pointer">Back to Settings</button>';
+  html+='</div>';
+  showModal(html);
+}
+
 function updateFluidModeUI(){
 var mode=document.querySelector('input[name="fluidMode"]:checked');
 if(!mode)return;
@@ -16211,7 +16397,23 @@ function openAppointmentModal(editId = null) {
         document.getElementById('appointmentReminder').value = 'none';
         document.getElementById('doctorName').value = '';
         document.getElementById('appointmentReason').value = '';
-        document.getElementById('appointmentQuestions').value = '';
+        // Pre-fill any pending questions saved from the Fluid Mode Assistant (or other wizards)
+        var pendingQs = settings.pendingDoctorQuestions && settings.pendingDoctorQuestions.length > 0
+            ? settings.pendingDoctorQuestions.map(function(q,i){ return (i+1)+'. '+q; }).join('\n')
+            : '';
+        document.getElementById('appointmentQuestions').value = pendingQs;
+        if(pendingQs){
+            // Show a banner inside the modal
+            setTimeout(function(){
+                var qField = document.getElementById('appointmentQuestions');
+                if(qField){
+                    var note = document.createElement('div');
+                    note.style.cssText = 'background:#eff6ff;border-left:3px solid #3b82f6;padding:10px 12px;border-radius:6px;font-size:13px;color:#1e40af;margin-top:6px';
+                    note.textContent = '💡 ' + settings.pendingDoctorQuestions.length + ' question(s) pre-filled from your Fluid Mode Assistant. Edit as needed.';
+                    qField.parentNode.insertBefore(note, qField.nextSibling);
+                }
+            }, 100);
+        }
         document.getElementById('doctorNotes').value = '';
         document.getElementById('prescriptionsGiven').value = '';
         document.getElementById('testsOrdered').value = '';
@@ -16268,6 +16470,11 @@ function saveAppointment() {
     }
     
     saveAppointmentsToStorage();
+    // Clear pending doctor questions once they've been committed to an appointment
+    if(settings.pendingDoctorQuestions && settings.pendingDoctorQuestions.length > 0){
+        settings.pendingDoctorQuestions = [];
+        saveSettingsToStorage();
+    }
     closeAppointmentModal();
     
     alert('✅ Appointment saved successfully!');
