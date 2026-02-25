@@ -2214,6 +2214,10 @@ function fireOSNotification(title, body, tag){
   // iOS Safari in a browser tab does not support Web Notifications API.
   // The in-app visual alert (audioAlertBox) is the primary notification path on iOS.
   if(!('Notification' in window)||getNotifStatus()!=='granted') return;
+  // Skip OS banner when the user is actively viewing ClinBridge —
+  // the in-app modal is already visible and the OS banner would just
+  // duplicate the sound. Only fire when the tab/app is in the background.
+  if(!document.hidden && document.hasFocus()) return;
   try{
     var n=new Notification(title,{
       body: body,
