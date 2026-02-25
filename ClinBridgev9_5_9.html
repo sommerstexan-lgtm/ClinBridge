@@ -1267,11 +1267,17 @@ Custom Range
         <div style="background:#fee2e2;border-left:4px solid #ef4444;padding:14px 16px;border-radius:8px;margin-bottom:12px">
           <strong style="font-size:16px">🔊 Audio Alerts — iPhone (Safari browser tab)</strong>
           <p style="font-size:14px;margin:6px 0 0 0;color:#7f1d1d">iOS Safari blocks Web Audio until the screen is tapped. Alerts chime correctly when you interact with the app. For reliable background audio, install ClinBridge to your Home Screen. The on-screen visual alert always works regardless.</p>
+          <div style="background:#7f1d1d;border-radius:6px;padding:10px 12px;margin-top:10px">
+            <p style="font-size:14px;margin:0;color:#fee2e2;font-weight:600">⚠️ Back up your data before removing the icon — deleting the ClinBridge home screen icon erases all your data on that device. Export first via Settings → Export Today's Data.</p>
+          </div>
         </div>
 
         <div style="background:#fee2e2;border-left:4px solid #ef4444;padding:14px 16px;border-radius:8px;margin-bottom:12px">
           <strong style="font-size:16px">🔔 OS Notifications — iPhone (Safari browser tab)</strong>
           <p style="font-size:14px;margin:6px 0 0 0;color:#7f1d1d">Apple restricts Web Notifications to apps installed on the Home Screen. In a browser tab, only the in-app alert fires. Install via Safari Share → "Add to Home Screen" to unlock full OS notifications.</p>
+          <div style="background:#7f1d1d;border-radius:6px;padding:10px 12px;margin-top:10px">
+            <p style="font-size:14px;margin:0;color:#fee2e2;font-weight:600">⚠️ Back up your data before removing the icon — deleting the ClinBridge home screen icon erases all your data on that device. Export first via Settings → Export Today's Data.</p>
+          </div>
         </div>
 
         <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 16px;border-radius:8px;margin-bottom:12px">
@@ -1294,7 +1300,7 @@ Custom Range
             <li>Doctor's Report Diagnosis field showing "Not specified" — now pulls from Settings cardiac conditions and custom conditions</li>
             <li>Alert chime replaying on every reminder reshow (after each log save) — chime now fires only once per event, on the initial notification</li>
             <li>Advanced Analytics, Doctor Appointment, and View All Appointments modals missing sticky close buttons — added to all three</li>
-            <li>Notification sender still showing version number on some devices — confirmed page title is "ClinBridge" with no version; hard refresh or re-add to home screen required to clear cached title on iOS</li>
+            <li>Notification sender still showing version number on some devices — confirmed page title is "ClinBridge" with no version; hard refresh or re-add to home screen required to clear cached title on iOS. <strong style="color:#dc2626">⚠️ Back up your data before deleting the icon — export first via Settings → Export Today's Data</strong></li>
           </ul>
         </div>
 
@@ -8981,6 +8987,7 @@ html+='<p style="font-size:16px;color:#64748b;margin-bottom:12px">Enable system-
     html+='<div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 16px;border-radius:8px;margin-bottom:14px;font-size:15px;line-height:1.6;color:#78350f">';
     html+='<strong>📱 iPhone &amp; iPad Users:</strong> When ClinBridge is open, event alerts will appear as a <strong>red pop-up on screen with a chime</strong> — this works now without any setup.';
     html+='<br><br>For alerts when ClinBridge is in the background or another app is open, install to your Home Screen: tap the <strong>Share ⬆</strong> button in Safari → <strong>"Add to Home Screen"</strong> → reopen from the Home Screen icon.';
+    html+='<br><br><div style="background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:12px;margin-top:4px"><strong>⚠️ BACK UP YOUR DATA FIRST</strong><br>Deleting the ClinBridge icon from your Home Screen <strong>permanently erases all your logged data</strong> on that device — iOS gives the app no warning. Before removing the icon for any reason, go to <strong>Settings → Export Today\'s Data</strong> or use <strong>Advanced Analytics → Download Report</strong> to save a copy of your data.</div>';
     html+='</div>';
   }
 })();
