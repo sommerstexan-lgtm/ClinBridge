@@ -6599,84 +6599,102 @@ alert('✓ Note deleted');
 
 function openAllNotesView(filterCategory){
 filterCategory=filterCategory||'all';
-// Gather all notes from all historical data
-var allData=getAllHistoricalData();
-var allNotes=[];
-// Gather today's notes first (in memory)
 var todayKey=getTodayKey();
-notes.forEach(function(note,i){allNotes.push({note:note,dateKey:todayKey,idx:i,isToday:true});});
-// Gather historical notes
-if(allData&&allData.notes){
-allData.notes.forEach(function(note){
-if(note._date!==todayKey){
-allNotes.push({note:note,dateKey:note._date,idx:null,isToday:false});
-}
-});
-}
-// Sort newest first
-allNotes.sort(function(a,b){
-var da=(a.dateKey+(a.note.time||''));
-var db=(b.dateKey+(b.note.time||''));
-return da>db?-1:da<db?1:0;
+var allNotes=[];
+
+// Step 1: today's notes from in-memory array
+notes.forEach(function(note,i){
+  allNotes.push({note:note,dateKey:todayKey,idx:i,isToday:true});
 });
 
-// Build category list from event names
+// Step 2: direct localStorage scan for BP_TRACKER_YYYY-MM-DD keys
+// Bypasses getAllHistoricalData entirely — simpler and always correct
+try{
+  for(var si=0;si<localStorage.length;si++){
+    var skey=localStorage.key(si);
+    if(!skey||!skey.startsWith('BP_TRACKER_'))continue;
+    var sdateStr=skey.replace('BP_TRACKER_','');
+    if(!sdateStr.match(/^\d{4}-\d{2}-\d{2}$/))continue;
+    if(sdateStr===todayKey)continue;
+    try{
+      var sstored=localStorage.getItem(skey);
+      if(!sstored)continue;
+      var sdayData=JSON.parse(sstored);
+      if(sdayData.notes&&sdayData.notes.length>0){
+        sdayData.notes.forEach(function(note){
+          if(note&&note.text){
+            allNotes.push({note:note,dateKey:sdateStr,idx:null,isToday:false});
+          }
+        });
+      }
+    }catch(se){console.error('All Notes: error reading',skey,se);}
+  }
+}catch(se){console.error('All Notes: scan error',se);}
+
+// Step 3: sort newest first
+allNotes.sort(function(a,b){
+  var da=a.dateKey+(a.note.time||'');
+  var db=b.dateKey+(b.note.time||'');
+  return da>db?-1:da<db?1:0;
+});
+
+// Step 4: build category list
 var categories=['all'];
 allNotes.forEach(function(item){
-if(item.note.eventId){
-var evt=getEventById(item.note.eventId);
-if(evt&&categories.indexOf(evt.name)===-1)categories.push(evt.name);
-}
-if(item.note.category&&categories.indexOf(item.note.category)===-1){categories.push(item.note.category);}
+  if(item.note.eventId){
+    var evt=getEventById(item.note.eventId);
+    if(evt&&categories.indexOf(evt.name)===-1)categories.push(evt.name);
+  }
+  if(item.note.category&&categories.indexOf(item.note.category)===-1){
+    categories.push(item.note.category);
+  }
 });
 
-// Filter by category
+// Step 5: apply category filter
 var filtered=filterCategory==='all'?allNotes:allNotes.filter(function(item){
-if(item.note.eventId){var evt=getEventById(item.note.eventId);if(evt&&evt.name===filterCategory)return true;}
-if(item.note.category&&item.note.category===filterCategory)return true;
-return false;
+  if(item.note.eventId){var evt=getEventById(item.note.eventId);if(evt&&evt.name===filterCategory)return true;}
+  if(item.note.category&&item.note.category===filterCategory)return true;
+  return false;
 });
 
-var html='<div class="modal-title">📋 All Notes</div>';
-// Category filter tabs
+// Step 6: render
+var html='<div class="modal-title">\U0001f4cb All Notes</div>';
 html+='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">';
 categories.forEach(function(cat){
-var isActive=cat===filterCategory;
-html+='<button type="button" onclick="openAllNotesView(\''+cat+'\')" style="padding:6px 14px;border-radius:20px;border:2px solid '+(isActive?'#8b5cf6':'#e5e7eb')+';background:'+(isActive?'#8b5cf6':'#fff')+';color:'+(isActive?'#fff':'#374151')+';font-size:14px;font-weight:600;cursor:pointer">'+(cat==='all'?'All Categories':cat)+'</button>';
+  var isActive=cat===filterCategory;
+  html+='<button type="button" onclick="openAllNotesView(\''+cat+'\')" style="padding:6px 14px;border-radius:20px;border:2px solid '+(isActive?'#8b5cf6':'#e5e7eb')+';background:'+(isActive?'#8b5cf6':'#fff')+';color:'+(isActive?'#fff':'#374151')+';font-size:14px;font-weight:600;cursor:pointer">'+(cat==='all'?'All Categories':cat)+'</button>';
 });
 html+='</div>';
-html+='<div style="font-size:14px;color:#6b7280;margin-bottom:12px">'+filtered.length+' note'+(filtered.length!==1?'s':'')+' found</div>';
+html+='<div style="font-size:14px;color:#6b7280;margin-bottom:12px">'+filtered.length+' note'+(filtered.length!==1?'s':'')+' \u2022 '+allNotes.length+' total</div>';
 
 if(filtered.length===0){
-html+='<div style="text-align:center;color:#9ca3af;font-size:18px;padding:40px 0">No notes in this category</div>';
+  html+='<div style="text-align:center;color:#9ca3af;font-size:18px;padding:40px 0">No notes in this category</div>';
 }else{
-html+='<div style="max-height:55vh;overflow-y:auto;padding-right:4px">';
-filtered.forEach(function(item,fi){
-var note=item.note;
-var isToday=item.isToday;
-var evt=note.eventId?getEventById(note.eventId):null;
-html+='<div style="padding:14px;border:2px solid #e5e7eb;border-radius:10px;margin-bottom:10px;position:relative;background:'+(isToday?'#f0fdf4':'#fff')+'">';
-// Date/time header
-html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">';
-html+='<div>';
-html+='<div style="font-size:13px;font-weight:700;color:'+(isToday?'#10b981':'#3b82f6')+'">'+( isToday?'📅 Today ('+item.dateKey+')':'📅 '+item.dateKey)+'</div>';
-if(note.time)html+='<div style="font-size:12px;color:#6b7280">⏰ '+note.time+'</div>';
-if(evt)html+='<div style="display:inline-block;padding:3px 8px;background:#f0fdf4;border:1px solid #86efac;border-radius:5px;font-size:12px;font-weight:600;color:#166534;margin-top:4px">'+evt.icon+' '+evt.name+'</div>';
-html+='</div>';
-// Edit/Delete buttons — always shown in All Notes view
-html+='<div style="display:flex;gap:6px;flex-shrink:0">';
-if(isToday&&item.idx!==null){
-html+='<button onclick="editNote('+item.idx+');hideModal()" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:13px;font-weight:600;cursor:pointer">Edit</button>';
-html+='<button onclick="deleteNoteFromAllView('+item.idx+',\'all\')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:13px;font-weight:600;cursor:pointer">✕</button>';
-}else if(!isToday){
-html+='<button onclick="deleteHistoricalNote(\''+item.dateKey+'\',\''+encodeURIComponent(note.text.slice(0,40))+'\',\''+filterCategory+'\')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:13px;font-weight:600;cursor:pointer">✕</button>';
-}
-html+='</div>';
-html+='</div>';
-html+='<div style="font-size:17px;white-space:pre-wrap;padding-right:4px;margin-top:10px">'+note.text+'</div>';
-html+='</div>';
-});
-html+='</div>';
+  html+='<div style="max-height:55vh;overflow-y:auto;padding-right:4px">';
+  filtered.forEach(function(item){
+    var note=item.note;
+    var isToday=item.isToday;
+    var evt=note.eventId?getEventById(note.eventId):null;
+    html+='<div style="padding:14px;border:2px solid '+(isToday?'#86efac':'#e5e7eb')+';border-radius:10px;margin-bottom:10px;background:'+(isToday?'#f0fdf4':'#fff')+'">';
+    html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">';
+    html+='<div>';
+    html+='<div style="font-size:13px;font-weight:700;color:'+(isToday?'#10b981':'#3b82f6')+'">'+'\U0001f4c5'+' '+(isToday?'Today':item.dateKey)+'</div>';
+    if(note.time)html+='<div style="font-size:12px;color:#6b7280">'+'\u23f0'+' '+note.time+'</div>';
+    if(evt)html+='<div style="display:inline-block;padding:3px 8px;background:#f0fdf4;border:1px solid #86efac;border-radius:5px;font-size:12px;font-weight:600;color:#166534;margin-top:4px">'+evt.icon+' '+evt.name+'</div>';
+    html+='</div>';
+    html+='<div style="display:flex;gap:6px;flex-shrink:0">';
+    if(isToday&&item.idx!==null){
+      html+='<button onclick="editNote('+item.idx+');hideModal()" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:13px;font-weight:600;cursor:pointer">Edit</button>';
+      html+='<button onclick="deleteNoteFromAllView('+item.idx+',\''+filterCategory+'\')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:13px;font-weight:600;cursor:pointer">\u2715</button>';
+    }else if(!isToday){
+      html+='<button onclick="deleteHistoricalNote(\''+item.dateKey+'\',\''+encodeURIComponent(note.text.slice(0,40))+'\',\''+filterCategory+'\')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:13px;font-weight:600;cursor:pointer">\u2715</button>';
+    }
+    html+='</div>';
+    html+='</div>';
+    html+='<div style="font-size:17px;white-space:pre-wrap;padding-right:4px;margin-top:10px">'+note.text+'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
 }
 
 html+='<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Close</button><button class="modal-ok" onclick="addNote()">+ Add Note</button></div>';
@@ -6694,19 +6712,19 @@ openAllNotesView(filterCategory);
 function deleteHistoricalNote(dateKey,textFragment,filterCategory){
 if(!confirm('Delete this historical note?\n\nThis cannot be undone.'))return;
 try{
-var stored=localStorage.getItem('clinbridge_'+dateKey);
-if(!stored)return;
+var stored=localStorage.getItem('BP_TRACKER_'+dateKey);
+if(!stored){alert('Note not found \u2014 it may have already been deleted.');return;}
 var dayData=JSON.parse(stored);
 if(!dayData.notes)return;
 var decoded=decodeURIComponent(textFragment);
 var idx=dayData.notes.findIndex(function(n){return n.text&&n.text.slice(0,40)===decoded;});
 if(idx===-1){alert('Note not found. It may have already been deleted.');return;}
 dayData.notes.splice(idx,1);
-localStorage.setItem('clinbridge_'+dateKey,JSON.stringify(dayData));
+localStorage.setItem('BP_TRACKER_'+dateKey,JSON.stringify(dayData));
 openAllNotesView(filterCategory);
 }catch(e){alert('Could not delete note: '+e.message);}
 }
-// ─── END ALL NOTES VIEW ────────────────────────────────────────────────────────
+// \u2500\u2500\u2500 END ALL NOTES VIEW \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 
 function logMedicine(){
