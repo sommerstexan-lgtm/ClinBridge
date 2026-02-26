@@ -1,0 +1,21 @@
+{
+  "version": "v9.5.10",
+  "releaseDate": "2026-02-26",
+  "summary": "Notes view, condition-aware symptoms, activity timing, weekly scheduling & backup actions",
+  "installType": "github-pages",
+  "whatsNew": [
+    "📋 All Notes — View every note across all dates, newest first, with category filtering and edit/delete",
+    "🫁 Condition-aware symptoms — Cardiac Cough and CHF-specific symptoms auto-appear when CHF, Heart Failure, or Diastolic Dysfunction are in your diagnoses",
+    "💾 Backup Now event action — one tap from a notification saves your backup file instantly",
+    "📅 Day-of-week scheduling — set any event to fire only on specific days (e.g. Sunday-only weekly backup reminder)",
+    "🔄 Sync split into two — 'Backup Data Now' and 'Sync to Another Device' are now separate notification actions",
+    "⚠️ Save as Missed button — dismiss a notification and keep the event visible on the main page to complete in order",
+    "🎯 Activity timing confirmation — Before/After buttons now show a green confirmation banner when selected"
+  ],
+  "fixes": [
+    "Activity timing Before/After buttons — added ✅ checkmark, solid fill, and green confirmation message so selection is unmissable",
+    "Doctor's Report medication adherence — now excludes as-needed (PRN) meds; only scheduled medications count toward adherence score",
+    "All Notes 'View All' button was being wiped each time Today/History toggle was tapped — fixed by using innerHTML instead of textContent on header",
+    "Updated date on main page header — now correctly shows Feb 26, 2026"
+  ]
+}

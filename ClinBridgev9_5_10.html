@@ -671,6 +671,19 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
 </div>
 <!-- End ClinBridge header -->
 
+<!-- ============================================================ -->
+<!-- UPDATE NOTIFICATION BANNER (hidden until update found)       -->
+<!-- ============================================================ -->
+<div id="updateBanner" style="display:none;margin-bottom:12px;padding:14px 18px;background:linear-gradient(135deg,#1e40af,#1d4ed8);color:#fff;border-radius:12px;cursor:pointer;box-shadow:0 4px 16px rgba(30,64,175,0.4)" onclick="openUpdateModal()">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+    <div>
+      <div style="font-size:17px;font-weight:700">🆕 <span id="updateBannerVersion">New version available</span></div>
+      <div id="updateBannerSummary" style="font-size:13px;opacity:0.88;margin-top:3px"></div>
+    </div>
+    <div style="background:rgba(255,255,255,0.2);border-radius:8px;padding:8px 16px;font-size:14px;font-weight:700;white-space:nowrap;flex-shrink:0">See What's New →</div>
+  </div>
+</div>
+
 
 <button class="btn bp" onclick="logBP()">📊 Log Blood Pressure</button>
 <button class="btn wt" id="weightBtn" style="display:none" onclick="logWeight()">⚖️ Log Weight</button>
@@ -683,6 +696,7 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
 <button class="btn" style="background:#fbbf24" onclick="planMyDay()">📋 Plan My Day</button>
 <button class="btn" style="background:#10b981" onclick="openAppointmentModal()">🩺 Log Doctor Appointment</button>
 <button class="btn" style="background:#8b5cf6" onclick="addNote()">📝 Add Note</button>
+<button class="btn" style="background:#7c3aed" onclick="openAllNotesView()">📋 All Notes</button>
 <button class="btn" style="background:#7c3aed" onclick="openHRDetector()">📊 HR Rate Detector</button>
 <button class="btn" style="background:#ec4899" onclick="manageMedicines()">⚙️ Manage Medicines</button>
 <button class="btn" style="background:#f472b6" onclick="manageSymptoms()">🩺 Manage Symptoms</button>
@@ -2275,7 +2289,9 @@ var EVENT_ACTIONS=[
   {id:'logMedicine', label:'💊 Log Medicine',            fn:'logMedicine()',         color:'#f97316'},
   {id:'logProcedure',label:'🏥 Log Medical Procedure',   fn:'logProcedure()',        color:'#dc2626'},
   {id:'logAppt',     label:'🩺 Log Doctor Appointment',  fn:'openAppointmentModal()',color:'#10b981'},
-  {id:'addNote',     label:'📝 Add Note',                fn:'addNote()',             color:'#8b5cf6'}
+  {id:'addNote',     label:'📝 Add Note',                fn:'addNote()',             color:'#8b5cf6'},
+  {id:'backupNow',   label:'💾 Backup Data Now',         fn:'backupNowFromEvent()',  color:'#7c3aed'},
+  {id:'syncDevices', label:'🔄 Sync to Another Device',  fn:'openSyncBackup()',      color:'#0ea5e9'}
 ];
 
 /** Build the action-button checklist HTML for event editors.
@@ -8366,9 +8382,9 @@ if(mode==='today'){
 buttons[0].classList.add('active');
 // Update headers to show "Today's"
 document.getElementById('bpHeader').textContent='📊 Today\'s Blood Pressure';
-document.getElementById('mealsHeader').textContent='🍽️ Meals';
+document.getElementById('mealsHeader').innerHTML='<span>🍽️ Meals</span><button class="btn" style="background:#f59e0b;padding:8px 16px;font-size:14px" onclick="viewAllMeals()">View All</button>';
 document.getElementById('medicinesHeader').textContent='💊 Medicines Taken';
-document.getElementById('notesHeader').textContent='📝 Notes';
+document.getElementById('notesHeader').innerHTML='<span>📝 Notes</span><button type="button" onclick="openAllNotesView()" style="background:#8b5cf6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer">📋 View All</button>';
 if(document.getElementById('weightHeader'))document.getElementById('weightHeader').textContent='⚖️ Weight Tracking';
 if(document.getElementById('symptomHeader'))document.getElementById('symptomHeader').textContent='💊 Symptom Tracking';
 if(document.getElementById('activityHeader'))document.getElementById('activityHeader').textContent='🏃 Activity/Exercise Tracking';
@@ -8376,9 +8392,9 @@ if(document.getElementById('activityHeader'))document.getElementById('activityHe
 buttons[1].classList.add('active');
 // Update headers to show "All History"
 document.getElementById('bpHeader').textContent='📊 Blood Pressure History (90 Days)';
-document.getElementById('mealsHeader').textContent='🍽️ Meals History (90 Days)';
+document.getElementById('mealsHeader').innerHTML='<span>🍽️ Meals History (90 Days)</span><button class="btn" style="background:#f59e0b;padding:8px 16px;font-size:14px" onclick="viewAllMeals()">View All</button>';
 document.getElementById('medicinesHeader').textContent='💊 Medicines History (90 Days)';
-document.getElementById('notesHeader').textContent='📝 Notes History (90 Days)';
+document.getElementById('notesHeader').innerHTML='<span>📝 Notes History (90 Days)</span><button type="button" onclick="openAllNotesView()" style="background:#8b5cf6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer">📋 View All</button>';
 if(document.getElementById('weightHeader'))document.getElementById('weightHeader').textContent='⚖️ Weight History (90 Days)';
 if(document.getElementById('symptomHeader'))document.getElementById('symptomHeader').textContent='💊 Symptom History (90 Days)';
 if(document.getElementById('activityHeader'))document.getElementById('activityHeader').textContent='🏃 Activity History (90 Days)';
@@ -9235,6 +9251,23 @@ html+='</div>';
 html+='<p style="font-size:14px;color:#64748b;text-align:center">For bugs and feature requests, please use <a href="https://github.com/yourusername/bp-tracker/issues" target="_blank" style="color:#0ea5e9;text-decoration:underline">GitHub Issues</a></p>';
 html+='</div>';
 
+// Update section
+html+='<div class="settings-section">';
+html+='<div class="settings-section-title"><span>🆕</span><span>App Version & Updates</span></div>';
+html+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px">';
+html+='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">';
+html+='<div>';
+html+='<div style="font-size:16px;font-weight:700;color:#1e293b">ClinBridge <span id="settingsVersionCurrent">v9.5.10</span></div>';
+html+='<div id="settingsVersionStatus" style="font-size:13px;color:#6b7280;margin-top:3px">Tap "Check for Updates" to see if a newer version is available</div>';
+html+='</div>';
+html+='<button onclick="checkForUpdates(true)" id="checkUpdateBtn" style="background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap">🔍 Check for Updates</button>';
+html+='</div>';
+html+='</div>';
+html+='<div style="background:#fffbeb;border:1px solid #fbbf24;border-radius:8px;padding:12px;font-size:13px;color:#92400e">';
+html+='⚠️ <strong>Before updating:</strong> Always use <strong>💾 Backup Data Now</strong> or <strong>Device Sync & Backup → Export ALL Data</strong> first. If you use the Home Screen icon on iPhone, updating requires deleting and re-adding it — which erases local data without a backup.';
+html+='</div>';
+html+='</div>';
+
 html+='<div class="settings-save-bar"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveSettings()">💾 Save Settings</button></div>';
 showModal(html);
 
@@ -9639,6 +9672,12 @@ html+='<div style="font-size:13px;color:#6b7280;margin-top:4px">';
 if(evt.time)html+='Time: '+evt.time+' • ';
 if(evt.fluidGoal)html+='Fluid: '+evt.fluidGoal+' oz • ';
 html+='Reminder: '+(evt.reminderEnabled?'✓ On':'✗ Off');
+// Show schedule days if set
+if(evt.scheduleDays&&evt.scheduleDays.length>0){
+var dayAbbr=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var dayLabels=evt.scheduleDays.slice().sort().map(function(d){return dayAbbr[d];}).join(', ');
+html+=' • 📅 '+dayLabels+' only';
+}
 html+='</div>';
 html+='</div>';
 html+='<div style="display:flex;gap:6px">';
@@ -9737,6 +9776,22 @@ html+='<input type="checkbox" id="eventReminder" style="width:20px;height:20px;m
 html+='<span style="font-size:16px;font-weight:600">🔔 Enable Reminder (sound + notification)</span>';
 html+='</label>';
 html+='</div>';
+// Day-of-week schedule picker
+var dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var scheduledDays=evt.scheduleDays||[];
+html+='<div style="margin-bottom:16px">';
+html+='<label style="display:block;font-size:16px;font-weight:600;margin-bottom:8px">📅 Repeat Schedule</label>';
+html+='<div style="font-size:13px;color:#6b7280;margin-bottom:8px">Leave all unchecked to fire every day (default). Select specific days to fire only on those days — ideal for weekly backup reminders, weigh-in days, etc.</div>';
+html+='<div style="display:flex;gap:6px;flex-wrap:wrap">';
+dayNames.forEach(function(day,idx){
+var checked=scheduledDays.indexOf(idx)!==-1;
+html+='<label style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer">';
+html+='<input type="checkbox" class="evtScheduleDay" value="'+idx+'" '+(checked?'checked':'')+' style="width:18px;height:18px;cursor:pointer" />';
+html+='<span style="font-size:14px;font-weight:600;color:#374151">'+day+'</span>';
+html+='</label>';
+});
+html+='</div>';
+html+='</div>';
 html+=renderEventActionCheckboxes(evt.actions||['logFluid']);
 html+='<div class="settings-save-bar">';
 html+='<button class="modal-cancel" onclick="renderDailyEventsList();hideModal();openSettingsAtEvents()">Cancel</button>';
@@ -9760,6 +9815,10 @@ if(!name){
 alert('Please enter an event name');
 return;
 }
+// Collect selected schedule days
+var scheduleDayCheckboxes=document.querySelectorAll('.evtScheduleDay:checked');
+var scheduleDays=[];
+scheduleDayCheckboxes.forEach(function(cb){scheduleDays.push(parseInt(cb.value));});
 const eventData={
 id:eventId,
 name:name,
@@ -9768,6 +9827,7 @@ time:document.getElementById('eventTime').value,
 fluidGoal:parseInt(document.getElementById('eventFluidGoal').value)||0,
 reminderEnabled:document.getElementById('eventReminder').checked,
 actions:collectSelectedActions(),
+scheduleDays:scheduleDays, // [] = every day, [0] = Sunday only, [0,6] = Sat+Sun, etc.
 order:idx===-1?settings.dailyEvents.length+1:settings.dailyEvents[idx].order
 };
 if(idx===-1){
@@ -10010,6 +10070,11 @@ var allReminders=[];
 if(settings.dailyEvents&&settings.dailyEvents.length>0){
 settings.dailyEvents.forEach(function(evt){
 if(!evt.reminderEnabled||!evt.time)return;
+// Day-of-week filter: if scheduleDays is set and non-empty, only fire on those days
+if(evt.scheduleDays&&evt.scheduleDays.length>0){
+var todayDow=new Date().getDay(); // 0=Sun, 1=Mon ... 6=Sat
+if(evt.scheduleDays.indexOf(todayDow)===-1)return; // not scheduled today
+}
 allReminders.push({
 id:evt.id,
 name:evt.name,
@@ -10259,6 +10324,32 @@ a.download='ClinBridge_Backup_'+new Date().toISOString().slice(0,10)+'.json';
 a.click();
 URL.revokeObjectURL(url);
 alert('✅ Backup saved!\n\nEmail this file to yourself, then open ClinBridge on your other device and tap "Device Sync & Backup" → "Import All Data".');
+}
+
+// Called from an event notification action — triggers instant file download
+// without dismissing the reminder (completeAndCloseModal keeps event alive)
+function backupNowFromEvent(){
+var allData={};
+for(var i=0;i<localStorage.length;i++){
+var key=localStorage.key(i);
+allData[key]=localStorage.getItem(key);
+}
+var json=JSON.stringify(allData,null,2);
+var blob=new Blob([json],{type:'application/json'});
+var url=URL.createObjectURL(blob);
+var a=document.createElement('a');
+a.href=url;
+a.download='ClinBridge_Backup_'+new Date().toISOString().slice(0,10)+'.json';
+a.click();
+URL.revokeObjectURL(url);
+// Show a brief inline toast — notification modal stays open, user can still dismiss
+var toast=document.createElement('div');
+toast.textContent='✅ Backup file saved! Check your Downloads folder.';
+toast.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#059669;color:#fff;padding:14px 22px;border-radius:10px;font-size:16px;font-weight:600;z-index:99999;max-width:90%;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.3)';
+document.body.appendChild(toast);
+setTimeout(function(){if(toast.parentNode)toast.parentNode.removeChild(toast);},4000);
+// NOTE: intentionally no hideModal() or dismissReminder() here —
+// the notification stays visible so user can tap Done — Dismiss when ready
 }
 
 function importAllData(){
@@ -17262,8 +17353,247 @@ alert(`🏃 Activity Summary\n\n` +
 // END OF PHASE 3: ADVANCED ANALYTICS DASHBOARD
 // ============================================================================
 
-loadSettings();
-loadMedicineList();
+// ============================================================
+// VERSION CHECK & UPDATE SYSTEM (v9.5.10)
+// Fetches version.json from GitHub Pages once per day.
+// Shows a non-blocking banner when a newer version is available.
+// Provides guided update flow for both browser-tab and
+// Home Screen (PWA) users, with mandatory backup gate for PWA.
+// ============================================================
+
+var VERSION_JSON_URL = 'https://sommerstexan-lgtm.github.io/ClinBridge/version.json';
+var VERSION_CHECK_KEY = 'CLINBRIDGE_LAST_VERSION_CHECK';
+var VERSION_DISMISSED_KEY = 'CLINBRIDGE_UPDATE_DISMISSED';
+var CURRENT_VERSION = 'v9.5.10';
+var _latestVersionData = null; // cached from last fetch
+
+// Detect whether running as an installed Home Screen PWA on iOS
+function isHomeScreenPWA() {
+  return (window.navigator.standalone === true) ||
+         (window.matchMedia('(display-mode: standalone)').matches);
+}
+
+// Run once per day at startup — silent unless update found
+function checkForUpdatesOnStartup() {
+  try {
+    var lastCheck = localStorage.getItem(VERSION_CHECK_KEY);
+    var today = getTodayKey();
+    if (lastCheck === today) return; // already checked today
+  } catch(e) {}
+  // Small delay so UI is fully loaded first
+  setTimeout(function() { checkForUpdates(false); }, 3000);
+}
+
+// Main check function. showFeedback=true when called from Settings button.
+function checkForUpdates(showFeedback) {
+  var btn = document.getElementById('checkUpdateBtn');
+  if (btn) { btn.textContent = '⏳ Checking…'; btn.disabled = true; }
+
+  fetch(VERSION_JSON_URL + '?_=' + Date.now(), { cache: 'no-store' })
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(data) {
+      try { localStorage.setItem(VERSION_CHECK_KEY, getTodayKey()); } catch(e) {}
+      _latestVersionData = data;
+
+      if (btn) { btn.textContent = '🔍 Check for Updates'; btn.disabled = false; }
+
+      var statusEl = document.getElementById('settingsVersionStatus');
+
+      if (data.version && data.version !== CURRENT_VERSION) {
+        // New version available
+        var dismissed = '';
+        try { dismissed = localStorage.getItem(VERSION_DISMISSED_KEY) || ''; } catch(e) {}
+
+        if (statusEl) {
+          statusEl.textContent = '🆕 ' + data.version + ' is available — tap "See What\'s New" to update';
+          statusEl.style.color = '#1d4ed8';
+          statusEl.style.fontWeight = '600';
+        }
+        if (btn) {
+          btn.textContent = '🆕 See What\'s New';
+          btn.style.background = '#059669';
+          btn.onclick = function() { openUpdateModal(); };
+        }
+
+        // Show banner only if user hasn't dismissed this version
+        if (dismissed !== data.version) {
+          var banner = document.getElementById('updateBanner');
+          var bannerVer = document.getElementById('updateBannerVersion');
+          var bannerSum = document.getElementById('updateBannerSummary');
+          if (banner) {
+            if (bannerVer) bannerVer.textContent = data.version + ' is available';
+            if (bannerSum && data.summary) bannerSum.textContent = data.summary;
+            banner.style.display = 'block';
+          }
+        }
+
+        if (showFeedback) openUpdateModal();
+
+      } else {
+        // Already up to date
+        if (statusEl) {
+          statusEl.textContent = '✅ You\'re on the latest version (' + CURRENT_VERSION + ')';
+          statusEl.style.color = '#059669';
+          statusEl.style.fontWeight = '600';
+        }
+        if (showFeedback) {
+          alert('✅ You\'re up to date!\n\nClinBridge ' + CURRENT_VERSION + ' is the latest version.');
+        }
+      }
+    })
+    .catch(function(err) {
+      if (btn) { btn.textContent = '🔍 Check for Updates'; btn.disabled = false; }
+      var statusEl = document.getElementById('settingsVersionStatus');
+      if (statusEl) {
+        statusEl.textContent = '⚠️ Could not check for updates — check your connection and try again';
+        statusEl.style.color = '#b45309';
+      }
+      if (showFeedback) {
+        alert('⚠️ Could not check for updates.\n\nPlease check your internet connection and try again.\n\nYou can always visit the app at:\nhttps://sommerstexan-lgtm.github.io/ClinBridge/');
+      }
+    });
+}
+
+// Open the full "What's New + Update Guide" modal
+function openUpdateModal() {
+  var data = _latestVersionData;
+  if (!data) {
+    // No data fetched yet — try now then reopen
+    fetch(VERSION_JSON_URL + '?_=' + Date.now(), { cache: 'no-store' })
+      .then(function(r) { return r.json(); })
+      .then(function(d) { _latestVersionData = d; openUpdateModal(); })
+      .catch(function() {
+        alert('Could not load update information. Please check your connection.');
+      });
+    return;
+  }
+
+  var isPWA = isHomeScreenPWA();
+  var newVer = data.version || 'New version';
+  var releaseDate = data.releaseDate || '';
+
+  var html = '<div class="modal-title">🆕 ' + newVer + ' Available</div>';
+  if (releaseDate) html += '<div style="text-align:center;font-size:14px;color:#6b7280;margin-bottom:16px">Released ' + releaseDate + '</div>';
+
+  // What's New
+  if (data.whatsNew && data.whatsNew.length > 0) {
+    html += '<div style="background:#f0fdf4;border-left:4px solid #10b981;border-radius:10px;padding:16px;margin-bottom:14px">';
+    html += '<div style="font-size:16px;font-weight:700;color:#065f46;margin-bottom:10px">✨ What\'s New</div>';
+    html += '<ul style="margin:0;padding-left:18px;line-height:2;font-size:15px;color:#065f46">';
+    data.whatsNew.forEach(function(item) {
+      html += '<li>' + item + '</li>';
+    });
+    html += '</ul></div>';
+  }
+
+  // Fixes
+  if (data.fixes && data.fixes.length > 0) {
+    html += '<div style="background:#eff6ff;border-left:4px solid #3b82f6;border-radius:10px;padding:16px;margin-bottom:16px">';
+    html += '<div style="font-size:16px;font-weight:700;color:#1e40af;margin-bottom:10px">🔧 Bugs Fixed</div>';
+    html += '<ul style="margin:0;padding-left:18px;line-height:2;font-size:14px;color:#1e3a8a">';
+    data.fixes.forEach(function(item) {
+      html += '<li>' + item + '</li>';
+    });
+    html += '</ul></div>';
+  }
+
+  // ── Install Guide ──────────────────────────────────────────────
+  html += '<div style="background:#1e293b;border-radius:12px;padding:18px;margin-bottom:14px">';
+  html += '<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:14px">📲 How to Update</div>';
+
+  if (!isPWA) {
+    // ── Browser tab path — easy ──────────────────────────────────
+    html += '<div style="background:#f0fdf4;border-radius:8px;padding:14px;margin-bottom:10px">';
+    html += '<div style="font-size:15px;font-weight:700;color:#065f46;margin-bottom:6px">✅ You\'re using the browser tab — updating is easy!</div>';
+    html += '<div style="font-size:14px;color:#374151;line-height:1.7">GitHub Pages serves the new version automatically. Just reload the page and you\'re done.</div>';
+    html += '<button onclick="reloadForUpdate()" style="width:100%;background:#059669;color:#fff;border:none;padding:14px;border-radius:8px;font-size:17px;font-weight:700;cursor:pointer;margin-top:12px">🔄 Reload Now to Update</button>';
+    html += '</div>';
+    html += '<div style="font-size:13px;color:#94a3b8;text-align:center">If the reload doesn\'t update the version, try a hard refresh: hold ⇧ Shift and tap reload, or clear your browser cache.</div>';
+  } else {
+    // ── Home Screen PWA path — requires backup gate ───────────────
+    html += '<div style="background:#fef3c7;border:2px solid #f59e0b;border-radius:8px;padding:14px;margin-bottom:12px">';
+    html += '<div style="font-size:15px;font-weight:700;color:#92400e;margin-bottom:4px">⚠️ You\'re using the Home Screen icon</div>';
+    html += '<div style="font-size:14px;color:#78350f;line-height:1.7">Updating requires <strong>deleting and re-adding the icon</strong>. Deleting the icon <strong>permanently erases your data</strong> on this device unless you back up first. Follow these steps carefully.</div>';
+    html += '</div>';
+
+    // Step 1 — Backup (mandatory gate)
+    html += '<div style="background:#fff;border:2px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:8px">';
+    html += '<div style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:8px">Step 1 — Back up your data <span style="color:#dc2626">★ Do this first</span></div>';
+    html += '<button onclick="backupThenCheckGate()" style="width:100%;background:#7c3aed;color:#fff;border:none;padding:14px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer">💾 Save Backup File Now</button>';
+    html += '<label style="display:flex;align-items:center;gap:10px;margin-top:12px;cursor:pointer;font-size:15px;font-weight:600;color:#374151">';
+    html += '<input type="checkbox" id="backupConfirmChk" onchange="checkPWAUpdateGate()" style="width:20px;height:20px;cursor:pointer" />';
+    html += 'I have saved my backup file and it is in my Downloads / Files app';
+    html += '</label>';
+    html += '</div>';
+
+    // Steps 2 & 3 — locked until backup confirmed
+    html += '<div id="pwaStep2" style="background:#f1f5f9;border:2px solid #cbd5e1;border-radius:8px;padding:14px;margin-bottom:8px;opacity:0.45;pointer-events:none">';
+    html += '<div style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:6px">Step 2 — Delete the ClinBridge icon</div>';
+    html += '<div style="font-size:14px;color:#475569;line-height:1.7">On your iPhone home screen: <strong>long-press the ClinBridge icon</strong> → tap <strong>"Remove App"</strong> → tap <strong>"Delete App"</strong>. Your backup file is safe in your Files app.</div>';
+    html += '</div>';
+
+    html += '<div id="pwaStep3" style="background:#f1f5f9;border:2px solid #cbd5e1;border-radius:8px;padding:14px;margin-bottom:8px;opacity:0.45;pointer-events:none">';
+    html += '<div style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:6px">Step 3 — Re-add to Home Screen</div>';
+    html += '<div style="font-size:14px;color:#475569;line-height:1.7">Open <strong>Safari</strong> and go to:<br><strong style="color:#1d4ed8;word-break:break-all">https://sommerstexan-lgtm.github.io/ClinBridge/</strong><br><br>Tap the <strong>Share button (□↑)</strong> → <strong>"Add to Home Screen"</strong> → <strong>Add</strong>. The new version is now installed.</div>';
+    html += '</div>';
+
+    html += '<div id="pwaStep4" style="background:#f1f5f9;border:2px solid #cbd5e1;border-radius:8px;padding:14px;opacity:0.45;pointer-events:none">';
+    html += '<div style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:6px">Step 4 — Restore your data</div>';
+    html += '<div style="font-size:14px;color:#475569;line-height:1.7">Open the new ClinBridge icon → tap <strong>Device Sync & Backup</strong> → <strong>Import All Data</strong> → select your backup file. All your data will be fully restored.</div>';
+    html += '</div>';
+  }
+
+  html += '</div>'; // end install guide
+
+  // Dismiss option
+  html += '<div class="modal-actions" style="flex-direction:column;gap:8px">';
+  html += '<button class="modal-cancel" onclick="dismissUpdateBanner(\'' + newVer + '\')">Remind Me Later</button>';
+  html += '</div>';
+
+  showModal(html);
+}
+
+// Called when Backup button tapped inside the PWA update guide
+function backupThenCheckGate() {
+  backupNowFromEvent();
+  // Small delay then auto-check the checkbox as a UX convenience
+  // (user still has to confirm manually that they actually see the file)
+}
+
+// Unlocks Steps 2–4 once backup checkbox is checked
+function checkPWAUpdateGate() {
+  var chk = document.getElementById('backupConfirmChk');
+  var locked = !chk || !chk.checked;
+  ['pwaStep2','pwaStep3','pwaStep4'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.style.opacity = locked ? '0.45' : '1';
+      el.style.pointerEvents = locked ? 'none' : 'auto';
+      el.style.borderColor = locked ? '#cbd5e1' : '#10b981';
+    }
+  });
+}
+
+// Reload for browser-tab users
+function reloadForUpdate() {
+  if (confirm('Reload ClinBridge to install ' + (_latestVersionData ? _latestVersionData.version : 'the latest version') + '?\n\nYour data is stored locally and will not be affected by a reload.')) {
+    window.location.reload(true);
+  }
+}
+
+// Dismiss the banner for this version
+function dismissUpdateBanner(version) {
+  try { localStorage.setItem(VERSION_DISMISSED_KEY, version); } catch(e) {}
+  var banner = document.getElementById('updateBanner');
+  if (banner) banner.style.display = 'none';
+  hideModal();
+}
+
+// ── END VERSION CHECK SYSTEM ─────────────────────────────────────────────────
+
 loadDailyData();
 loadProcedures();
 loadPlan();
@@ -17272,6 +17602,9 @@ showMeals();showBP();showWeight();showSymptoms();showActivities();updateFluid();
 
 // Phase 6C: Initialize Smart Reminder System
 initReminderSystem();
+
+// Version check — once per day, delayed 3s so UI finishes loading first
+checkForUpdatesOnStartup();
 
 // Midnight Auto-Refresh System (v7.1)
 // Checks every minute if the date has changed, and refreshes displays automatically
