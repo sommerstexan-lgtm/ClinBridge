@@ -1,21 +1,27 @@
 {
-  "version": "v9.5.10",
+  "version": "v9.5.11 beta 1",
   "releaseDate": "2026-02-26",
-  "summary": "Notes view, condition-aware symptoms, activity timing, weekly scheduling & backup actions",
+  "summary": "Settings restore fix, import validation, version update system",
   "installType": "github-pages",
   "whatsNew": [
-    "📋 All Notes — View every note across all dates, newest first, with category filtering and edit/delete",
-    "🫁 Condition-aware symptoms — Cardiac Cough and CHF-specific symptoms auto-appear when CHF, Heart Failure, or Diastolic Dysfunction are in your diagnoses",
-    "💾 Backup Now event action — one tap from a notification saves your backup file instantly",
+    "🔔 Automatic version update notices — ClinBridge now checks once per day and shows a banner when a newer version is available",
+    "📋 What's New modal — tap the banner to see exactly what changed and fixed, with a step-by-step guided update flow for both browser and Home Screen users",
+    "🔍 Check for Updates — new button in Settings to manually check any time",
     "📅 Day-of-week scheduling — set any event to fire only on specific days (e.g. Sunday-only weekly backup reminder)",
-    "🔄 Sync split into two — 'Backup Data Now' and 'Sync to Another Device' are now separate notification actions",
-    "⚠️ Save as Missed button — dismiss a notification and keep the event visible on the main page to complete in order",
-    "🎯 Activity timing confirmation — Before/After buttons now show a green confirmation banner when selected"
+    "💾 Backup Now event action — one tap from a notification saves your full backup file instantly without closing the notification",
+    "🔄 Backup and Sync split — 'Backup Data Now' and 'Sync to Another Device' are now two separate notification action buttons",
+    "📋 All Notes — View every note across all dates newest-first, with event category filtering and edit/delete for all dates",
+    "🫁 Condition-aware symptoms — Cardiac Cough and CHF-specific symptoms auto-appear when CHF, Heart Failure, or Diastolic Dysfunction are in your diagnoses",
+    "⚠️ Save as Missed button on notifications — dismiss an alert and keep the event visible on the main page to complete in order",
+    "🎯 Activity timing confirmation — Before/After buttons now show a green banner confirming which timing was saved"
   ],
   "fixes": [
-    "Activity timing Before/After buttons — added ✅ checkmark, solid fill, and green confirmation message so selection is unmissable",
-    "Doctor's Report medication adherence — now excludes as-needed (PRN) meds; only scheduled medications count toward adherence score",
-    "All Notes 'View All' button was being wiped each time Today/History toggle was tapped — fixed by using innerHTML instead of textContent on header",
-    "Updated date on main page header — now correctly shows Feb 26, 2026"
+    "Settings not restoring after data import — loadSettings now uses a full deep merge restoring every saved property including fluidIncrement, weightUnit, weightAlertThreshold, customActivities, and any future fields",
+    "iOS double-reload after import — version key is now pre-set before reload so the version-check code does not trigger a second hard reload on top of the import reload",
+    "Import now validates the file is a real ClinBridge backup before writing to localStorage",
+    "All Notes 'View All' button was disappearing when Today/History toggle was tapped — fixed header update to use innerHTML preserving the button",
+    "Doctor's Report medication adherence — now excludes as-needed (PRN) meds; only regularly-scheduled medications count",
+    "Activity timing Before/After buttons — added checkmark, solid color fill, and green confirmation message",
+    "Updated date on main page header corrected to Feb 26, 2026"
   ]
 }
