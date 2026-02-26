@@ -9405,32 +9405,51 @@ try{
 var saved=localStorage.getItem('BP_TRACKER_SETTINGS');
 if(saved){
 var loaded=JSON.parse(saved);
-settings.fluidMin=loaded.fluidMin||40;
-settings.fluidMax=loaded.fluidMax||64;
-settings.fluidMode=loaded.fluidMode||'range';
-settings.systolicMin=loaded.systolicMin||90;
-settings.systolicMax=loaded.systolicMax||140;
-settings.diastolicMin=loaded.diastolicMin||60;
-settings.diastolicMax=loaded.diastolicMax||90;
-settings.hrMin=loaded.hrMin||60;
-settings.hrMax=loaded.hrMax||100;
-// Phase 1: Load patient profile
-settings.patientName=loaded.patientName||'';
-settings.dateOfBirth=loaded.dateOfBirth||'';
-settings.conditions=loaded.conditions||[];
-settings.customConditions=loaded.customConditions||[];
-settings.features=loaded.features||settings.features;
-settings.reportPreferences=loaded.reportPreferences||settings.reportPreferences;
-settings.dailyEvents=loaded.dailyEvents||[];
-// Migrate: if reminderEnabled was never set (undefined), default it to true
+// ── Full deep merge: restore EVERY property that was saved ──────────────
+// Walk every key in the saved object and apply it to settings.
+// Explicit field list is intentionally avoided so future properties
+// are always restored automatically without editing this function.
+Object.keys(loaded).forEach(function(key){
+  if(loaded[key]!==null&&loaded[key]!==undefined){
+    if(typeof loaded[key]==='object'&&!Array.isArray(loaded[key])&&typeof settings[key]==='object'&&!Array.isArray(settings[key])&&settings[key]!==null){
+      // Deep merge objects (e.g. settings.features, settings.reportPreferences)
+      // so that new default keys added in future versions are preserved
+      Object.keys(loaded[key]).forEach(function(subKey){
+        settings[key][subKey]=loaded[key][subKey];
+      });
+    } else {
+      settings[key]=loaded[key];
+    }
+  }
+});
+// Safety: ensure critical numeric fields have valid fallback values
+settings.fluidMax=settings.fluidMax||64;
+settings.fluidMin=settings.fluidMin||40;
+settings.fluidMode=settings.fluidMode||'range';
+settings.fluidIncrement=settings.fluidIncrement||8;
+settings.systolicMin=settings.systolicMin||90;
+settings.systolicMax=settings.systolicMax||140;
+settings.diastolicMin=settings.diastolicMin||60;
+settings.diastolicMax=settings.diastolicMax||90;
+settings.hrMin=settings.hrMin||60;
+settings.hrMax=settings.hrMax||100;
+settings.patientName=settings.patientName||'';
+settings.dateOfBirth=settings.dateOfBirth||'';
+settings.conditions=settings.conditions||[];
+settings.customConditions=settings.customConditions||[];
+settings.dailyEvents=settings.dailyEvents||[];
+settings.customSymptoms=settings.customSymptoms||[];
+settings.customActivities=settings.customActivities||[];
+settings.morningCheckin=(settings.morningCheckin!==undefined)?settings.morningCheckin:true;
+settings.weightUnit=settings.weightUnit||'lbs';
+settings.weightAlertThreshold=settings.weightAlertThreshold||3;
+// Migrate: ensure reminderEnabled defaults to true on older events
 settings.dailyEvents.forEach(function(evt){
   if(evt.reminderEnabled===undefined||evt.reminderEnabled===null){evt.reminderEnabled=true;}
 });
-settings.customSymptoms=loaded.customSymptoms||[];
-settings.morningCheckin=(loaded.morningCheckin!==undefined)?loaded.morningCheckin:true;
 }
 }catch(e){
-console.error('Failed to load settings');
+console.error('Failed to load settings',e);
 }
 }
 
@@ -10364,15 +10383,33 @@ var reader=new FileReader();
 reader.onload=function(ev){
 try{
 var allData=JSON.parse(ev.target.result);
+// Validate it looks like a ClinBridge backup
+var hasClinBridgeData=Object.keys(allData).some(function(k){
+  return k.startsWith('BP_TRACKER_')||k==='dailyPlan'||k==='medicineList'||k==='cardiacAppointments';
+});
+if(!hasClinBridgeData){
+  alert('❌ This does not appear to be a valid ClinBridge backup file.\n\nPlease select a file named "ClinBridge_Backup_YYYY-MM-DD.json".');
+  return;
+}
 var count=0;
 Object.keys(allData).forEach(function(k){
-localStorage.setItem(k,allData[k]);
-count++;
+  localStorage.setItem(k,allData[k]);
+  count++;
 });
-alert('✅ '+count+' items imported successfully!\n\nClinBridge will now reload with your data.');
+// ── iOS PWA fix: apply settings immediately in-memory ──────────────────
+// On iOS, two back-to-back hard reloads (import reload + version-check reload)
+// can cause localStorage writes to not be reliably read. Applying settings
+// in-memory now means the user sees their data instantly regardless.
+loadSettings();
+loadMedicineList();
+// Force the version key to current so the version-check code does NOT
+// trigger a second hard reload on top of the one we're about to do.
+try{ localStorage.setItem('CLINBRIDGE_APP_VERSION','v9.5.10'); }catch(ex){}
+
+alert('✅ '+count+' items imported successfully!\n\nClinBridge will now reload to show all your restored data.');
 location.reload();
 }catch(err){
-alert('❌ Import failed. Make sure you selected a valid ClinBridge backup file.');
+alert('❌ Import failed. Make sure you selected a valid ClinBridge backup file.\n\nError: '+err.message);
 }
 };
 reader.readAsText(file);
