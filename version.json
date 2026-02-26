@@ -1,27 +1,28 @@
 {
-  "version": "v9.5.11 beta 1",
+  "version": "v9.5.11 beta 2",
   "releaseDate": "2026-02-26",
   "summary": "Settings restore fix, import validation, version update system",
   "installType": "github-pages",
   "whatsNew": [
-    "🔔 Automatic version update notices — ClinBridge now checks once per day and shows a banner when a newer version is available",
-    "📋 What's New modal — tap the banner to see exactly what changed and fixed, with a step-by-step guided update flow for both browser and Home Screen users",
-    "🔍 Check for Updates — new button in Settings to manually check any time",
-    "📅 Day-of-week scheduling — set any event to fire only on specific days (e.g. Sunday-only weekly backup reminder)",
-    "💾 Backup Now event action — one tap from a notification saves your full backup file instantly without closing the notification",
-    "🔄 Backup and Sync split — 'Backup Data Now' and 'Sync to Another Device' are now two separate notification action buttons",
-    "📋 All Notes — View every note across all dates newest-first, with event category filtering and edit/delete for all dates",
-    "🫁 Condition-aware symptoms — Cardiac Cough and CHF-specific symptoms auto-appear when CHF, Heart Failure, or Diastolic Dysfunction are in your diagnoses",
-    "⚠️ Save as Missed button on notifications — dismiss an alert and keep the event visible on the main page to complete in order",
-    "🎯 Activity timing confirmation — Before/After buttons now show a green banner confirming which timing was saved"
+    "\ud83d\udd14 Automatic version update notices \u2014 ClinBridge now checks once per day and shows a banner when a newer version is available",
+    "\ud83d\udccb What's New modal \u2014 tap the banner to see exactly what changed and fixed, with a step-by-step guided update flow for both browser and Home Screen users",
+    "\ud83d\udd0d Check for Updates \u2014 new button in Settings to manually check any time",
+    "\ud83d\udcc5 Day-of-week scheduling \u2014 set any event to fire only on specific days (e.g. Sunday-only weekly backup reminder)",
+    "\ud83d\udcbe Backup Now event action \u2014 one tap from a notification saves your full backup file instantly without closing the notification",
+    "\ud83d\udd04 Backup and Sync split \u2014 'Backup Data Now' and 'Sync to Another Device' are now two separate notification action buttons",
+    "\ud83d\udccb All Notes \u2014 View every note across all dates newest-first, with event category filtering and edit/delete for all dates",
+    "\ud83e\udec1 Condition-aware symptoms \u2014 Cardiac Cough and CHF-specific symptoms auto-appear when CHF, Heart Failure, or Diastolic Dysfunction are in your diagnoses",
+    "\u26a0\ufe0f Save as Missed button on notifications \u2014 dismiss an alert and keep the event visible on the main page to complete in order",
+    "\ud83c\udfaf Activity timing confirmation \u2014 Before/After buttons now show a green banner confirming which timing was saved"
   ],
   "fixes": [
-    "Settings not restoring after data import — loadSettings now uses a full deep merge restoring every saved property including fluidIncrement, weightUnit, weightAlertThreshold, customActivities, and any future fields",
-    "iOS double-reload after import — version key is now pre-set before reload so the version-check code does not trigger a second hard reload on top of the import reload",
+    "beta 2: loadSettings() and loadMedicineList() were missing from startup sequence \u2014 settings, medicines, and events never loaded from localStorage after a reload (introduced when Version Check System was added in beta 1)",
+    "Settings not restoring after data import \u2014 loadSettings now uses a full deep merge restoring every saved property including fluidIncrement, weightUnit, weightAlertThreshold, customActivities, and any future fields",
+    "iOS double-reload after import \u2014 version key is now pre-set before reload so the version-check code does not trigger a second hard reload on top of the import reload",
     "Import now validates the file is a real ClinBridge backup before writing to localStorage",
-    "All Notes 'View All' button was disappearing when Today/History toggle was tapped — fixed header update to use innerHTML preserving the button",
-    "Doctor's Report medication adherence — now excludes as-needed (PRN) meds; only regularly-scheduled medications count",
-    "Activity timing Before/After buttons — added checkmark, solid color fill, and green confirmation message",
+    "All Notes 'View All' button was disappearing when Today/History toggle was tapped \u2014 fixed header update to use innerHTML preserving the button",
+    "Doctor's Report medication adherence \u2014 now excludes as-needed (PRN) meds; only regularly-scheduled medications count",
+    "Activity timing Before/After buttons \u2014 added checkmark, solid color fill, and green confirmation message",
     "Updated date on main page header corrected to Feb 26, 2026"
   ]
 }
