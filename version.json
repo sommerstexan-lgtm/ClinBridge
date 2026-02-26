@@ -1,5 +1,5 @@
 {
-  "version": "v9.5.11",
+  "version": "v9.5.11 beta 3",
   "releaseDate": "2026-02-26",
   "summary": "Version update system, settings restore fix, backup actions & scheduling",
   "installType": "github-pages",
