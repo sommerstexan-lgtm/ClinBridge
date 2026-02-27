@@ -1,29 +1,19 @@
 {
-  "version": "v9.5.11",
-  "releaseDate": "2026-02-26",
-  "summary": "Version update system, settings restore fix, backup actions & scheduling",
-  "installType": "github-pages",
+  "version": "v9.6.0",
+  "releaseDate": "February 27, 2026",
+  "summary": "Stable release: Fluid Limit Wizard, Advanced Analytics overhaul (Morning Patterns, PPH Detection, Daily Fluid Trend, Smarter Insights), expanded condition-specific symptoms, redesigned Device Sync with import preview, and three UX fixes.",
   "whatsNew": [
-    "🔔 Automatic version update notices — ClinBridge checks once per day and shows a banner when a newer version is available",
-    "📋 What's New modal — full release notes with guided update steps for browser and Home Screen users",
-    "🔍 Check for Updates in Settings — manual trigger any time",
-    "💾 Backup Now event action — one tap from a notification saves your full backup file instantly",
-    "🔄 Backup and Sync split — 'Backup Data Now' and 'Sync to Another Device' are now two separate notification action buttons",
-    "📅 Day-of-week scheduling for events — set any event to fire only on specific days (e.g. Sunday-only weekly backup)",
-    "✅ Activity timing confirmation — Before/After buttons now show checkmark, solid fill, and green confirmation banner",
-    "📊 Medication adherence — now excludes as-needed (PRN) meds; only scheduled medications count",
-    "🫁 Condition-aware symptoms — CHF, A-Fib, Hypertension, and PPH patients get diagnosis-specific symptoms automatically",
-    "🔄 Device Sync shortcut inside Add Event modal",
-    "⚠️ Save as Missed button on notifications — keep events in chronological order",
-    "📋 All Notes — view every note across all dates with category filtering, edit and delete"
+    "\ud83e\ude84 Fluid Limit Setup Wizard (Path A prescribed + Path B guided estimate) \u2014 beta.1",
+    "\ud83d\udccb Doctor Question Router \u2014 smart appointment targeting instead of silent staging \u2014 beta.1",
+    "\ud83d\udca7 Daily Fluid Trend Chart \u2014 bar chart showing total fluid logged per day with your limit as a dashed red line, color-coded green/amber/red \u2014 beta.2",
+    "\ud83c\udf05 Morning Patterns Panel \u2014 connects Morning Check-In data to analytics: feeling distribution, fluid over-limit vs next-morning feeling table, sleep correlation, top symptoms. Requires 5+ check-ins in the selected period \u2014 beta.2",
+    "\ud83c\udf7d\ufe0f Post-Meal BP Patterns (PPH Detection) \u2014 analyzes BP readings before and after logged meals to surface consistent post-meal drops. For pattern tracking only, not medical advice \u2014 beta.2",
+    "\ud83d\udca1 Smarter Key Insights \u2014 plain-language card summaries replacing the old bullet dump: BP Overview, Fluid Behavior, Morning Pattern Summary, Weight Change, Activity \u2014 beta.2",
+    "\ud83e\ude7a Expanded Condition-Specific Symptoms (beta.3) \u2014 All 19 named cardiac conditions mapped with clinically relevant trackable symptoms. CAD, PAD, Arrhythmia, SSS, Bradycardia, Tachycardia, Cardiomyopathy, Orthostatic Hypotension, OSA, Diabetes, TIA/Stroke, Venous Insufficiency and more now surface automatically in the symptom selector when selected in Settings.",
+    "\ud83d\udd27 Fix: Appointment widget restructured \u2014 no more narrow column layout. Full-width card with date/doctor/reason in a clean header row and detail sections below (beta.4)",
+    "\ud83d\udd27 Fix: Event order now consistent across Settings, Fluid Budget Dashboard, and all views \u2014 respects your manual \u2191\u2193 sort order (beta.4)",
+    "\ud83d\udd27 Fix: Log BP medication tracking is now context-aware \u2014 shows your already-logged meds as one-tap buttons instead of making you reselect from a dropdown (beta.4)",
+    "\ud83d\udd04 Device Sync redesigned (beta.5) \u2014 Backup freshness indicator (Today / X days ago / Never) shown in both Settings and the sync modal. Step-by-step guidance with device-specific tips (iPhone AirDrop, Files app, email). Import now shows a full preview \u2014 BP readings count, days of data, medications, patient name \u2014 before overwriting anything. Backup Now button added to Settings so you never have to dig into the sync modal just to export."
   ],
-  "fixes": [
-    "Settings not restoring after data import — full deep merge now restores every saved property including fluid increment, weight unit, custom activities, and all future fields",
-    "loadSettings and loadMedicineList missing from startup sequence — settings, medicines, and events now load correctly on every page load",
-    "iOS double-reload after import — version key pre-set before reload prevents second hard reload race condition",
-    "Import validation — now verifies file is a real ClinBridge backup before writing to storage",
-    "All Notes 'View All' button disappearing when Today/History toggled — fixed",
-    "Doctor's Report medication adherence inflated by PRN medications — fixed",
-    "Activity timing Before/After visual confirmation improved"
-  ]
+  "fixes": []
 }
