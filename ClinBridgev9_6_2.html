@@ -19146,10 +19146,9 @@ function reloadForUpdate() {
   var filename = _latestVersionData && _latestVersionData.filename ? _latestVersionData.filename : null;
   if (confirm('Open ' + ver + ' now?\n\nYour data is stored locally and will not be affected.')) {
     if (filename) {
-      var base = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
-      window.location.href = base + filename + '?_=' + Date.now();
+      window.location.href = 'https://sommerstexan-lgtm.github.io/ClinBridge/' + filename + '?_=' + Date.now();
     } else {
-      window.location.reload(true);
+      window.location.href = 'https://sommerstexan-lgtm.github.io/ClinBridge/';
     }
   }
 }
