@@ -1,12 +1,13 @@
 {
-  "version": "v9.6.1",
+  "version": "v9.6.2",
   "releaseDate": "2026-02-28",
   "releaseNotes": [
-    "Fix: Event repeat schedule — events only appear on their scheduled days",
-    "Fix: Daily Fluid Trend chart bars now display correctly on all screens including Retina/HiDPI",
-    "Fix: Upcoming Appointment card — time inline with Edit/Delete buttons, Reason full-width below",
-    "Fix: Doctor's Report — diagnosis tags wrap horizontally instead of stacking",
-    "Fix: Doctor's Report — out-of-range readings show dated table instead of HIGH, HIGH, HIGH..."
+    "Fix: Update banner now has ✕ dismiss button — no modal required",
+    "Fix: Version check accuracy — banner no longer appears when already on latest",
+    "Fix: Doctor's Report — only shows actively selected diagnoses",
+    "Fix: Fluid Trend chart — 90-day range now renders on iPhone",
+    "Fix: Appointment card — time and countdown inline, mobile-responsive layout",
+    "Fix: Landing page — Launch App button opens app directly"
   ],
-  "filename": "ClinBridgev9_6_1.html"
+  "filename": "ClinBridgev9_6_2.html"
 }
