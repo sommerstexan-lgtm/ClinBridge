@@ -11033,8 +11033,15 @@ try{
   loadSettings();
   loadMedicineList();
   try{ localStorage.setItem('CLINBRIDGE_APP_VERSION','v9.6.3'); }catch(ex){}
-  alert('✅ '+count+' items imported successfully!\n\nClinBridge will now reload to show all your restored data.');
-  setTimeout(function(){ location.reload(); }, 400);
+  setTimeout(function(){
+    var msg=document.createElement('div');
+    msg.style='position:fixed;top:0;left:0;right:0;bottom:0;background:#0f2a4a;color:white;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:99999;text-align:center;padding:30px';
+    msg.innerHTML='✅ '+count+' items imported!<br><br><span style="font-size:16px;opacity:0.8">Reloading your data...</span>';
+    document.body.appendChild(msg);
+    setTimeout(function(){
+      window.location.href = window.location.href.split('?')[0] + '?imported=' + Date.now();
+    }, 800);
+  }, 200);
 }catch(err){
   alert('❌ Import failed: '+err.message);
 }
