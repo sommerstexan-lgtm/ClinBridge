@@ -1,5 +1,5 @@
 {
-  "version": "v9.6.3",
+  "version": "v9.6.4",
   "released": "2026-03-01",
-  "notes": "Fixed data import not loading after restore on iOS"
+  "notes": "Appointment card layout fixed for all phone sizes. Backup and update guidance added to Help."
 }
