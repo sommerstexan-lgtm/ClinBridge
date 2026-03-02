@@ -1,6 +1,6 @@
 {
-  "version": "v9.6.5",
-  "filename": "ClinBridgev9_6_5.html",
+  "version": "v9.6.6",
   "date": "2026-03-02",
-  "notes": "Phase 2 Correlation Engine: Baseline vs. New symptom classification, Baseline Conditions Registry, Edit Today Check-In, and Charts A-D (fluid bands, symptom frequency, sleep vs BP, late meal patterns)."
+  "filename": "ClinBridgev9_6_6.html",
+  "notes": "Multi-select medication grid in Log BP — select all your meds at once, time-of-day quick-select, group Before/After timing."
 }
