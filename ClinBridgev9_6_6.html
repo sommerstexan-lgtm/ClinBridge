@@ -19645,7 +19645,7 @@ function checkForUpdates(showFeedback) {
         statusEl.style.color = '#b45309';
       }
       if (showFeedback) {
-        alert('⚠️ Could not check for updates.\n\nPlease check your internet connection and try again.\n\nYou can always visit the app at:\nhttps://sommerstexan-lgtm.github.io/ClinBridge/');
+        alert('⚠️ Could not check for updates.\n\nPlease check your internet connection and try again.\n\nYou can always visit the app at:\nhttps://clinbridge.clinic');
       }
     });
 }
@@ -19730,8 +19730,8 @@ function openUpdateModal() {
 
     html += '<div id="pwaStep3" style="background:#f1f5f9;border:2px solid #cbd5e1;border-radius:8px;padding:14px;margin-bottom:8px;opacity:0.45;pointer-events:none">';
     html += '<div style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:6px">Step 3 — Re-add to Home Screen</div>';
-    var _step3url = 'https://sommerstexan-lgtm.github.io/ClinBridge/' + (data.filename || '');
-html += '<div style="font-size:14px;color:#475569;line-height:1.7">Open <strong>Safari</strong> and go to:<br><strong style="color:#1d4ed8;word-break:break-all">' + _step3url + '</strong><br><br>Tap the <strong>Share button (□↑)</strong> → <strong>"Add to Home Screen"</strong> → <strong>Add</strong>. The new version is now installed.</div>';
+    var _step3url = 'https://clinbridge.clinic';
+html += '<div style="font-size:14px;color:#475569;line-height:1.7">Open <strong>Safari</strong> and go to:<br><strong style="color:#1d4ed8;word-break:break-all">https://clinbridge.clinic</strong><br><br>This always opens the latest version automatically. Tap the <strong>Share button (□↑)</strong> → <strong>"Add to Home Screen"</strong> → <strong>Add</strong>. The new version is now installed.</div>';
     html += '</div>';
 
     html += '<div id="pwaStep4" style="background:#f1f5f9;border:2px solid #cbd5e1;border-radius:8px;padding:14px;opacity:0.45;pointer-events:none">';
@@ -19777,9 +19777,9 @@ function reloadForUpdate() {
   var filename = _latestVersionData && _latestVersionData.filename ? _latestVersionData.filename : null;
   if (confirm('Open ' + ver + ' now?\n\nYour data is stored locally and will not be affected.')) {
     if (filename) {
-      window.location.href = 'https://sommerstexan-lgtm.github.io/ClinBridge/' + filename + '?_=' + Date.now();
+      window.location.href = 'https://clinbridge.clinic';
     } else {
-      window.location.href = 'https://sommerstexan-lgtm.github.io/ClinBridge/';
+      window.location.href = 'https://clinbridge.clinic';
     }
   }
 }
