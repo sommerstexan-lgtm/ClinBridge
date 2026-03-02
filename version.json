@@ -1,5 +1,6 @@
 {
-  "version": "v9.6.4",
-  "released": "2026-03-01",
-  "notes": "Appointment card layout fixed for all phone sizes. Backup and update guidance added to Help."
+  "version": "v9.6.5",
+  "filename": "ClinBridgev9_6_5.html",
+  "date": "2026-03-02",
+  "notes": "Phase 2 Correlation Engine: Baseline vs. New symptom classification, Baseline Conditions Registry, Edit Today Check-In, and Charts A-D (fluid bands, symptom frequency, sleep vs BP, late meal patterns)."
 }
