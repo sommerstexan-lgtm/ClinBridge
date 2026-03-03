@@ -1,6 +1,6 @@
 {
-  "version": "v9.6.8",
+  "version": "v9.6.9",
   "date": "2026-03-03",
-  "releaseNotes": "Bug fix: Medication Effectiveness analysis now correctly attributes BP readings to ALL co-administered medications in a multi-med session. Previously only the primary medication received the reading; Metoprolol and other co-administered meds were absent from the analysis.",
+  "releaseNotes": "Bug fix: Events set to repeat on specific days (e.g. Thursday only) now correctly disappear from the Next Event banner and Next Fluid Event callout on non-scheduled days.",
   "critical": false
 }
