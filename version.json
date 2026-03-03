@@ -1,6 +1,6 @@
 {
-  "version": "v9.6.7",
+  "version": "v9.6.8",
   "date": "2026-03-03",
-  "releaseNotes": "HR Rate Detector redesigned as diverging bar chart. Symptom Severity Trends chart is now full-width with horizontal scroll. Support / Buy Me a Coffee promoted to its own tab in Help, About & Privacy.",
+  "releaseNotes": "Bug fix: Medication Effectiveness analysis now correctly attributes BP readings to ALL co-administered medications in a multi-med session. Previously only the primary medication received the reading; Metoprolol and other co-administered meds were absent from the analysis.",
   "critical": false
 }
