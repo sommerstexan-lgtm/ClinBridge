@@ -1,6 +1,6 @@
 {
   "version": "v9.6.9",
   "date": "2026-03-03",
-  "releaseNotes": "Bug fix: Events set to repeat on specific days (e.g. Thursday only) now correctly disappear from the Next Event banner and Next Fluid Event callout on non-scheduled days.",
+  "releaseNotes": "Bug fixes: (1) Events with Repeat Schedule now hidden correctly in Next Event banner and Next Fluid Event callout, not just Today Events list. (2) Activity Duration Trends Coming Soon placeholder removed \u2014 chart was already built. (3) Medication Effectiveness now correctly counts all co-administered meds.",
   "critical": false
 }

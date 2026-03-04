@@ -796,9 +796,9 @@ Need at least 2 weight entries to show chart
 <div id="activity"></div>
 <div class="hdr" style="margin-top:24px">📊 Activity Duration Trends</div>
 <div id="noChartDataActivity" style="padding:24px;text-align:center;color:#6b7280;background:#f3f4f6;border-radius:8px;margin-bottom:16px">
-<div style="font-size:32px;margin-bottom:8px">📊</div>
-<div style="font-size:18px;font-weight:600;color:#374151;margin-bottom:4px">Coming Soon in v9.7</div>
-<div style="font-size:14px;color:#9ca3af">Activity trend charts are being enhanced for better insights.</div>
+<div style="font-size:32px;margin-bottom:8px">🏃</div>
+<div style="font-size:18px;font-weight:600;color:#374151;margin-bottom:4px">Log 2 or more activities to see your Duration Trends chart</div>
+<div style="font-size:14px;color:#9ca3af">Bars are color-coded by exertion level: green = Light, amber = Moderate, red = Intense.</div>
 </div>
 <canvas id="activityChart" style="max-height:400px;display:none"></canvas>
 </div>
@@ -1243,6 +1243,7 @@ Custom Range
           <h3 style="margin:0 0 4px 0;font-size:22px">🚀 New in v9.6.9 <span style="font-size:14px;font-weight:400;opacity:0.85">— March 3, 2026</span></h3>
             <ul style="margin:8px 0 0 0;padding-left:20px;line-height:1.8">
               <li><strong>Bug Fix: Events with Repeat Schedule Now Hidden Everywhere</strong> — Events set to repeat only on specific days (e.g. Thursday only) were still appearing in the Next Event banner and the Next Fluid Event callout on non-scheduled days, even though the Today's Events list was already filtering them correctly. All three display points now apply the same day-of-week filter and are fully consistent.</li>
+              <li><strong>Fix: Activity Duration Trends — "Coming Soon" Placeholder Removed</strong> — The chart was fully built but displaying a stale "Coming Soon in v9.7" message instead of the correct prompt. Now correctly shows "Log 2 or more activities to see your Duration Trends chart" when data is insufficient, and renders the full color-coded bar chart (green = Light, amber = Moderate, red = Intense) once 2+ entries exist.</li>
             </ul>
           <h3 style="margin:16px 0 4px 0;font-size:22px">🚀 New in v9.6.8 <span style="font-size:14px;font-weight:400;opacity:0.85">— March 3, 2026</span></h3>
             <ul style="margin:8px 0 0 0;padding-left:20px;line-height:1.8">
@@ -1461,6 +1462,7 @@ Custom Range
           <strong style="font-size:16px">&#x2705; New in v9.6.9 &#x2014; March 3, 2026</strong>
             <ul style="margin:6px 0 0 0;padding-left:18px;line-height:1.8;font-size:14px">
               <li><strong>Event Repeat Schedule — Next Event Banner and Fluid Callout Now Filter by Day</strong> — Events set to Thursday-only were already hidden from Today's Events but still showed in the Next Event banner and Next Fluid Event callout. All three locations now apply the same day-of-week filter.</li>
+              <li><strong>Activity Duration Trends — "Coming Soon" Placeholder Removed</strong> — Chart was fully functional but showing a stale "Coming Soon in v9.7" label. Now shows the correct prompt when fewer than 2 entries exist, and renders the full chart when data is available.</li>
             </ul>
         </div>
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
@@ -1603,7 +1605,7 @@ Custom Range
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
           <strong style="font-size:16px">&#x2705; Bug Fix v9.6.9 — Completed March 3, 2026</strong>
-          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46">Events set to repeat on specific days (e.g. Thursday only) now correctly disappear from the Next Event banner and the Next Fluid Event callout on non-scheduled days. Previously only the Today's Events list filtered correctly.</p>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46">Events set to repeat on specific days (e.g. Thursday only) now correctly disappear from the Next Event banner and the Next Fluid Event callout on non-scheduled days. Previously only the Today's Events list filtered correctly. Also removed stale "Coming Soon in v9.7" placeholder from Activity Duration Trends — the chart was already fully built and now displays correctly.</p>
         </div>
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
           <strong style="font-size:16px">&#x2705; Bug Fix v9.6.8 — Completed March 3, 2026</strong>
