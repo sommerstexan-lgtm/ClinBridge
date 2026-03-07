@@ -1,6 +1,5 @@
 {
-  "version": "v9.6.9",
-  "date": "2026-03-03",
-  "releaseNotes": "Bug fixes: (1) Events with Repeat Schedule now hidden correctly in Next Event banner and Next Fluid Event callout, not just Today Events list. (2) Activity Duration Trends Coming Soon placeholder removed \u2014 chart was already built. (3) Medication Effectiveness now correctly counts all co-administered meds.",
-  "critical": false
+  "version": "v9.7.0",
+  "date": "2026-03-07",
+  "notes": "Activity Timer Pause/Resume. HR Rate Detector Quick Stats period selector (Today/7/30/All Time) with horizontal scroll chart and date-aware labels. All Notes emoji header fixed. Medication tab empty state clarified."
 }
