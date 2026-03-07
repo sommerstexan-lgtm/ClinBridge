@@ -12512,11 +12512,11 @@ html+=`<div style="font-weight:600;color:#111827">⚠️ Severe Bradycardia</div
 }else if(p.type==='rapid_change'){
 html+=`<div style="font-weight:600;color:#111827">📈 Rapid Heart Rate Change</div>
 <div style="color:#6b7280;margin-top:5px">HR changed from ${p.from} to ${p.to} BPM (Δ${p.change})</div>
-<div style="color:#6b7280;font-size:14px">Time: ${new Date(p.timestamp).toLocaleString()}</div>`;
+<div style="color:#6b7280;font-size:14px">Time: ${p.timestamp||'—'}</div>`;
 }else if(p.type==='sustained_abnormality'){
 html+=`<div style="font-weight:600;color:#111827">⏱️ Sustained Abnormality</div>
 <div style="color:#6b7280;margin-top:5px">${p.duration} consecutive abnormal readings</div>
-<div style="color:#6b7280;font-size:14px">Period: ${new Date(p.startTime).toLocaleTimeString()} - ${new Date(p.endTime).toLocaleTimeString()}</div>`;
+<div style="color:#6b7280;font-size:14px">Period: ${p.startTime||'—'} – ${p.endTime||'—'}</div>`;
 }
 html+=`</div>`;
 });
@@ -12763,10 +12763,10 @@ if(p.type==='severe_bradycardia'){
 report.push(`   - ${p.count} episode${p.count>1?'s':''} of HR <50 BPM detected`);
 }else if(p.type==='rapid_change'){
 report.push(`   - HR changed from ${p.from} to ${p.to} BPM (Δ${p.change})`);
-report.push(`   - Time: ${new Date(p.timestamp).toLocaleString()}`);
+report.push(`   - Time: ${p.timestamp||'—'}`);
 }else if(p.type==='sustained_abnormality'){
 report.push(`   - ${p.duration} consecutive abnormal readings`);
-report.push(`   - Period: ${new Date(p.startTime).toLocaleTimeString()} - ${new Date(p.endTime).toLocaleTimeString()}`);
+report.push(`   - Period: ${p.startTime||'—'} – ${p.endTime||'—'}`);
 }
 });
 report.push('');

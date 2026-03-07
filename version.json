@@ -1,5 +1,5 @@
 {
   "version": "v9.7.0",
   "date": "2026-03-07",
-  "notes": "Activity Timer Pause/Resume. HR Rate Detector Quick Stats period selector (Today/7/30/All Time) with horizontal scroll chart and date-aware labels. All Notes emoji header fixed. Medication tab empty state clarified."
+  "notes": "Activity Timer Pause/Resume. HR Rate Detector Quick Stats period selector (Today/7/30/All Time) with horizontal scroll chart and date-aware labels. All Notes emoji header fixed. Medication tab empty state clarified. Pattern Detection Invalid Date fixed."
 }
