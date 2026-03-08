@@ -1,11 +1,9 @@
 {
-  "version": "v9.7.7",
+  "version": "v9.7.8",
   "releaseDate": "March 8, 2026",
-  "summary": "Summary tiles now have bold colors, tinted backgrounds, and colored shadows",
+  "summary": "Floating ↑ Today's Status button — no more scrolling back after viewing a card",
   "whatsNew": [
-    "Each summary tile now has a tinted background, full-strength colored border, and a colored drop shadow — each tile is visually distinct at a glance",
-    "Empty tiles (count = 0) use a dashed border and faded tint to clearly distinguish them from tiles with data",
-    "Populated tiles use a solid bold border with a glow shadow in their own accent color"
+    "A floating '↑ Today's Status' button appears in the bottom-right corner whenever you scroll more than 300px down the page — tap it to snap back to your summary tiles instantly"
   ],
   "fixes": []
 }
