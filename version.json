@@ -1,11 +1,11 @@
 {
-  "version": "v9.7.2",
+  "version": "v9.7.7",
   "releaseDate": "March 8, 2026",
-  "summary": "Tap any summary tile to reveal that day's details — main screen is now much shorter",
+  "summary": "Summary tiles now have bold colors, tinted backgrounds, and colored shadows",
   "whatsNew": [
-    "Summary tiles are now tappable — tap BP Readings, Fluid, Meals, Meds, Weight, Symptoms, or Activities to expand or collapse that card's full detail view",
-    "Main screen starts collapsed showing only your status summary and action buttons — no more scrolling past all your data to reach buttons",
-    "Each tile shows a ▼/▲ chevron so it's clear they're interactive. Tapping opens the card and smoothly scrolls to it"
+    "Each summary tile now has a tinted background, full-strength colored border, and a colored drop shadow — each tile is visually distinct at a glance",
+    "Empty tiles (count = 0) use a dashed border and faded tint to clearly distinguish them from tiles with data",
+    "Populated tiles use a solid bold border with a glow shadow in their own accent color"
   ],
   "fixes": []
 }
