@@ -1,1 +1,1 @@
-{"version":"v9.8.7","releaseDate":"March 8, 2026","summary":"Fix: Today's Status tile grid responsive — 2 columns on iPhone, 4 on desktop","fixes":["Tile grid now uses CSS media query: 2 columns on screens under 520px (iPhone), 4 columns on wider screens — eliminates clipping, wrapping text, and horizontal scroll on mobile"]}
+{"version":"v9.9.0","releaseDate":"March 8, 2026","summary":"Help docs updated through v9.8.9","fixes":["Added changelog entries for v9.8.6, v9.8.8, and v9.8.9 in About & Privacy"]}
