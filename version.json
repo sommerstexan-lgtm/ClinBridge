@@ -1,9 +1,1 @@
-{
-  "version": "v9.7.8",
-  "releaseDate": "March 8, 2026",
-  "summary": "Floating ↑ Today's Status button — no more scrolling back after viewing a card",
-  "whatsNew": [
-    "A floating '↑ Today's Status' button appears in the bottom-right corner whenever you scroll more than 300px down the page — tap it to snap back to your summary tiles instantly"
-  ],
-  "fixes": []
-}
+{"version":"v9.8.3","releaseDate":"March 8, 2026","summary":"Fix: Floating ↑ Today's Status button — green, bottom-right, correct on all browsers","fixes":["Moved all button styles inline to eliminate CSS rule conflicts — button now always appears green, bottom-right corner, correct size on Chromebook and iPhone"]}
