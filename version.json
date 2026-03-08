@@ -1,12 +1,11 @@
 {
-  "version": "v9.7.1",
+  "version": "v9.7.2",
   "releaseDate": "March 8, 2026",
-  "summary": "Main page button grid + Settings accordion — faster navigation on every screen",
+  "summary": "Tap any summary tile to reveal that day's details — main screen is now much shorter",
   "whatsNew": [
-    "Main page buttons reorganized into a 2-column grid with 4 labeled groups: Logging, Planning, Analytics, and Manage & Data — cuts scroll height roughly in half",
-    "Settings modal now uses a collapsible accordion — tap any section header to expand or collapse it. Patient Profile opens by default; all other sections start collapsed so you can jump straight to what you need"
+    "Summary tiles are now tappable — tap BP Readings, Fluid, Meals, Meds, Weight, Symptoms, or Activities to expand or collapse that card's full detail view",
+    "Main screen starts collapsed showing only your status summary and action buttons — no more scrolling past all your data to reach buttons",
+    "Each tile shows a ▼/▲ chevron so it's clear they're interactive. Tapping opens the card and smoothly scrolls to it"
   ],
-  "fixes": [
-    "openSettingsAtEvents() now auto-expands the Daily Schedule section when navigating directly to Events from elsewhere in the app"
-  ]
+  "fixes": []
 }
