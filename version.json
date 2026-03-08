@@ -1,1 +1,1 @@
-{"version":"v9.8.3","releaseDate":"March 8, 2026","summary":"Fix: Floating ↑ Today's Status button — green, bottom-right, correct on all browsers","fixes":["Moved all button styles inline to eliminate CSS rule conflicts — button now always appears green, bottom-right corner, correct size on Chromebook and iPhone"]}
+{"version":"v9.8.5","releaseDate":"March 8, 2026","summary":"Help docs updated through v9.8.4","fixes":["Added changelog entries for v9.7.1 through v9.8.4 in About & Privacy — all March 8 changes now documented"]}
