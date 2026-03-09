@@ -1,1 +1,10 @@
-{"version":"v9.9.0","releaseDate":"March 8, 2026","summary":"Help docs updated through v9.8.9","fixes":["Added changelog entries for v9.8.6, v9.8.8, and v9.8.9 in About & Privacy"]}
+{
+  "version": "v9.9.1",
+  "releaseDate": "March 9, 2026",
+  "summary": "Medication Effectiveness summary now shows correct directional language per metric — and Advanced Analytics period buttons always stay highlighted.",
+  "whatsNew": [],
+  "fixes": [
+    "Medication Effectiveness — Summary message now correctly distinguishes systolic and diastolic direction. Instead of a single ambiguous 'increased/decreased' label, it reads e.g. 'Systolic dropped 3 mmHg · Diastolic rose 1 mmHg.' Icon is ✅ when systolic and diastolic both dropped, ⚠️ when mixed, and 🔴 when both rose.",
+    "Advanced Analytics — Period buttons (7 Days / 30 Days / 90 Days / Custom) now reliably stay highlighted after selection. Previously, opening the Doctor's Report modal could silently clear the active state due to a shared DOM query. Both selectors are now fully independent."
+  ]
+}
