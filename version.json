@@ -1,16 +1,15 @@
 {
-  "version": "v9.9.2",
+  "version": "v9.9.3",
   "releaseDate": "March 10, 2026",
-  "summary": "Service Worker push notifications, Symptom Trends redesign, Today's Status button fixes, Contact & Feedback cleanup",
+  "summary": "HR Pattern dates + Investigate button, notification cancel on early completion, reminder card completion state",
   "whatsNew": [
-    "Service Worker push notifications — banner reminders on lock screen when installed to Home Screen",
-    "Symptom Severity Trends — per-symptom color-coded lines, date x-axis, severity labels, legend",
-    "Today's Status button hidden across all modal screens (Analytics, HR Detector, Procedure Impact, Medication, Help)",
-    "Contact & Feedback — GitHub Issues removed, help-first confirmation before texting developer"
+    "HR Pattern Detection cards now show date and time — every Rapid Change, Bradycardia, and Sustained Abnormality entry shows Mar 10, 2026 · 14:26 format",
+    "🔍 Investigate [date] button on each pattern card opens Advanced Analytics pre-filtered to that date",
+    "Notifications cancel automatically when you complete an event before its scheduled time",
+    "Event reminder card transforms to completion state after first action — prevents duplicate logging"
   ],
   "fixes": [
-    "Today's Status floating button was visible behind Advanced Analytics, Help, HR Rate Detector, Procedure Impact, and Medication Effectiveness modals",
-    "Symptom chart font sizes too small on Chromebook — all canvas text enlarged",
-    "Updated date on main page now reflects actual release date"
+    "Today's Status floating button now hides for all modal screens including Analytics, HR Detector, Medication Effectiveness, Procedure Impact, and Help",
+    "Reminder card action buttons were reusable — now replaced with confirmation state after first completion"
   ]
 }

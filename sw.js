@@ -1,18 +1,18 @@
-// ClinBridge Service Worker — v9.9.2
+// ClinBridge Service Worker — v9.9.3
 // Handles OS push notifications and app open on notification click.
 // Deploy this file alongside ClinBridgev9_9_2.html (or index.html) on GitHub Pages.
 
-var CACHE_NAME = 'clinbridge-v9.9.2';
+var CACHE_NAME = 'clinbridge-v9.9.3';
 
 // ── Install ──────────────────────────────────────────────────────────────
 self.addEventListener('install', function(event) {
-  console.log('[SW] Installed ClinBridge SW v9.9.2');
+  console.log('[SW] Installed ClinBridge SW v9.9.3');
   self.skipWaiting(); // Activate immediately — no waiting for old SW to exit
 });
 
 // ── Activate ─────────────────────────────────────────────────────────────
 self.addEventListener('activate', function(event) {
-  console.log('[SW] Activated ClinBridge SW v9.9.2');
+  console.log('[SW] Activated ClinBridge SW v9.9.3');
   event.waitUntil(
     clients.claim() // Take control of all open pages immediately
   );
