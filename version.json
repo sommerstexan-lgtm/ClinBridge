@@ -1,15 +1,11 @@
 {
-  "version": "v9.9.3",
+  "version": "v9.9.4",
   "releaseDate": "March 10, 2026",
-  "summary": "HR Pattern dates + Investigate button, notification cancel on early completion, reminder card completion state",
+  "summary": "Next event banner now respects dismissed events",
   "whatsNew": [
-    "HR Pattern Detection cards now show date and time — every Rapid Change, Bradycardia, and Sustained Abnormality entry shows Mar 10, 2026 · 14:26 format",
-    "🔍 Investigate [date] button on each pattern card opens Advanced Analytics pre-filtered to that date",
-    "Notifications cancel automatically when you complete an event before its scheduled time",
-    "Event reminder card transforms to completion state after first action — prevents duplicate logging"
-  ],
-  "fixes": [
-    "Today's Status floating button now hides for all modal screens including Analytics, HR Detector, Medication Effectiveness, Procedure Impact, and Help",
-    "Reminder card action buttons were reusable — now replaced with confirmation state after first completion"
+    "Next: [Event] banner no longer shows events that have been dismissed",
+    "HR Pattern Detection cards show date and Investigate button",
+    "Notifications cancel when event completed early",
+    "Reminder card transforms to completion state after first action"
   ]
 }
