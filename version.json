@@ -1,10 +1,16 @@
 {
-  "version": "v9.9.1",
-  "releaseDate": "March 9, 2026",
-  "summary": "Medication Effectiveness summary now shows correct directional language per metric — and Advanced Analytics period buttons always stay highlighted.",
-  "whatsNew": [],
+  "version": "v9.9.2",
+  "releaseDate": "March 10, 2026",
+  "summary": "Service Worker push notifications, Symptom Trends redesign, Today's Status button fixes, Contact & Feedback cleanup",
+  "whatsNew": [
+    "Service Worker push notifications — banner reminders on lock screen when installed to Home Screen",
+    "Symptom Severity Trends — per-symptom color-coded lines, date x-axis, severity labels, legend",
+    "Today's Status button hidden across all modal screens (Analytics, HR Detector, Procedure Impact, Medication, Help)",
+    "Contact & Feedback — GitHub Issues removed, help-first confirmation before texting developer"
+  ],
   "fixes": [
-    "Medication Effectiveness — Summary message now correctly distinguishes systolic and diastolic direction. Instead of a single ambiguous 'increased/decreased' label, it reads e.g. 'Systolic dropped 3 mmHg · Diastolic rose 1 mmHg.' Icon is ✅ when systolic and diastolic both dropped, ⚠️ when mixed, and 🔴 when both rose.",
-    "Advanced Analytics — Period buttons (7 Days / 30 Days / 90 Days / Custom) now reliably stay highlighted after selection. Previously, opening the Doctor's Report modal could silently clear the active state due to a shared DOM query. Both selectors are now fully independent."
+    "Today's Status floating button was visible behind Advanced Analytics, Help, HR Rate Detector, Procedure Impact, and Medication Effectiveness modals",
+    "Symptom chart font sizes too small on Chromebook — all canvas text enlarged",
+    "Updated date on main page now reflects actual release date"
   ]
 }
