@@ -1,10 +1,10 @@
 {
-  "version": "v9.9.5",
+  "version": "v9.9.7",
   "releaseDate": "March 10, 2026",
-  "summary": "Fix: notifications firing after early completion for Plan My Day events",
+  "summary": "One notification per event — in-app card and OS banner no longer fire simultaneously",
   "fixes": [
-    "Plan My Day events had no id field in the normalized widget object — cancel tags were built as cb_undefined_d0_at and matched nothing in the scheduled timeout map",
-    "Added id field to Plan My Day events in updateUpcomingEventsWidget matching scheduleAllEventNotifications format",
-    "Added name-based sweep as safety net across all three cancellation sites (dismissReminder, markEventMissedAndReturn, completeAndCloseModal)"
+    "OS banner was firing at the same time as the in-app action card when app was in foreground — document.hasFocus() is unreliable on iOS PWA and was returning false even when app was fully visible",
+    "Replaced hasFocus() check with document.visibilityState==='visible' — OS banner now correctly suppressed whenever ClinBridge is on screen",
+    "Result: app in foreground = in-app card only. App backgrounded = OS banner only. Never both."
   ]
 }
