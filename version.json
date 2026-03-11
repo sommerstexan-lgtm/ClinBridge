@@ -1,10 +1,17 @@
 {
-  "version": "v9.9.7",
-  "releaseDate": "March 10, 2026",
-  "summary": "One notification per event — in-app card and OS banner no longer fire simultaneously",
+  "version": "v9.9.9",
+  "releaseDate": "March 11, 2026",
+  "summary": "iOS PWA push notifications fully restored — sw.js, manifest.json, and permission flow all fixed",
+  "whatsNew": [
+    "iOS PWA Push Notifications — sw.js now ships as a companion file so the Service Worker actually registers (previously 404'd silently)",
+    "manifest.json now linked in page head — required by iOS 16.4+ for Web Push to function",
+    "Startup permission request suppressed for Home Screen installs — iOS requires a user gesture, and the PWA prompt modal already handles that correctly",
+    "Event notifications now schedule inside the SW's confirmed .then() callback rather than a fixed 2-second blind delay",
+    "Per-action ✅ stubs on reminder cards — tapping an action button replaces only that button with a grayed stub while remaining actions stay active. Done — Dismiss and Save as Missed remain throughout. Full green completion state only after all actions logged or Done — Dismiss tapped."
+  ],
   "fixes": [
-    "OS banner was firing at the same time as the in-app action card when app was in foreground — document.hasFocus() is unreliable on iOS PWA and was returning false even when app was fully visible",
-    "Replaced hasFocus() check with document.visibilityState==='visible' — OS banner now correctly suppressed whenever ClinBridge is on screen",
-    "Result: app in foreground = in-app card only. App backgrounded = OS banner only. Never both."
+    "Service Worker registration silently failing with 404 — sw.js file was never deployed",
+    "Web Push not qualifying on iOS 16.4+ — manifest.json was missing from page head",
+    "Non-gesture Notification.requestPermission() call on startup conflicting with the PWA permission modal flow on iOS"
   ]
 }
