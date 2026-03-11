@@ -1,9 +1,14 @@
 {
   "version": "v9.9.10",
   "releaseDate": "March 11, 2026",
-  "summary": "Alert chime fixed + accurate iOS notification documentation",
+  "summary": "Anchor Date Investigation + alert chime fix + accurate iOS notification documentation",
+  "whatsNew": [
+    "Anchor Date Investigation in Advanced Analytics — pick any date for a 20-day focused view (14-day baseline + anchor + 5-day response) with all metrics, annotation timeline, plain-language summary, and saved investigations",
+    "Alert chime fixed — now schedules tones inside AudioContext.resume().then() so they play reliably on iOS",
+    "All notification capability text corrected — iOS alerts fire while ClinBridge is on screen only; background alerts require future server-push implementation"
+  ],
   "fixes": [
-    "Alert chime silently dropping on iOS when AudioContext was suspended — tones now scheduled inside .then() after AudioContext.resume() fully resolves",
-    "All in-app text, settings descriptions, and permission prompts corrected to accurately reflect iOS notification capability: alerts fire while ClinBridge is open and on screen only — background/locked-screen alerts require a future server-push implementation"
+    "Chime silently dropping when AudioContext was suspended — fixed by scheduling inside .then() callback",
+    "In-app text claiming notifications fire on locked phone or in background — corrected throughout"
   ]
 }

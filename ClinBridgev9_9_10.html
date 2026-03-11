@@ -1321,10 +1321,11 @@ Custom Range
         <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);padding:20px;border-radius:12px;margin-bottom:20px;color:white">
           <h3 style="margin:0 0 4px 0;font-size:22px">🚀 New in v9.9.10 <span style="font-size:14px;font-weight:400;opacity:0.85">— March 11, 2026</span></h3>
             <ul style="margin:8px 0 0 0;padding-left:20px;line-height:1.8">
-              <li><strong>🔔 Alert Chime Fixed — Plays Reliably Again</strong> — The chime was silently dropping on iOS when the AudioContext was suspended (e.g. after the phone had been idle). Fixed by scheduling tones inside the .then() callback after AudioContext.resume() fully resolves, instead of scheduling immediately while the context was still suspended.</li>
-              <li><strong>📱 Notification Capability — Accurate Documentation</strong> — Corrected all in-app text, settings descriptions, and permission prompts to accurately reflect what iOS supports: alerts fire while ClinBridge is open and on screen. Background/locked-screen alerts on iPhone require a server-push infrastructure (future roadmap) and are not possible with a client-only PWA.</li>
-              <li><strong>✅ Event Reminder Card — Per-Action Stubs (Fix #1)</strong> — Tapping an action button replaces only that button with a grayed ✅ Done stub while remaining actions stay active. Done — Dismiss and Save as Missed remain throughout. Full green completion state appears only after all actions are individually logged or Done — Dismiss is tapped.</li>
-              <li><strong>🔧 Service Worker + Manifest Deployed</strong> — sw.js and manifest.json now ship as companion files. SW registration no longer 404s silently. Notification scheduling runs inside the confirmed SW .then() callback. These lay the groundwork for a future server-push implementation.</li>
+              <li><strong>🔍 Anchor Date Investigation — Advanced Analytics</strong> — Pick any date to instantly see a focused 20-day window (14-day baseline → anchor day → 5-day response) with all metrics aligned on the same timeline. Stacked charts show Systolic BP, Diastolic BP, Heart Rate, Weight, and Fluid Intake, each with a dashed 14-day baseline average line for instant deviation spotting. An annotation timeline below shows medications, symptoms, meals, activities, notes, procedures, and Morning Check-In responses day by day. Auto-generated plain-language summary is one tap away from the clipboard for your doctor. Investigations can be saved by name and reloaded at any future appointment — a March investigation is fully available in August.</li>
+              <li><strong>🔔 Alert Chime Fixed</strong> — Chime was silently dropping when AudioContext was suspended (e.g. after phone had been idle). Now schedules tones inside AudioContext.resume().then() so they always play.</li>
+              <li><strong>📱 Notification Capability Accurately Documented</strong> — All in-app text corrected: iOS alerts fire while ClinBridge is open and on screen. Background/locked-screen alerts require a future server-push implementation.</li>
+              <li><strong>✅ Event Reminder Card — Per-Action Stubs (Fix #1)</strong> — Tapping an action button replaces only that button with a grayed ✅ Done stub while remaining actions stay active. Done — Dismiss and Save as Missed remain throughout.</li>
+              <li><strong>🔧 Service Worker + Manifest Deployed</strong> — sw.js and manifest.json now ship as companion files, laying groundwork for future server-push notifications.</li>
             </ul>
           <h3 style="margin:16px 0 4px 0;font-size:22px">🚀 New in v9.8.9 <span style="font-size:14px;font-weight:400;opacity:0.85">— March 8, 2026</span></h3>
             <ul style="margin:8px 0 0 0;padding-left:20px;line-height:1.8">
@@ -2402,6 +2403,41 @@ Custom Range
 <div id="insightsContent"></div>
 </div>
 
+<!-- Anchor Date Investigation Panel -->
+<div id="anchorPanel" style="display:none;background:white;padding:24px;border-radius:12px;margin-bottom:20px;border:2px solid #0ea5e9">
+<h3 style="margin:0 0 4px 0;color:#0369a1;font-size:22px">🔍 Anchor Date Investigation</h3>
+<p style="margin:0 0 16px 0;font-size:14px;color:#6b7280">Pick any date to see a focused 20-day window (14 days before → anchor → 5 days after) with all metrics and events aligned on the same timeline.</p>
+
+<!-- Date picker row -->
+<div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px">
+  <div style="flex:1;min-width:160px">
+    <label style="display:block;font-size:14px;font-weight:600;color:#374151;margin-bottom:6px">📅 Anchor Date</label>
+    <input type="date" id="anchorDateInput" class="modal-input" style="width:100%;box-sizing:border-box">
+  </div>
+  <button onclick="runAnchorInvestigation()" style="background:#0ea5e9;color:white;border:none;padding:14px 24px;border-radius:8px;font-size:17px;font-weight:600;cursor:pointer;white-space:nowrap">🔍 Investigate</button>
+</div>
+
+<!-- Saved investigations list -->
+<div id="anchorSavedList"></div>
+
+<!-- Results area -->
+<div id="anchorResults" style="display:none">
+  <!-- Charts -->
+  <div id="anchorChartsContainer" style="overflow-x:auto;-webkit-overflow-scrolling:touch"></div>
+  <!-- Annotation timeline -->
+  <div id="anchorAnnotations" style="margin-top:16px"></div>
+  <!-- Plain-language summary -->
+  <div id="anchorSummaryBox" style="margin-top:16px;padding:18px;background:#f0f9ff;border-radius:10px;border-left:4px solid #0ea5e9">
+    <div style="font-size:15px;font-weight:700;color:#0369a1;margin-bottom:8px">📋 Plain-Language Summary</div>
+    <div id="anchorSummaryText" style="font-size:15px;color:#1e293b;line-height:1.7"></div>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+      <button onclick="copyAnchorSummary()" style="background:#0ea5e9;color:white;border:none;padding:10px 18px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer">📋 Copy for Doctor</button>
+      <button onclick="saveAnchorInvestigation()" style="background:#10b981;color:white;border:none;padding:10px 18px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer">💾 Save Investigation</button>
+    </div>
+  </div>
+</div>
+</div>
+
 <!-- Notes Field -->
 <div style="background:#fff;padding:20px;border-radius:12px;margin-bottom:20px;border:2px solid #e5e7eb">
 <h3 style="margin:0 0 12px 0;color:#374151;font-size:20px">📝 Analysis Notes</h3>
@@ -2821,9 +2857,8 @@ function promptPWANotificationPermission(){
     html+='<div style="font-size:15px;color:#374151;line-height:1.7;margin-bottom:16px">';
     html+='ClinBridge can send <strong>banner notifications</strong> to remind you when your scheduled events are coming up — when ClinBridge is open or running in the foreground.</div>';
     html+='<div style="background:#f0fdf4;border:2px solid #10b981;border-radius:10px;padding:14px;margin-bottom:16px;font-size:14px;color:#065f46">';
-    html+='✅ Works when ClinBridge is open or on screen<br>';
-    html+='✅ Works when another browser tab is open (desktop/Android)<br>';
-    html+='❌ Does not fire when iPhone is locked or a different app is open<br>';
+    html+='✅ Fires reliably when ClinBridge was opened in the last few hours<br>';
+    html+='⚠️ May miss if iPhone has been asleep overnight<br>';
     html+='❌ Will not fire from a browser tab — Home Screen install only';
     html+='</div>';
     html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
@@ -7326,22 +7361,11 @@ initializeAudioContext();
 if(!audioContext)return;
 
 function scheduleChime(){
-// Senior-optimized audio (v9.5.8-SA):
-// • C4/E4/G4 at 261–392 Hz — one octave lower than before.
-//   Age-related hearing loss (presbycusis) hits high frequencies first;
-//   the 250–500 Hz range is the most reliable for aging ears.
-// • Triangle oscillator — richer harmonic content than sine, cuts through
-//   background noise (TV, music) without being harsh.
-// • Gain raised from 0.4 → 0.75 — noticeably louder.
-// • Sequence plays 3 times with a 400ms pause between repeats so a
-//   distracted user has multiple chances to notice it.
-
 function playTone(frequency,duration,startTime){
   var osc=audioContext.createOscillator();
   var gain=audioContext.createGain();
   osc.type='triangle';
   osc.frequency.setValueAtTime(frequency,startTime);
-  // Envelope: fast attack, hold, smooth release
   gain.gain.setValueAtTime(0,startTime);
   gain.gain.linearRampToValueAtTime(0.75,startTime+0.06);
   gain.gain.setValueAtTime(0.75,startTime+duration-0.08);
@@ -7351,18 +7375,13 @@ function playTone(frequency,duration,startTime){
   osc.start(startTime);
   osc.stop(startTime+duration);
 }
-
-// C4 → E4 → G4 (major triad, lower octave, longer notes)
 var notes=[
-  {freq:261.63,dur:0.40},  // C4
-  {freq:329.63,dur:0.40},  // E4
-  {freq:392.00,dur:0.55}   // G4 — held longer for emphasis
+  {freq:261.63,dur:0.40},
+  {freq:329.63,dur:0.40},
+  {freq:392.00,dur:0.55}
 ];
-
-// Play 3 times so a distracted user has multiple chances to notice
-var sequenceDuration=notes.reduce(function(t,n){return t+n.dur+0.06;},0); // ~1.47s
-var pauseBetween=0.40; // 400ms silence between repeats
-
+var sequenceDuration=notes.reduce(function(t,n){return t+n.dur+0.06;},0);
+var pauseBetween=0.40;
 for(var rep=0;rep<3;rep++){
   var now=audioContext.currentTime+(rep*(sequenceDuration+pauseBetween));
   notes.forEach(function(note){
@@ -7370,12 +7389,11 @@ for(var rep=0;rep<3;rep++){
     now+=note.dur+0.06;
   });
 }
-
 console.log('Senior-optimized alert chime played (3×)');
 }
 
 // iOS: AudioContext must be fully resumed before scheduling any tones.
-// If we schedule while suspended, tones are silently dropped.
+// Scheduling while suspended silently drops all tones.
 if(audioContext.state==='suspended'){
   audioContext.resume().then(function(){
     scheduleChime();
@@ -7423,7 +7441,7 @@ document.getElementById('audioAlertBox').style.display='block';
 // Arm the fluid goal so the first fluid-capable modal that opens gets pre-populated
 pendingEventFluid=(eventObj&&eventObj.amount>0)?eventObj.amount:(eventAmount>0?eventAmount:0);
 
-// Fire OS-level notification — fires when app is backgrounded on desktop/Android; iOS requires app to be open
+// Fire OS-level notification — visible even on other tabs or during video playback
 fireOSNotification(
   '🔔 '+eventName,
   (eventAmount>0?'💧 '+eventAmount+' oz  •  ':'')+'Tap to open ClinBridge',
@@ -10740,7 +10758,7 @@ html+='<p style="font-size:16px;color:#64748b;margin-bottom:12px">Enable system-
   if(isIOS&&(isSafari||notifUnsupported)){
     html+='<div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 16px;border-radius:8px;margin-bottom:14px;font-size:15px;line-height:1.6;color:#78350f">';
     html+='<strong>📱 iPhone &amp; iPad Users:</strong> When ClinBridge is open, event alerts will appear as a <strong>red pop-up on screen with a chime</strong> — this works now without any setup.';
-    html+='<br><br>For the most reliable in-app alerts, install to your Home Screen: tap the <strong>Share ⬆</strong> button in Safari → <strong>"Add to Home Screen"</strong> → reopen from the Home Screen icon. Note: iOS does not support background alerts when the phone is locked or a different app is open — alerts fire while ClinBridge is visible on screen.';
+    html+='<br><br>For alerts when ClinBridge is in the background or another app is open, install to your Home Screen: tap the <strong>Share ⬆</strong> button in Safari → <strong>"Add to Home Screen"</strong> → reopen from the Home Screen icon.';
     html+='<br><br><div style="background:#fee2e2;border:2px solid #ef4444;border-radius:8px;padding:12px;margin-top:4px"><strong>⚠️ BACK UP YOUR DATA FIRST</strong><br>Deleting the ClinBridge icon from your Home Screen <strong>permanently erases all your logged data</strong> on that device — iOS gives the app no warning. Before removing the icon for any reason, go to <strong>Settings → Export Today\'s Data</strong> or use <strong>Advanced Analytics → Download Report</strong> to save a copy of your data.</div>';
     html+='</div>';
   }
@@ -11932,7 +11950,7 @@ pendingEventFluid=(function(){
   var remaining=settings.fluidMax-dailyFluid;
   return Math.max(0,Math.min(rawGoal,remaining));
 })();
-// Fire OS-level notification — fires when app is backgrounded on desktop/Android; iOS requires app to be open
+// Fire OS-level notification — visible even on other tabs or during video playback
 fireOSNotification(
   '🔔 '+evt.name,
   (evt.fluidGoal>0?'💧 Fluid goal: '+evt.fluidGoal+' oz  •  ':'')+'⏰ '+evt.time+'  •  Tap to open ClinBridge',
@@ -13461,25 +13479,19 @@ var mon=months[parseInt(parts[1],10)-1]||parts[1];
 return mon+' '+parseInt(parts[2],10)+', '+parts[0];
 }
 
-// Investigate button: close HR Detector, open Advanced Analytics pre-filtered to date
+// Investigate button: close HR Detector, open Advanced Analytics pre-filled to anchor date
 function investigatePatternDate(dateStr){
 closeHRDetector();
 setTimeout(function(){
   openAnalyticsDashboard();
-  // Pre-set the date filter to the specific date if the analytics date input exists
   setTimeout(function(){
-    var fromEl=document.getElementById('analyticsDateFrom');
-    var toEl=document.getElementById('analyticsDateTo');
-    if(fromEl&&toEl){
-      fromEl.value=dateStr;
-      toEl.value=dateStr;
-      // Trigger analytics refresh if function exists
-      if(typeof applyAnalyticsDateFilter==='function') applyAnalyticsDateFilter();
-      else if(typeof renderAnalyticsDashboard==='function') renderAnalyticsDashboard();
-    }
-    // Scroll to top of analytics modal
-    var mc=document.getElementById('analyticsDashboardModal');
-    if(mc) mc.scrollTop=0;
+    var inp=document.getElementById('anchorDateInput');
+    if(inp) inp.value=dateStr;
+    // Scroll to anchor panel
+    var panel=document.getElementById('anchorPanel');
+    if(panel) panel.scrollIntoView({behavior:'smooth',block:'start'});
+    // Auto-run
+    runAnchorInvestigation();
   },300);
 },200);
 }
@@ -15439,6 +15451,9 @@ const savedNotes=localStorage.getItem('analyticsNotes');
 if(savedNotes){
 analyticsNotesData=JSON.parse(savedNotes);
 }
+// Show anchor panel and refresh saved list
+document.getElementById('anchorPanel').style.display='block';
+renderAnchorSavedList();
 }
 
 function closeAnalyticsDashboard(){
@@ -16812,6 +16827,8 @@ document.getElementById('insightsPanel').style.display='block';
 // New v9.6 panels
 document.getElementById('fluidTrendPanel').style.display='block';
 document.getElementById('morningPatternsPanel').style.display='block';
+// Anchor Investigation Panel — always visible once analytics are open
+document.getElementById('anchorPanel').style.display='block';
 // PPH panel: only show if meals are being tracked
 if(settings.features&&settings.features.meals){
 document.getElementById('pphPanel').style.display='block';
@@ -19650,6 +19667,667 @@ if(dateKey&&time){
 addContextToReading(dateKey,time);
 }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ANCHOR DATE INVESTIGATION ENGINE — v9.9.10
+// ═══════════════════════════════════════════════════════════════════════════
+
+var ANCHOR_STORAGE_KEY = 'CLINBRIDGE_ANCHOR_INVESTIGATIONS';
+var _anchorCharts = []; // track Chart.js instances for cleanup
+
+// ── Storage helpers ──────────────────────────────────────────────────────────
+
+function loadSavedInvestigations(){
+  try{ return JSON.parse(localStorage.getItem(ANCHOR_STORAGE_KEY)||'[]'); }catch(e){ return []; }
+}
+
+function saveSavedInvestigations(list){
+  try{ localStorage.setItem(ANCHOR_STORAGE_KEY, JSON.stringify(list)); }catch(e){}
+}
+
+// ── Date math helpers ────────────────────────────────────────────────────────
+
+function anchorAddDays(dateStr, n){
+  var d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() + n);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function anchorDateLabel(dateStr){
+  var parts = dateStr.split('-');
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[parseInt(parts[1],10)-1]+' '+parseInt(parts[2],10);
+}
+
+function anchorFriendlyDate(dateStr){
+  var parts = dateStr.split('-');
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return months[parseInt(parts[1],10)-1]+' '+parseInt(parts[2],10)+', '+parts[0];
+}
+
+// ── Data loader ──────────────────────────────────────────────────────────────
+// Returns a map: dateStr → { bp, weight, symptoms, activities, meals, medications, fluids, notes, mci }
+// plus a flat arrays version for chart rendering
+
+function loadAnchorWindowData(anchorDate){
+  var windowStart = anchorAddDays(anchorDate, -14);
+  var windowEnd   = anchorAddDays(anchorDate, +5);
+  var todayKey    = getTodayKey();
+  var byDate      = {};
+  var dates       = [];
+
+  // Build ordered date list
+  var cur = windowStart;
+  while(cur <= windowEnd){
+    dates.push(cur);
+    byDate[cur] = {bp:[], weight:[], symptoms:[], activities:[], meals:[], medications:[], fluids:[], notes:[], mci:null};
+    cur = anchorAddDays(cur, 1);
+  }
+
+  // Load morning check-ins
+  var mciRecords = loadMorningCheckins ? loadMorningCheckins() : [];
+
+  // Fill each date
+  dates.forEach(function(key){
+    // Morning check-in
+    var mci = mciRecords.find(function(r){ return r.date === key; }) || null;
+    byDate[key].mci = mci;
+
+    if(key === todayKey){
+      // Today: use in-memory globals
+      byDate[key].bp          = (typeof B !== 'undefined' ? B : []).slice();
+      byDate[key].weight      = (typeof W !== 'undefined' ? W : []).slice();
+      byDate[key].symptoms    = (typeof S !== 'undefined' ? S : []).slice();
+      byDate[key].activities  = (typeof A !== 'undefined' ? A : []).slice();
+      byDate[key].meals       = (typeof M !== 'undefined' ? M : []).slice();
+      byDate[key].medications = (typeof medLog !== 'undefined' ? medLog : []).slice();
+      byDate[key].fluids      = (typeof fluidLog !== 'undefined' ? fluidLog : []).slice();
+      byDate[key].notes       = (typeof notes !== 'undefined' ? notes : []).slice();
+    } else {
+      var raw = localStorage.getItem('BP_TRACKER_'+key);
+      if(raw){
+        try{
+          var d = JSON.parse(raw);
+          byDate[key].bp          = d.bp       || d.B || [];
+          byDate[key].weight      = d.weight   || d.W || [];
+          byDate[key].symptoms    = d.symptoms || d.S || [];
+          byDate[key].activities  = d.activities || d.A || [];
+          byDate[key].meals       = d.meals    || d.M || [];
+          byDate[key].medications = d.medLog   || [];
+          byDate[key].fluids      = d.fluid    || d.fluidLog || [];
+          byDate[key].notes       = d.notes    || [];
+        }catch(e){}
+      }
+    }
+  });
+
+  // Also pull procedures (global array, filter by date)
+  var procs = (typeof procedures !== 'undefined' ? procedures : []);
+  procs.forEach(function(p){
+    var pd = p.date || '';
+    if(byDate[pd]) byDate[pd].procedures = byDate[pd].procedures || [];
+    if(byDate[pd]) byDate[pd].procedures.push(p);
+  });
+
+  return { dates: dates, byDate: byDate, anchorDate: anchorDate, windowStart: windowStart, windowEnd: windowEnd };
+}
+
+// ── Chart rendering ──────────────────────────────────────────────────────────
+
+function destroyAnchorCharts(){
+  _anchorCharts.forEach(function(c){ try{ c.destroy(); }catch(e){} });
+  _anchorCharts = [];
+}
+
+function buildAnchorCharts(windowData){
+  destroyAnchorCharts();
+  var container = document.getElementById('anchorChartsContainer');
+  container.innerHTML = '';
+
+  var dates     = windowData.dates;
+  var byDate    = windowData.byDate;
+  var anchor    = windowData.anchorDate;
+  var labels    = dates.map(function(d){ return anchorDateLabel(d); });
+  var anchorIdx = dates.indexOf(anchor);
+
+  // Shade plugin: baseline (0–13 = indices 0–13), anchor (idx 14), response (15–19)
+  // We implement shading via chartArea backgrounds drawn in a custom plugin
+  var shadePlugin = {
+    id: 'anchorShade',
+    beforeDraw: function(chart){
+      var ctx2 = chart.ctx;
+      var ca   = chart.chartArea;
+      if(!ca) return;
+      var total = labels.length;
+      var colW  = (ca.right - ca.left) / total;
+
+      // Baseline shade (days 0–13)
+      ctx2.save();
+      ctx2.fillStyle = 'rgba(148,163,184,0.10)';
+      ctx2.fillRect(ca.left, ca.top, colW * 14, ca.bottom - ca.top);
+
+      // Response shade (days 15–19)
+      ctx2.fillStyle = 'rgba(16,185,129,0.08)';
+      ctx2.fillRect(ca.left + colW * 15, ca.top, colW * 5, ca.bottom - ca.top);
+
+      // Anchor band (day 14)
+      ctx2.fillStyle = 'rgba(239,68,68,0.12)';
+      ctx2.fillRect(ca.left + colW * 14, ca.top, colW, ca.bottom - ca.top);
+
+      // Anchor vertical line
+      ctx2.strokeStyle = '#ef4444';
+      ctx2.lineWidth = 2;
+      ctx2.setLineDash([5, 3]);
+      var ax = ca.left + colW * 14 + colW / 2;
+      ctx2.beginPath();
+      ctx2.moveTo(ax, ca.top);
+      ctx2.lineTo(ax, ca.bottom);
+      ctx2.stroke();
+      ctx2.setLineDash([]);
+      ctx2.restore();
+    }
+  };
+
+  // ── Helper: build per-date average for a metric ──────────────────────────
+  function bpSeries(field){
+    return dates.map(function(d){
+      var readings = byDate[d].bp;
+      if(!readings || readings.length === 0) return null;
+      var vals = readings.map(function(r){ return r[field]; }).filter(function(v){ return v && !isNaN(v); });
+      if(!vals.length) return null;
+      return Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length);
+    });
+  }
+
+  function weightSeries(){
+    return dates.map(function(d){
+      var entries = byDate[d].weight;
+      if(!entries || entries.length === 0) return null;
+      var vals = entries.map(function(r){ return parseFloat(r.w||r.weight||r); }).filter(function(v){ return !isNaN(v); });
+      if(!vals.length) return null;
+      return Math.round(vals[vals.length-1]*10)/10;
+    });
+  }
+
+  function fluidSeries(){
+    return dates.map(function(d){
+      var entries = byDate[d].fluids;
+      if(!entries) return 0;
+      return Math.round(entries.reduce(function(sum,f){ return sum+(parseFloat(f.oz||f.amount||f)||0); },0));
+    });
+  }
+
+  // ── Baseline average lines (14-day prior period) ─────────────────────────
+  function baselineAvg(series){
+    var vals = series.slice(0,14).filter(function(v){ return v !== null; });
+    if(!vals.length) return null;
+    return Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length * 10)/10;
+  }
+
+  var sysSeries  = bpSeries('s');
+  var diaSeries  = bpSeries('d');
+  var hrSeries   = bpSeries('h');
+  var wtSeries   = weightSeries();
+  var flSeries   = fluidSeries();
+
+  var sysAvg = baselineAvg(sysSeries);
+  var diaAvg = baselineAvg(diaSeries);
+  var hrAvg  = baselineAvg(hrSeries);
+  var wtAvg  = baselineAvg(wtSeries);
+  var flAvg  = baselineAvg(flSeries);
+
+  var fluidLimit = (settings && settings.fluidMax) ? settings.fluidMax : null;
+
+  // Chart configs
+  var chartDefs = [
+    { label:'Systolic BP (mmHg)', data: sysSeries, color:'#dc2626', avg: sysAvg, unit:'mmHg' },
+    { label:'Diastolic BP (mmHg)', data: diaSeries, color:'#2563eb', avg: diaAvg, unit:'mmHg' },
+    { label:'Heart Rate (bpm)', data: hrSeries, color:'#f97316', avg: hrAvg, unit:'bpm' },
+    { label:'Weight (lbs)', data: wtSeries, color:'#8b5cf6', avg: wtAvg, unit:'lbs' },
+    { label:'Fluid Intake (oz)', data: flSeries, color:'#0ea5e9', avg: flAvg, unit:'oz', limit: fluidLimit, isBar: true }
+  ];
+
+  // Filter to only charts with any data
+  var activeCharts = chartDefs.filter(function(cd){
+    return cd.data.some(function(v){ return v !== null && v !== 0; });
+  });
+
+  if(activeCharts.length === 0){
+    container.innerHTML = '<p style="color:#6b7280;font-size:15px;padding:12px">No metric data found in this 20-day window.</p>';
+    return { sysSeries, diaSeries, hrSeries, wtSeries, flSeries, sysAvg, diaAvg, hrAvg, wtAvg, flAvg };
+  }
+
+  activeCharts.forEach(function(cd, idx){
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'margin-bottom:18px;background:#f9fafb;border-radius:10px;padding:12px';
+
+    // Label row
+    var labelRow = document.createElement('div');
+    labelRow.style.cssText = 'font-size:13px;font-weight:700;color:#374151;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center';
+    var avgLabel = cd.avg !== null ? '<span style="color:#6b7280;font-weight:400">14-day avg: <strong style="color:'+cd.color+'">'+cd.avg+' '+cd.unit+'</strong></span>' : '';
+    if(cd.limit) avgLabel += ' <span style="color:#ef4444;font-weight:400">limit: '+cd.limit+' oz</span>';
+    labelRow.innerHTML = '<span>'+cd.label+'</span>' + avgLabel;
+    wrap.appendChild(labelRow);
+
+    var scrollDiv = document.createElement('div');
+    scrollDiv.style.cssText = 'overflow-x:auto;-webkit-overflow-scrolling:touch';
+    var canvas = document.createElement('canvas');
+    var chartW = Math.max(labels.length * 38, 500);
+    canvas.width  = chartW * (window.devicePixelRatio||1);
+    canvas.height = 140 * (window.devicePixelRatio||1);
+    canvas.style.width  = chartW + 'px';
+    canvas.style.height = '140px';
+    canvas.style.display = 'block';
+    scrollDiv.appendChild(canvas);
+    wrap.appendChild(scrollDiv);
+    container.appendChild(wrap);
+
+    var datasets = [{
+      label: cd.label,
+      data: cd.data,
+      borderColor: cd.color,
+      backgroundColor: cd.isBar ? cd.color + '99' : cd.color + '22',
+      borderWidth: cd.isBar ? 0 : 2.5,
+      tension: 0.3,
+      spanGaps: true,
+      pointRadius: 4,
+      pointBackgroundColor: cd.color
+    }];
+
+    // Baseline average line
+    if(cd.avg !== null){
+      datasets.push({
+        label: '14-day avg',
+        data: new Array(labels.length).fill(cd.avg),
+        borderColor: cd.color + '55',
+        borderWidth: 1.5,
+        borderDash: [6,3],
+        pointRadius: 0,
+        spanGaps: true
+      });
+    }
+
+    // Fluid limit line
+    if(cd.limit){
+      datasets.push({
+        label: 'Daily limit',
+        data: new Array(labels.length).fill(cd.limit),
+        borderColor: '#ef4444',
+        borderWidth: 1.5,
+        borderDash: [4,2],
+        pointRadius: 0,
+        spanGaps: true
+      });
+    }
+
+    var chartType = cd.isBar ? 'bar' : 'line';
+    var c = new Chart(canvas.getContext('2d'), {
+      type: chartType,
+      plugins: [shadePlugin],
+      data: { labels: labels, datasets: datasets },
+      options: {
+        animation: false,
+        responsive: false,
+        maintainAspectRatio: false,
+        devicePixelRatio: window.devicePixelRatio||1,
+        plugins: {
+          legend: { display: false },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        scales: {
+          x: { ticks: { font: { size: 10 }, maxRotation: 45 } },
+          y: { ticks: { font: { size: 10 } }, beginAtZero: cd.isBar }
+        }
+      }
+    });
+    _anchorCharts.push(c);
+  });
+
+  return { sysSeries, diaSeries, hrSeries, wtSeries, flSeries, sysAvg, diaAvg, hrAvg, wtAvg, flAvg };
+}
+
+// ── Annotation timeline ──────────────────────────────────────────────────────
+
+function buildAnchorAnnotations(windowData){
+  var dates  = windowData.dates;
+  var byDate = windowData.byDate;
+  var anchor = windowData.anchorDate;
+
+  // Categories to show
+  var cats = [
+    { key:'medications', icon:'💊', label:'Meds', color:'#f97316',
+      getText: function(r){ return r.medicine||r.med||'Med'; } },
+    { key:'symptoms', icon:'🩺', label:'Symptoms', color:'#ec4899',
+      getText: function(r){ var sev=r.severity||r.s||''; return (r.symptom||r.name||'Symptom')+(sev?' ('+sev+')':''); } },
+    { key:'meals', icon:'🍽️', label:'Meals', color:'#9333ea',
+      getText: function(r){ var fl=r.mealFluidOz||r.fluidOz||0; return (r.meal||r.name||'Meal')+(fl?' '+fl+'oz':''); } },
+    { key:'activities', icon:'🏃', label:'Activity', color:'#14b8a6',
+      getText: function(r){ return (r.activity||r.type||'Activity')+(r.duration?' '+r.duration+'min':''); } },
+    { key:'notes', icon:'📝', label:'Notes', color:'#8b5cf6',
+      getText: function(r){ var t=(r.text||r.note||''); return t.length>30?t.slice(0,30)+'…':t; } },
+    { key:'procedures', icon:'🏥', label:'Procedures', color:'#dc2626',
+      getText: function(r){ return r.name||r.procedure||'Procedure'; } }
+  ];
+
+  var html = '<div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px">📌 Events in Window</div>';
+
+  // Legend: 14-day baseline / anchor / 5-day response
+  html += '<div style="display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap;font-size:12px">';
+  html += '<span style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:14px;height:14px;background:rgba(148,163,184,0.25);border-radius:3px"></span>14-day baseline</span>';
+  html += '<span style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:14px;height:14px;background:rgba(239,68,68,0.2);border-radius:3px;border:1px solid #ef4444"></span>Anchor</span>';
+  html += '<span style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:14px;height:14px;background:rgba(16,185,129,0.15);border-radius:3px"></span>5-day response</span>';
+  html += '</div>';
+
+  // Per-category rows
+  cats.forEach(function(cat){
+    var hasAny = dates.some(function(d){ var arr=byDate[d][cat.key]||[]; return arr.length>0; });
+    if(!hasAny) return;
+
+    html += '<div style="margin-bottom:10px">';
+    html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:4px">'+cat.icon+' '+cat.label+'</div>';
+    html += '<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px">';
+
+    dates.forEach(function(d, di){
+      var items = byDate[d][cat.key] || [];
+      var isAnchor = d === anchor;
+      var isResponse = di > 14;
+      var bgColor = isAnchor ? 'rgba(239,68,68,0.12)' : isResponse ? 'rgba(16,185,129,0.08)' : 'rgba(148,163,184,0.10)';
+      var borderStyle = isAnchor ? '1px solid #ef4444' : '1px solid #e5e7eb';
+      html += '<div style="min-width:36px;flex:1;background:'+bgColor+';border:'+borderStyle+';border-radius:6px;padding:4px 2px;text-align:center;font-size:11px;min-height:36px;display:flex;align-items:center;justify-content:center;flex-direction:column">';
+      if(items.length > 0){
+        html += '<span style="color:'+cat.color+';font-weight:700">'+items.length+'</span>';
+        var tip = items.map(function(r){ return cat.getText(r); }).join(', ');
+        if(tip.length > 40) tip = tip.slice(0,40)+'…';
+        html += '<span style="font-size:9px;color:#6b7280;line-height:1.2;word-break:break-word">'+anchorDateLabel(d)+'</span>';
+      } else {
+        html += '<span style="color:#d1d5db">·</span>';
+      }
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+
+  // MCI row
+  var hasMCI = dates.some(function(d){ return byDate[d].mci !== null; });
+  if(hasMCI){
+    html += '<div style="margin-bottom:10px">';
+    html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:4px">🌅 Morning Check-In</div>';
+    html += '<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px">';
+    dates.forEach(function(d, di){
+      var mci = byDate[d].mci;
+      var isAnchor = d === anchor;
+      var isResponse = di > 14;
+      var bgColor = isAnchor ? 'rgba(239,68,68,0.12)' : isResponse ? 'rgba(16,185,129,0.08)' : 'rgba(148,163,184,0.10)';
+      var borderStyle = isAnchor ? '1px solid #ef4444' : '1px solid #e5e7eb';
+      html += '<div style="min-width:36px;flex:1;background:'+bgColor+';border:'+borderStyle+';border-radius:6px;padding:4px 2px;text-align:center;font-size:11px;min-height:36px;display:flex;align-items:center;justify-content:center;flex-direction:column">';
+      if(mci){
+        var fMap={great:'😊',good:'🙂',okay:'😐',rough:'😟',bad:'😣'};
+        html += '<span style="font-size:14px">'+(fMap[mci.feeling]||'🌅')+'</span>';
+      } else {
+        html += '<span style="color:#d1d5db">·</span>';
+      }
+      html += '</div>';
+    });
+    html += '</div></div>';
+  }
+
+  document.getElementById('anchorAnnotations').innerHTML = html;
+}
+
+// ── Plain-language summary generator ────────────────────────────────────────
+
+function generateAnchorSummaryText(windowData, seriesData){
+  var anchor  = windowData.anchorDate;
+  var byDate  = windowData.byDate;
+  var dates   = windowData.dates;
+  var anchorFriendly = anchorFriendlyDate(anchor);
+
+  var parts = [];
+
+  // BP
+  if(seriesData.sysSeries && seriesData.sysAvg !== null){
+    var anchorSys  = seriesData.sysSeries[14];
+    var postSys    = seriesData.sysSeries.slice(15).filter(function(v){return v!==null;});
+    var postSysAvg = postSys.length ? Math.round(postSys.reduce(function(a,b){return a+b;},0)/postSys.length) : null;
+    if(anchorSys !== null){
+      var diff = anchorSys - seriesData.sysAvg;
+      var dir  = diff > 0 ? 'above' : 'below';
+      if(Math.abs(diff) >= 3){
+        parts.push('On '+anchorFriendly+', systolic BP was '+anchorSys+' mmHg — '+Math.abs(diff)+' mmHg '+dir+' its prior 14-day average of '+seriesData.sysAvg+' mmHg.');
+      }
+    }
+    if(postSysAvg !== null){
+      parts.push('In the 5 days following, average systolic BP was '+postSysAvg+' mmHg.');
+    }
+  }
+
+  // HR
+  if(seriesData.hrSeries && seriesData.hrAvg !== null){
+    var anchorHR  = seriesData.hrSeries[14];
+    var postHR    = seriesData.hrSeries.slice(15).filter(function(v){return v!==null;});
+    var postHRAvg = postHR.length ? Math.round(postHR.reduce(function(a,b){return a+b;},0)/postHR.length) : null;
+    if(anchorHR !== null){
+      var hrDiff = anchorHR - seriesData.hrAvg;
+      var hrDir  = hrDiff > 0 ? 'above' : 'below';
+      if(Math.abs(hrDiff) >= 3){
+        parts.push('Heart rate on anchor date: '+anchorHR+' bpm — '+Math.abs(hrDiff)+' bpm '+hrDir+' its 14-day average of '+seriesData.hrAvg+' bpm.');
+      }
+    }
+    if(postHRAvg !== null && seriesData.hrAvg !== null && Math.abs(postHRAvg - seriesData.hrAvg) >= 3){
+      parts.push('In the 5 days following, HR averaged '+postHRAvg+' bpm.');
+    }
+  }
+
+  // Weight
+  if(seriesData.wtSeries && seriesData.wtAvg !== null){
+    var anchorWt = seriesData.wtSeries[14];
+    if(anchorWt !== null){
+      var wtDiff = Math.round((anchorWt - seriesData.wtAvg)*10)/10;
+      if(Math.abs(wtDiff) >= 0.5){
+        parts.push('Weight on anchor date: '+anchorWt+' lbs ('+Math.abs(wtDiff)+' lbs '+(wtDiff>0?'above':'below')+' 14-day average of '+seriesData.wtAvg+' lbs).');
+      }
+    }
+  }
+
+  // Medications in 48h before anchor
+  var medWindow = [anchorAddDays(anchor,-2), anchorAddDays(anchor,-1), anchor];
+  var medsNearAnchor = [];
+  medWindow.forEach(function(d){
+    (byDate[d]&&byDate[d].medications||[]).forEach(function(m){
+      var name = m.medicine||m.med||'';
+      if(name && medsNearAnchor.indexOf(name)===-1) medsNearAnchor.push(name);
+    });
+  });
+  if(medsNearAnchor.length){
+    parts.push('Medications logged in the 48 hours around anchor date: '+medsNearAnchor.join(', ')+'.');
+  }
+
+  // Symptoms in 5-day response window
+  var responseDates = dates.slice(15);
+  var responseSymptoms = [];
+  responseDates.forEach(function(d){
+    (byDate[d].symptoms||[]).forEach(function(sym){
+      var name = sym.symptom||sym.name||'';
+      var sev  = sym.severity||sym.s||'';
+      if(name){
+        var entry = name+(sev?' (severity '+sev+')':'');
+        responseSymptoms.push(entry);
+      }
+    });
+  });
+  if(responseSymptoms.length){
+    parts.push('Symptoms logged in the 5 days following: '+responseSymptoms.join('; ')+'.');
+  }
+
+  // Procedures in window
+  var allProcs = [];
+  dates.forEach(function(d){
+    (byDate[d].procedures||[]).forEach(function(p){
+      allProcs.push((p.name||'Procedure')+' ('+anchorFriendlyDate(d)+')');
+    });
+  });
+  if(allProcs.length){
+    parts.push('Procedures in this window: '+allProcs.join('; ')+'.');
+  } else {
+    parts.push('No procedures were recorded in this 20-day window.');
+  }
+
+  // Activities near anchor
+  var actNearAnchor = [];
+  [anchorAddDays(anchor,-1), anchor, anchorAddDays(anchor,1)].forEach(function(d){
+    (byDate[d]&&byDate[d].activities||[]).forEach(function(act){
+      var name = act.activity||act.type||'Activity';
+      if(actNearAnchor.indexOf(name)===-1) actNearAnchor.push(name);
+    });
+  });
+  if(actNearAnchor.length){
+    parts.push('Activities logged around anchor date: '+actNearAnchor.join(', ')+'.');
+  }
+
+  if(!parts.length) parts.push('Insufficient data to generate a summary for this window.');
+
+  return parts.join(' ');
+}
+
+// ── Main entry point ─────────────────────────────────────────────────────────
+
+var _lastAnchorDate = null;
+var _lastAnchorSummary = '';
+
+function runAnchorInvestigation(){
+  var inp = document.getElementById('anchorDateInput');
+  if(!inp || !inp.value){
+    inp.focus();
+    return;
+  }
+  var anchorDate = inp.value; // YYYY-MM-DD
+  _lastAnchorDate = anchorDate;
+
+  var windowData = loadAnchorWindowData(anchorDate);
+  var seriesData = buildAnchorCharts(windowData);
+  buildAnchorAnnotations(windowData);
+
+  var summaryText = generateAnchorSummaryText(windowData, seriesData);
+  _lastAnchorSummary = summaryText;
+  document.getElementById('anchorSummaryText').textContent = summaryText;
+  document.getElementById('anchorResults').style.display = 'block';
+
+  // Scroll to results
+  setTimeout(function(){
+    document.getElementById('anchorResults').scrollIntoView({behavior:'smooth',block:'start'});
+  },150);
+}
+
+function copyAnchorSummary(){
+  if(!_lastAnchorSummary) return;
+  var text = 'ClinBridge Anchor Date Investigation — '+anchorFriendlyDate(_lastAnchorDate)+'\n\n'+_lastAnchorSummary;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(function(){
+      showToast('Copied to clipboard');
+    }).catch(function(){
+      fallbackCopyText(text);
+    });
+  } else {
+    fallbackCopyText(text);
+  }
+}
+
+function fallbackCopyText(text){
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand('copy'); showToast('Copied to clipboard'); }catch(e){ alert('Copy failed — please long-press the summary text to copy manually.'); }
+  document.body.removeChild(ta);
+}
+
+function showToast(msg){
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:white;padding:10px 20px;border-radius:20px;font-size:15px;font-weight:600;z-index:99999;pointer-events:none;opacity:1;transition:opacity 0.4s';
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){ document.body.removeChild(t); },400); },2000);
+}
+
+function saveAnchorInvestigation(){
+  if(!_lastAnchorDate || !_lastAnchorSummary) return;
+  var list = loadSavedInvestigations();
+  // Default name
+  var defaultName = 'Investigation — '+anchorFriendlyDate(_lastAnchorDate);
+  var html = '<div class="modal-title">💾 Save Investigation</div>';
+  html += '<div style="font-size:15px;color:#374151;margin-bottom:12px">Give this investigation a name so you can find it later.</div>';
+  html += '<input type="text" id="anchorSaveName" class="modal-input" style="width:100%;box-sizing:border-box;font-size:16px;padding:12px" value="'+defaultName+'" maxlength="80">';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">';
+  html += '<button onclick="hideModal()" class="modal-cancel">Cancel</button>';
+  html += '<button onclick="confirmSaveAnchor()" class="modal-ok">💾 Save</button>';
+  html += '</div>';
+  showModal(html);
+  setTimeout(function(){
+    var el = document.getElementById('anchorSaveName');
+    if(el){ el.focus(); el.select(); }
+  },100);
+}
+
+function confirmSaveAnchor(){
+  var nameEl = document.getElementById('anchorSaveName');
+  var name = nameEl ? nameEl.value.trim() : '';
+  if(!name) name = 'Investigation — '+anchorFriendlyDate(_lastAnchorDate);
+  var list = loadSavedInvestigations();
+  // Replace existing entry for same anchor date if present
+  list = list.filter(function(item){ return item.anchorDate !== _lastAnchorDate; });
+  list.unshift({
+    id: 'anchor_'+_lastAnchorDate,
+    name: name,
+    anchorDate: _lastAnchorDate,
+    summary: _lastAnchorSummary,
+    savedAt: new Date().toISOString()
+  });
+  if(list.length > 20) list = list.slice(0,20); // cap at 20
+  saveSavedInvestigations(list);
+  hideModal();
+  renderAnchorSavedList();
+  showToast('Investigation saved');
+}
+
+function renderAnchorSavedList(){
+  var list = loadSavedInvestigations();
+  var el = document.getElementById('anchorSavedList');
+  if(!el) return;
+  if(!list.length){
+    el.innerHTML = '';
+    return;
+  }
+  var html = '<div style="margin-bottom:14px">';
+  html += '<div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px">💾 Saved Investigations</div>';
+  list.forEach(function(item){
+    html += '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;margin-bottom:6px">';
+    html += '<div style="flex:1;min-width:0">';
+    html += '<div style="font-size:14px;font-weight:600;color:#0369a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+item.name+'</div>';
+    html += '<div style="font-size:12px;color:#6b7280">Anchor: '+anchorFriendlyDate(item.anchorDate)+'</div>';
+    html += '</div>';
+    html += '<button onclick="loadSavedAnchor(\''+item.anchorDate+'\')" style="background:#0ea5e9;color:white;border:none;padding:8px 14px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">Load</button>';
+    html += '<button onclick="deleteSavedAnchor(\''+item.anchorDate+'\')" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;padding:8px 10px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">✕</button>';
+    html += '</div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function loadSavedAnchor(anchorDate){
+  var inp = document.getElementById('anchorDateInput');
+  if(inp) inp.value = anchorDate;
+  runAnchorInvestigation();
+}
+
+function deleteSavedAnchor(anchorDate){
+  var list = loadSavedInvestigations().filter(function(item){ return item.anchorDate !== anchorDate; });
+  saveSavedInvestigations(list);
+  renderAnchorSavedList();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 function saveAnalyticsNotes(){
 const range=getAnalyticsDateRange();
