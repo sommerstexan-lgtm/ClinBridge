@@ -1,17 +1,9 @@
 {
-  "version": "v9.9.9",
+  "version": "v9.9.10",
   "releaseDate": "March 11, 2026",
-  "summary": "iOS PWA push notifications fully restored — sw.js, manifest.json, and permission flow all fixed",
-  "whatsNew": [
-    "iOS PWA Push Notifications — sw.js now ships as a companion file so the Service Worker actually registers (previously 404'd silently)",
-    "manifest.json now linked in page head — required by iOS 16.4+ for Web Push to function",
-    "Startup permission request suppressed for Home Screen installs — iOS requires a user gesture, and the PWA prompt modal already handles that correctly",
-    "Event notifications now schedule inside the SW's confirmed .then() callback rather than a fixed 2-second blind delay",
-    "Per-action ✅ stubs on reminder cards — tapping an action button replaces only that button with a grayed stub while remaining actions stay active. Done — Dismiss and Save as Missed remain throughout. Full green completion state only after all actions logged or Done — Dismiss tapped."
-  ],
+  "summary": "Alert chime fixed + accurate iOS notification documentation",
   "fixes": [
-    "Service Worker registration silently failing with 404 — sw.js file was never deployed",
-    "Web Push not qualifying on iOS 16.4+ — manifest.json was missing from page head",
-    "Non-gesture Notification.requestPermission() call on startup conflicting with the PWA permission modal flow on iOS"
+    "Alert chime silently dropping on iOS when AudioContext was suspended — tones now scheduled inside .then() after AudioContext.resume() fully resolves",
+    "All in-app text, settings descriptions, and permission prompts corrected to accurately reflect iOS notification capability: alerts fire while ClinBridge is open and on screen only — background/locked-screen alerts require a future server-push implementation"
   ]
 }
