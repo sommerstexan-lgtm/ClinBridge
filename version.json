@@ -1,8 +1,5 @@
 {
-  "version": "v9.9.13",
-  "releaseDate": "March 11, 2026",
-  "summary": "HR Level Shift Detection — new pattern type catches sustained regime changes the old detector missed entirely",
-  "newFeatures": [
-    "HR Rate Detector now detects level shifts: periods where HR was stable, then durably moved to a new baseline over multiple days. Algorithm uses daily averages + sliding window split-point to distinguish real step changes from noise. Shows before/after means, standard deviation, shift magnitude, onset date, and Investigate button."
-  ]
+  "version": "v9.9.14",
+  "releaseDate": "2026-03-11",
+  "notes": "Tap-to-show tooltips on all Advanced Analytics Anchor Date charts — exact value, date, and delta vs. 14-day baseline average."
 }

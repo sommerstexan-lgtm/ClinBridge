@@ -1,68 +1,84 @@
-// ClinBridge Service Worker — v9.9.9
-// Handles notification display and click routing for iOS PWA and Android PWA.
-// Notifications are scheduled and fired from the main thread via
-// registration.showNotification() — this SW receives the notificationclick event
-// and focuses or opens the app window in response.
+// ClinBridge Service Worker — v9.9.14
+const CACHE_NAME = 'clinbridge-v9.9.14';
+const CORE_FILES = [
+  './ClinBridgev9_9_14.html',
+  './index.html',
+  './manifest.json'
+];
 
-var CACHE_NAME = 'clinbridge-sw-v1';
-
-// ── Lifecycle ────────────────────────────────────────────────────────────────
-
+// ── Install: pre-cache core files ─────────────────────────────────────────
 self.addEventListener('install', function(event) {
-  // Take control immediately — don't wait for old SW to become idle
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(function(cache) {
+      return cache.addAll(CORE_FILES);
+    })
+  );
   self.skipWaiting();
 });
 
+// ── Activate: purge old caches ────────────────────────────────────────────
 self.addEventListener('activate', function(event) {
-  // Claim all open clients so this SW controls them right away
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then(function(keys) {
+      return Promise.all(
+        keys.filter(function(k) { return k !== CACHE_NAME; })
+            .map(function(k)   { return caches.delete(k); })
+      );
+    })
+  );
+  self.clients.claim();
 });
 
-// ── Notification Click ───────────────────────────────────────────────────────
+// ── Fetch: network-first, fall back to cache ──────────────────────────────
+self.addEventListener('fetch', function(event) {
+  // Only handle GET requests on our own origin
+  if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith(self.location.origin)) return;
 
-self.addEventListener('notificationclick', function(event) {
-  event.notification.close();
-
-  var targetUrl = (event.notification.data && event.notification.data.url)
-    ? event.notification.data.url
-    : self.registration.scope;
-
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then(function(clientList) {
-        // If ClinBridge is already open, focus it
-        for (var i = 0; i < clientList.length; i++) {
-          var client = clientList[i];
-          if (client.url === targetUrl && 'focus' in client) {
-            return client.focus();
-          }
+  event.respondWith(
+    fetch(event.request)
+      .then(function(response) {
+        // Cache a fresh copy on success
+        if (response && response.status === 200) {
+          var clone = response.clone();
+          caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(event.request, clone);
+          });
         }
-        // Otherwise open a new window
-        if (clients.openWindow) {
-          return clients.openWindow(targetUrl);
-        }
+        return response;
+      })
+      .catch(function() {
+        // Offline: serve from cache
+        return caches.match(event.request);
       })
   );
 });
 
-// ── Push Event (future-proofing) ─────────────────────────────────────────────
-// ClinBridge currently uses scheduled setTimeout-based notifications fired from
-// the main thread via registration.showNotification(). This handler is a no-op
-// placeholder for a future server-push implementation.
+// ── Push notifications ────────────────────────────────────────────────────
 self.addEventListener('push', function(event) {
-  if (!event.data) return;
-  try {
-    var payload = event.data.json();
-    event.waitUntil(
-      self.registration.showNotification(payload.title || 'ClinBridge', {
-        body:  payload.body  || '',
-        tag:   payload.tag   || 'clinbridge-push',
-        icon:  'clinbridge-logo.png',
-        badge: 'clinbridge-logo.png',
-        data:  { url: self.registration.scope }
-      })
-    );
-  } catch(e) {
-    console.warn('[ClinBridge SW] Push parse error:', e);
-  }
+  var data = event.data ? event.data.json() : {};
+  var title   = data.title   || 'ClinBridge';
+  var options = {
+    body:    data.body    || 'Time for your scheduled event.',
+    icon:    data.icon    || './ClinBridge-App-logo.JPG',
+    badge:   data.badge   || './ClinBridge-App-logo.JPG',
+    tag:     data.tag     || 'clinbridge-reminder',
+    data:    data.data    || {}
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// ── Notification click: focus or open app ────────────────────────────────
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(list) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].url.includes('ClinBridge') && 'focus' in list[i]) {
+          return list[i].focus();
+        }
+      }
+      return clients.openWindow('./ClinBridgev9_9_14.html');
+    })
+  );
 });
