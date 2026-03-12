@@ -1,8 +1,8 @@
-// ClinBridge Service Worker — v9.9.22
+// ClinBridge Service Worker — v9.9.23
 // Scope: push notification infrastructure groundwork.
 // No aggressive caching — GitHub Pages handles delivery.
 
-const CACHE_NAME = 'clinbridge-v9.9.22';
+const CACHE_NAME = 'clinbridge-v9.9.23';
 
 // Install: activate immediately
 self.addEventListener('install', function(event) {

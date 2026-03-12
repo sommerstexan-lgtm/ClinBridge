@@ -1,11 +1,11 @@
 {
-  "version": "v9.9.22",
+  "version": "v9.9.23",
   "releaseDate": "March 12, 2026",
-  "summary": "iOS anchor date tap fix — charts now show correct dates after auto-scroll.",
+  "summary": "Anchor Date charts now show 3 key stats per chart — prior 14-day avg, target date value, and 5-day post avg.",
   "whatsNew": [
-    "Anchor Date Investigation charts now show the correct date when tapping any data point on iPhone — even after the chart auto-scrolls to center the anchor date on open."
+    "Anchor Date Investigation: every chart now shows a 3-stat summary bar — Prior to target date 14-day avg, On target date value, and After target date 5-day avg. All key insight visible at a glance without tapping."
   ],
   "fixes": [
-    "Root cause of the iOS 'shows Feb dates when tapping Mar points' bug finally eliminated. iOS compositor desyncs scrollLeft reads after programmatic writes — fixed by caching scroll position in JavaScript instead of reading the unreliable DOM property."
+    "Cross-chart tooltip interference permanently resolved by removing the tooltip system and replacing it with always-visible stat pills. Charts are now fully passive."
   ]
 }
