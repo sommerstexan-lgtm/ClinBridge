@@ -1,12 +1,11 @@
-// ClinBridge Service Worker — v9.9.14
-const CACHE_NAME = 'clinbridge-v9.9.14';
+// ClinBridge Service Worker — v9.9.15
+const CACHE_NAME = 'clinbridge-v9.9.15';
 const CORE_FILES = [
-  './ClinBridgev9_9_14.html',
+  './ClinBridgev9_9_15.html',
   './index.html',
   './manifest.json'
 ];
 
-// ── Install: pre-cache core files ─────────────────────────────────────────
 self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
@@ -16,7 +15,6 @@ self.addEventListener('install', function(event) {
   self.skipWaiting();
 });
 
-// ── Activate: purge old caches ────────────────────────────────────────────
 self.addEventListener('activate', function(event) {
   event.waitUntil(
     caches.keys().then(function(keys) {
@@ -29,16 +27,12 @@ self.addEventListener('activate', function(event) {
   self.clients.claim();
 });
 
-// ── Fetch: network-first, fall back to cache ──────────────────────────────
 self.addEventListener('fetch', function(event) {
-  // Only handle GET requests on our own origin
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith(self.location.origin)) return;
-
   event.respondWith(
     fetch(event.request)
       .then(function(response) {
-        // Cache a fresh copy on success
         if (response && response.status === 200) {
           var clone = response.clone();
           caches.open(CACHE_NAME).then(function(cache) {
@@ -48,13 +42,11 @@ self.addEventListener('fetch', function(event) {
         return response;
       })
       .catch(function() {
-        // Offline: serve from cache
         return caches.match(event.request);
       })
   );
 });
 
-// ── Push notifications ────────────────────────────────────────────────────
 self.addEventListener('push', function(event) {
   var data = event.data ? event.data.json() : {};
   var title   = data.title   || 'ClinBridge';
@@ -68,7 +60,6 @@ self.addEventListener('push', function(event) {
   event.waitUntil(self.registration.showNotification(title, options));
 });
 
-// ── Notification click: focus or open app ────────────────────────────────
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
   event.waitUntil(
@@ -78,7 +69,7 @@ self.addEventListener('notificationclick', function(event) {
           return list[i].focus();
         }
       }
-      return clients.openWindow('./ClinBridgev9_9_14.html');
+      return clients.openWindow('./ClinBridgev9_9_15.html');
     })
   );
 });

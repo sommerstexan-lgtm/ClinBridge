@@ -1,5 +1,5 @@
 {
-  "version": "v9.9.14",
+  "version": "v9.9.15",
   "releaseDate": "2026-03-11",
-  "notes": "Tap-to-show tooltips on all Advanced Analytics Anchor Date charts — exact value, date, and delta vs. 14-day baseline average."
+  "notes": "Next Event quick-edit button — tap Edit directly from the Main Page banner to change event time, fluid goal, or reminders without going to Settings."
 }
