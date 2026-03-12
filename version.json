@@ -1,5 +1,5 @@
 {
-  "version": "v9.9.18",
+  "version": "v9.9.19",
   "releaseDate": "2026-03-12",
-  "notes": "Anchor Date chart phantom tooltip fix — tooltips now only appear on explicit tap, not on scroll proximity."
+  "notes": "Anchor Date chart tap fix — tapping after horizontal scroll now shows the correct date using scroll-offset-aware coordinate calculation."
 }
