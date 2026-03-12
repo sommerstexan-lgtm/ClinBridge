@@ -1,5 +1,5 @@
 {
-  "version": "v9.9.19",
+  "version": "v9.9.20",
   "releaseDate": "2026-03-12",
-  "notes": "Anchor Date chart tap fix — tapping after horizontal scroll now shows the correct date using scroll-offset-aware coordinate calculation."
+  "notes": "Anchor Date charts now open pre-scrolled to the anchor date — no manual scrolling needed, tap any point to see correct date and value."
 }
