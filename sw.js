@@ -1,7 +1,7 @@
-// ClinBridge Service Worker — v9.9.16
-const CACHE_NAME = 'clinbridge-v9.9.16';
+// ClinBridge Service Worker — v9.9.18
+const CACHE_NAME = 'clinbridge-v9.9.18';
 const CORE_FILES = [
-  './ClinBridgev9.9.16.html',
+  './ClinBridgev9_9_18.html',
   './index.html',
   './manifest.json'
 ];
@@ -69,7 +69,7 @@ self.addEventListener('notificationclick', function(event) {
           return list[i].focus();
         }
       }
-      return clients.openWindow('./ClinBridgev9.9.16.html');
+      return clients.openWindow('./ClinBridgev9_9_18.html');
     })
   );
 });
