@@ -1,6 +1,6 @@
-// ClinBridge Service Worker — v9.9.16
-var CACHE_NAME = 'clinbridge-v9-9-16';
-var APP_FILE   = 'ClinBridgev9_9_16.html';
+// ClinBridge Service Worker — v9.9.17
+var CACHE_NAME = 'clinbridge-v9-9-17';
+var APP_FILE   = 'ClinBridgev9_9_17.html';
 
 self.addEventListener('install', function(e) {
   e.waitUntil(
@@ -31,7 +31,6 @@ self.addEventListener('fetch', function(e) {
   );
 });
 
-// Push notification handler (groundwork for future server-push)
 self.addEventListener('push', function(e) {
   var data = e.data ? e.data.json() : { title: 'ClinBridge', body: 'You have a reminder.' };
   e.waitUntil(
