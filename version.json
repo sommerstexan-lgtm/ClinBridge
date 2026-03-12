@@ -1,5 +1,5 @@
 {
-  "version": "v9.9.15",
-  "releaseDate": "2026-03-11",
-  "notes": "Next Event quick-edit button — tap Edit directly from the Main Page banner to change event time, fluid goal, or reminders without going to Settings."
+  "version": "v9.9.16",
+  "date": "2026-03-12",
+  "file": "ClinBridgev9_9_16.html"
 }
