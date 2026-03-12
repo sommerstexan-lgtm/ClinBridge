@@ -1,5 +1,5 @@
 {
-  "version": "v9.9.17",
-  "date": "2026-03-12",
-  "file": "ClinBridgev9_9_17.html"
+  "version": "v9.9.18",
+  "releaseDate": "2026-03-12",
+  "notes": "Anchor Date chart phantom tooltip fix — tooltips now only appear on explicit tap, not on scroll proximity."
 }
