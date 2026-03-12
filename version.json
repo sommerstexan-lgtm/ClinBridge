@@ -1,5 +1,11 @@
 {
-  "version": "v9.9.21",
-  "releaseDate": "2026-03-12",
-  "notes": "iOS anchor chart fix — scroll to anchor date now works on iPhone, and tapping data points shows correct dates using scroll-aware touchend detection."
+  "version": "v9.9.22",
+  "releaseDate": "March 12, 2026",
+  "summary": "iOS anchor date tap fix — charts now show correct dates after auto-scroll.",
+  "whatsNew": [
+    "Anchor Date Investigation charts now show the correct date when tapping any data point on iPhone — even after the chart auto-scrolls to center the anchor date on open."
+  ],
+  "fixes": [
+    "Root cause of the iOS 'shows Feb dates when tapping Mar points' bug finally eliminated. iOS compositor desyncs scrollLeft reads after programmatic writes — fixed by caching scroll position in JavaScript instead of reading the unreliable DOM property."
+  ]
 }
