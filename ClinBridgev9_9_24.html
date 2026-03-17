@@ -3560,10 +3560,6 @@ function _wzSaveChecklistPath(pathId){
   localStorage.setItem('wizardChecklist_'+pathId,JSON.stringify(cl));
   alert('✓ Checklist saved! You can view it anytime from the Getting Started tab.');
 }
-  var cl=JSON.parse(localStorage.getItem('wizardChecklist_A')||'{}');
-  localStorage.setItem('wizardChecklist_A',JSON.stringify(cl));
-  alert('✓ Checklist saved! You can view it anytime from the Getting Started tab.');
-}
 
 function openWizardChecklist(){
   var el=document.getElementById('wizardEntryPoint');
