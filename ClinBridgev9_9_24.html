@@ -3554,7 +3554,12 @@ function _wzToggleChecklist(key){
   _wzToggleChecklistPath('A',key);
 }
 
-function _wzSaveChecklist(){
+function _wzSaveChecklistPath(pathId){
+  // Always reads current state from localStorage — never uses stale render-time state
+  var cl=JSON.parse(localStorage.getItem('wizardChecklist_'+pathId)||'{}');
+  localStorage.setItem('wizardChecklist_'+pathId,JSON.stringify(cl));
+  alert('✓ Checklist saved! You can view it anytime from the Getting Started tab.');
+}
   var cl=JSON.parse(localStorage.getItem('wizardChecklist_A')||'{}');
   localStorage.setItem('wizardChecklist_A',JSON.stringify(cl));
   alert('✓ Checklist saved! You can view it anytime from the Getting Started tab.');
@@ -3675,7 +3680,7 @@ function _wzEndScreen(el,pathId,config){
   h+='</div>';
 
   h+='<button onclick="closeHelpModal();window.scrollTo({top:0,behavior:\'smooth\'})" style="width:100%;background:#1a3a5c;color:#fff;border:none;border-radius:12px;padding:15px;font-size:17px;font-weight:700;cursor:pointer;margin-bottom:10px">🏠 Go to Home Screen</button>';
-  h+='<button onclick="localStorage.setItem(\'wizardChecklist_'+pathId+'\',JSON.stringify('+JSON.stringify(cl)+')); alert(\'✓ Checklist saved!\')" style="width:100%;background:#10b981;color:#fff;border:none;border-radius:12px;padding:15px;font-size:17px;font-weight:700;cursor:pointer;margin-bottom:10px">💾 Save My Checklist</button>';
+  h+='<button onclick="_wzSaveChecklistPath(\''+pathId+'\')" style="width:100%;background:#10b981;color:#fff;border:none;border-radius:12px;padding:15px;font-size:17px;font-weight:700;cursor:pointer;margin-bottom:10px">💾 Save My Checklist</button>';
   h+='<button onclick="openWizardPathMenu()" style="width:100%;background:#9333ea;color:#fff;border:none;border-radius:12px;padding:15px;font-size:17px;font-weight:700;cursor:pointer;margin-bottom:10px">🔍 Explore more — choose another path</button>';
   el.innerHTML=h;
 }
@@ -3736,14 +3741,14 @@ function _wzB_step1(el){
       inner+='</div></div>';
     });
     inner+='</div>';
-    inner+='<button onclick="hideModal();manageMedicines()" style="width:100%;background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px">💊 Add or Edit Medications</button>';
+    inner+='<button onclick="closeHelpModal();setTimeout(manageMedicines,100)" style="width:100%;background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px">💊 Add or Edit Medications</button>';
     inner+='<button onclick="_wzNext()" style="width:100%;background:#10b981;color:#fff;border:none;border-radius:12px;padding:15px;font-size:17px;font-weight:700;cursor:pointer;margin-bottom:10px">✅ My medications are correct — Next Step →</button>';
   } else {
     inner+='<div style="background:#fef3c7;border:2px solid #fde68a;border-radius:12px;padding:14px;margin-bottom:14px">';
     inner+='<div style="font-size:16px;font-weight:700;color:#92400e;margin-bottom:4px">⚠️ No medications added yet</div>';
     inner+='<div style="font-size:16px;color:#78350f">Tap the button below to add your medications. Include every one you take regularly — even vitamins or supplements if your cardiologist tracks them.</div>';
     inner+='</div>';
-    inner+='<button onclick="hideModal();manageMedicines()" style="width:100%;background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:10px">💊 Open Manage Medicines</button>';
+    inner+='<button onclick="closeHelpModal();setTimeout(manageMedicines,100)" style="width:100%;background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:10px">💊 Open Manage Medicines</button>';
     inner+='<button onclick="_wzNext()" style="width:100%;background:#f3f4f6;color:#6b7280;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px">Skip — I\'ll add medications later</button>';
   }
   inner+='<button onclick="_wzBack()" style="width:100%;background:#f3f4f6;color:#374151;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">← Back</button>';
