@@ -1,11 +1,10 @@
 {
-  "version": "v9.9.23",
-  "releaseDate": "March 12, 2026",
-  "summary": "Anchor Date charts now show 3 key stats per chart — prior 14-day avg, target date value, and 5-day post avg.",
+  "version": "v9.9.24",
+  "releaseDate": "2026-03-17",
+  "fileName": "ClinBridgev9_9_24.html",
   "whatsNew": [
-    "Anchor Date Investigation: every chart now shows a 3-stat summary bar — Prior to target date 14-day avg, On target date value, and After target date 5-day avg. All key insight visible at a glance without tapping."
-  ],
-  "fixes": [
-    "Cross-chart tooltip interference permanently resolved by removing the tooltip system and replacing it with always-visible stat pills. Charts are now fully passive."
+    "🧭 New: Guided Setup Wizard — Path A (Blood Pressure & Fluid). Find it in Help & About → Getting Started.",
+    "🐛 Fix: Patient Profile condition buttons now correctly show selected/deselected visual state.",
+    "🐛 Fix: Historical weight entries are now editable and deletable from the All Data view."
   ]
 }
