@@ -1,19 +1,17 @@
 {
   "name": "ClinBridge",
   "short_name": "ClinBridge",
-  "description": "Cardiac health tracking — blood pressure, fluid intake, medications, symptoms, and more.",
-  "start_url": "./index.html",
+  "description": "Cardiac health tracking — free, private, no account required.",
+  "start_url": "./ClinBridgev9_9_24.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#0ea5e9",
+  "background_color": "#f9fafb",
+  "theme_color": "#1a3a5c",
   "icons": [
     {
-      "src": "https://sommerstexan-lgtm.github.io/ClinBridge/ClinBridge-App-logo.JPG",
-      "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
+      "src": "ClinBridge-App-logo.JPG",
+      "sizes": "any",
+      "type": "image/jpeg"
     }
   ]
 }

@@ -3,7 +3,7 @@
   "releaseDate": "2026-03-17",
   "fileName": "ClinBridgev9_9_24.html",
   "whatsNew": [
-    "🧭 New: Guided Setup Wizard — Path A (Blood Pressure & Fluid). Find it in Help & About → Getting Started.",
+    "🧭 New: Guided Setup Wizard — all 4 paths complete (BP & Fluid, Medication Effectiveness, Pattern Investigation, Full Cardiac Monitoring). Find it in Help & About → Getting Started.",
     "🐛 Fix: Patient Profile condition buttons now correctly show selected/deselected visual state.",
     "🐛 Fix: Historical weight entries are now editable and deletable from the All Data view."
   ]
