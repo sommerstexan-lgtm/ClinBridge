@@ -1,14 +1,6 @@
 {
-  "version": "v9.9.25",
-  "releaseDate": "March 18, 2026",
-  "summary": "Condition symptom matching fixed, smart doctor note prompts, Edit Past Weight Entries",
-  "whatsNew": [
-    "Guided Setup Wizard — all four paths complete (BP & Fluid, Medication Effectiveness, Pattern Investigation, Full Cardiac Monitoring)",
-    "Smart Unknown Symptom Recording — gentle follow-up after logging an unrecognised or recurring symptom, with one-tap routing to upcoming appointments or a new appointment placeholder",
-    "Edit Past Weight Entries — orange button on weight card header opens history directly; explains when only today's entry exists"
-  ],
-  "fixes": [
-    "Condition symptom matching — CHF, Diastolic Dysfunction and other full-name conditions now correctly surface Cardiac Cough, Orthopnea, PND and all other condition-specific symptoms",
-    "Historical weight edit no longer requires page refresh — in-memory array is now patched immediately on save"
-  ]
+  "version": "v9.9.26",
+  "releaseDate": "2026-03-18",
+  "filename": "ClinBridgev9_9_26.html",
+  "changelog": "Critical fix: all main page panels (BP, Weight, Symptoms, Activities, Meals, Medicines) restored. Duplicate getAllHistoricalData function override caused all data to show empty. Edit Past Entries button fixed. All History mode fixed. Doctor Report and Analytics historical data restored."
 }
