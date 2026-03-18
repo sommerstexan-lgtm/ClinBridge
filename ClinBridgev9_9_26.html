@@ -46,8 +46,8 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
 <title>ClinBridge</title>
-<link rel="apple-touch-icon" href="https://sommerstexan-lgtm.github.io/ClinBridge/ClinBridge-App-logo.JPG">
-<link rel="icon" type="image/jpeg" href="https://sommerstexan-lgtm.github.io/ClinBridge/ClinBridge-App-logo.JPG">
+<link rel="apple-touch-icon" href="ClinBridge-App-logo.JPG">
+<link rel="icon" type="image/jpeg" href="ClinBridge-App-logo.JPG">
 <style>
 body{font-family:-apple-system,sans-serif;background:#f9fafb;padding:16px;margin:0;font-size:18px;overflow-x:hidden;box-sizing:border-box}
 .card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1);padding:24px;margin-bottom:16px}
@@ -730,7 +730,7 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
 
 
 <div style="max-width:900px;margin:0 auto;text-align:center;">
-  <img class="logo-img" src="clinbridge-logo.png" alt="ClinBridge Logo">
+  <img class="logo-img" id="clinbridgeLogo" src="ClinBridge-App-logo.JPG" alt="ClinBridge Logo" crossorigin="anonymous" onload="removeLogoWhiteBg(this)">
 
   <div class="hdr" style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
     <div style="display:flex;flex-direction:column;align-items:flex-start;">
@@ -855,7 +855,7 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
 
 <div id="panel-bp" class="card-panel-hidden">
 <div class="card" id="bpCard">
-<div class="hdr" id="bpHeader">📊 Today's Blood Pressure</div>
+<div class="hdr" id="bpHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span>📊 Today's Blood Pressure</span><button onclick="showBPHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button></div>
 <div id="bp"></div>
 </div>
 
@@ -883,12 +883,7 @@ Need at least 2 weight entries to show chart
 </div></div><!-- /panel-weight -->
 
 <div id="panel-symptoms" class="card-panel-hidden"><div class="card" id="symptomCard" style="display:none">
-  <div class="hdr" id="symptomHeader">
-    💊 Symptom Tracking
-    <button onclick="openSymptomReview()" style="margin-left:12px;padding:6px 12px;font-size:14px;border:none;border-radius:999px;background:#3b82f6;color:#fff;cursor:pointer;">
-      Review for Doctor
-    </button>
-  </div>
+  <div class="hdr" id="symptomHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span>💊 Symptom Tracking</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button onclick="openSymptomReview()" style="padding:6px 12px;font-size:14px;border:none;border-radius:999px;background:#3b82f6;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px">Review for Doctor</button><button onclick="showSymptomsHistory()" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button></div></div>
 
   <!-- Daily symptom list -->
   <div id="symptom"></div>
@@ -904,7 +899,7 @@ Need at least 2 weight entries to show chart
 </div></div><!-- /panel-symptoms -->
 
 <div id="panel-activities" class="card-panel-hidden"><div class="card" id="activityCard" style="display:none">
-<div class="hdr" id="activityHeader">🏃 Activity/Exercise Tracking</div>
+<div class="hdr" id="activityHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span>🏃 Activity/Exercise Tracking</span><button onclick="showActivitiesHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button></div>
 <div id="activity"></div>
 <div class="hdr" style="margin-top:24px">📊 Activity Duration Trends</div>
 <div id="noChartDataActivity" style="padding:24px;text-align:center;color:#6b7280;background:#f3f4f6;border-radius:8px;margin-bottom:16px">
@@ -916,12 +911,12 @@ Need at least 2 weight entries to show chart
 </div></div><!-- /panel-activities -->
 
 <div id="panel-meals" class="card-panel-hidden"><div class="card" id="mealsCard" style="display:none">
-<div class="hdr" id="mealsHeader" style="display:flex;justify-content:space-between;align-items:center"><span>🍽️ Meals</span><button class="btn" style="background:#f59e0b;padding:8px 16px;font-size:14px" onclick="viewAllMeals()">View All</button></div>
+<div class="hdr" id="mealsHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span>🍽️ Meals</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" style="background:#f59e0b;padding:8px 16px;font-size:14px;min-height:44px" onclick="viewAllMeals()">View All</button><button onclick="showMealsHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button></div></div>
 <div id="meals"></div>
 </div></div><!-- /panel-meals -->
 
 <div id="panel-meds" class="card-panel-hidden"><div class="card" id="medicinesCard" style="display:none">
-<div class="hdr" id="medicinesHeader">💊 Medicines Taken</div>
+<div class="hdr" id="medicinesHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span>💊 Medicines Taken</span><button onclick="showMedHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button></div>
 <div id="medicines"></div>
 </div></div><!-- /panel-meds -->
 
@@ -1070,16 +1065,16 @@ Custom Range
 
     <!-- Tabs -->
     <div class="hr-tabs" aria-label="Help sections">
-      <button type="button" class="hr-tab" data-help-section="welcome">Welcome</button>
-      <button type="button" class="hr-tab" data-help-section="getting-started">Getting Started</button>
-      <button type="button" class="hr-tab" data-help-section="how-to-use">How to Use</button>
-      <button type="button" class="hr-tab" data-help-section="morning-checkin">🌅 Morning Check-In</button>
-      <button type="button" class="hr-tab" data-help-section="faq">FAQ</button>
-      <button type="button" class="hr-tab" data-help-section="privacy">Privacy</button>
-      <button type="button" class="hr-tab" data-help-section="data-management">Data Mgmt</button>
-      <button type="button" class="hr-tab" data-help-section="known-issues">Known Issues</button>
-      <button type="button" class="hr-tab" data-help-section="planned-features">Planned Features</button>
-      <button type="button" class="hr-tab" data-help-section="support">☕ Support</button>
+      <button type="button" class="hr-tab active" id="htab-welcome" onclick="setHelpSection('welcome')">Welcome</button>
+      <button type="button" class="hr-tab" id="htab-getting-started" onclick="setHelpSection('getting-started')">Getting Started</button>
+      <button type="button" class="hr-tab" id="htab-how-to-use" onclick="setHelpSection('how-to-use')">How to Use</button>
+      <button type="button" class="hr-tab" id="htab-morning-checkin" onclick="setHelpSection('morning-checkin')">🌅 Morning Check-In</button>
+      <button type="button" class="hr-tab" id="htab-faq" onclick="setHelpSection('faq')">FAQ</button>
+      <button type="button" class="hr-tab" id="htab-privacy" onclick="setHelpSection('privacy')">Privacy</button>
+      <button type="button" class="hr-tab" id="htab-data-management" onclick="setHelpSection('data-management')">Data Mgmt</button>
+      <button type="button" class="hr-tab" id="htab-known-issues" onclick="setHelpSection('known-issues')">Known Issues</button>
+      <button type="button" class="hr-tab" id="htab-planned-features" onclick="setHelpSection('planned-features')">Planned Features</button>
+      <button type="button" class="hr-tab" id="htab-support" onclick="setHelpSection('support')">☕ Support</button>
     </div>
 
     <!-- Body -->
@@ -1243,6 +1238,8 @@ Custom Range
             <li>Log symptoms with a severity rating — the Doctor's Report uses this to flag high-severity episodes for your cardiologist.</li>
             <li><strong>Activity Timer:</strong> Use the timer in Log Activity to time workouts in real time. Tap <strong>⏸ Pause</strong> to freeze the clock if interrupted — a PAUSED label confirms it's stopped. Tap <strong>▶ Resume</strong> to continue, then <strong>⏹ Stop &amp; Use</strong> to save the full elapsed time.</li>
             <li><strong>HR Rate Detector — Quick Stats:</strong> Open HR Rate Detector and use the Today / 7 Days / 30 Days / All Time buttons to analyse your heart rate trends across any time window. The chart scrolls horizontally for multi-day views and shows date labels so you can pinpoint when patterns occurred.</li>
+            <li><strong>Viewing history for any card:</strong> Each main page card (Blood Pressure, Weight, Symptoms, Activities, Meals, Medicines) has a <strong>📋 View History</strong> button in its header. Tap it to see up to 90 days of entries in that card only — no other cards are affected. Tap <strong>← Back to Today</strong> inside the card to return. Only one card can show history at a time.</li>
+            <li><strong>Correcting past weight entries:</strong> Tap <strong>✏️ Edit Past Entries</strong> on the Weight card header to open 90-day weight history. A <strong>🗓️ Jump to date</strong> picker lets you navigate directly to any date. Entries that deviate significantly from your 7-day rolling average are automatically flagged — yellow ⚠️ for 10–19 lbs off, red 🚨 for 20+ lbs — so data entry errors are easy to spot without scrolling through every record.</li>
           </ul>
         </div>
       </section>
@@ -1355,6 +1352,8 @@ Custom Range
               <li><strong>🐛 Fix: "Edit Past Entries" Button (Weight) — Now Works</strong> — Tapping "✏️ Edit Past Entries" on the Weight card now correctly switches to All History mode and populates weight entries from all previous days. This was broken by the same getAllHistoricalData override above — switching to 'all' history mode called the broken function and returned no weight data.</li>
               <li><strong>🐛 Fix: All History Mode — BP, Weight, Symptoms, Activities, Meals, Medicines</strong> — Switching from Today to All History using the date filter buttons now loads the full 90-day history correctly across all panels. Previously all panels showed empty in All History mode due to the same root cause.</li>
               <li><strong>🐛 Fix: Doctor's Report and Analytics — Historical Data Restored</strong> — The Doctor's Report, HR Rate Detector, and Advanced Analytics sections that call <code>getAllHistoricalData()</code> with no arguments now correctly receive all 90 days of data. These were also broken by the function override.</li>
+              <li><strong>🗓️ Weight History — Jump-to-Date Picker</strong> — When viewing weight history (Edit Past Entries), a date picker now appears at the top of the list. Pick any date and the view scrolls directly to that entry with a brief highlight pulse — no manual scrolling through 90+ entries required.</li>
+              <li><strong>⚠️ Weight History — Automatic Outlier Flagging</strong> — Each historical weight entry is now compared against your 7-day trailing rolling average (requires ≥ 2 entries in the window). Entries that deviate <strong>10–19 lbs</strong> receive a yellow ⚠️ banner ("Possible data entry error"); entries that deviate <strong>≥ 20 lbs</strong> receive a red 🚨 banner ("Likely data entry error"). Thresholds are grounded in AHA/ACC heart failure guidelines: normal daily fluctuation is 2–4 lbs; 5 lbs/week is a clinical alert threshold; 10+ lbs in a rolling window is almost certainly a typo or unit error (e.g. entering 68 kg instead of 150 lbs). A summary count of flagged entries appears in the picker panel so you know immediately if anything needs review.</li>
               <li><strong>🔧 Cache Buster Version Updated</strong> — Version gate corrected to v9.9.26 to ensure users always load the latest release on upgrade.</li>
             </ul>
         </div>
@@ -1664,6 +1663,20 @@ Custom Range
         <p style="font-size:15px;color:#6b7280;margin-bottom:16px">We track issues openly so you always know the current state of the app.</p>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">✅ Fixed &amp; Shipped in v9.9.26 — March 18, 2026</strong>
+            <ul style="margin:6px 0 0 0;padding-left:18px;line-height:1.8;font-size:14px">
+              <li><strong>Critical Fix — All main page panels empty after v9.9.25</strong> — All data panels (BP, Weight, Symptoms, Activities, Meals, Medicines) were showing blank / "None" on launch. Root cause: a duplicate <code>getAllHistoricalData()</code> function in the analytics engine silently overrode the main-page version. Resolved by renaming the analytics version to <code>getHistoricalDataRange()</code>.</li>
+              <li><strong>Fix — "Edit Past Entries" button did nothing on Chromebook</strong> — The button was silently blocked by a "no history yet" check that fired incorrectly, and even when it did proceed it called a global date-filter switch that changed every panel on the page to 90-day history mode simultaneously. Both issues resolved.</li>
+              <li><strong>Fix — Opening weight history changed BP, Symptoms, Activities, Meals and Medicines to history mode</strong> — Weight history now uses its own isolated <code>weightViewMode</code> variable and never touches any other panel.</li>
+              <li><strong>Per-card history isolation — all panels</strong> — Every main page card (BP, Weight, Symptoms, Activities, Meals, Medicines) now has its own isolated view mode. One card at a time can show history. Attempting to open a second card's history while one is already open shows a toast and scrolls to the open card's Back button.</li>
+              <li><strong>Auto-close triggers for history mode</strong> — History resets automatically on: (1) tapping ← Back to Today on any card, (2) collapsing the panel via its tile, (3) midnight auto-refresh, (4) any global Today filter switch.</li>
+              <li><strong>Weight outlier flagging</strong> — All weight history entries are now automatically compared to a 7-day trailing rolling average. Entries 10–19 lbs off receive a yellow ⚠️ banner; entries 20+ lbs off receive a red 🚨 banner. Thresholds based on AHA/ACC heart failure guidelines. Requires ≥2 entries in the 7-day window before flagging.</li>
+              <li><strong>Weight history — jump-to-date picker</strong> — Date input at the top of the weight history card scrolls directly to any date's entry with a highlight pulse. Outlier count summary shown when flagged entries exist.</li>
+              <li><strong>Fix — delete/edit weight entry in history mode not updating display</strong> — Deleting or editing today's weight entry while in history mode now correctly patches the in-memory W[] array so the display updates immediately without requiring a page reload.</li>
+            </ul>
+        </div>
+
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
           <strong style="font-size:16px">&#x2705; New in v9.7.0 &#x2014; March 7, 2026</strong>
             <ul style="margin:6px 0 0 0;padding-left:18px;line-height:1.8;font-size:14px">
               <li><strong>Activity Timer — Pause &amp; Resume</strong> — Pause button added to the activity timer. Tap Pause to freeze the clock; a ⏸ PAUSED label confirms the paused state. Resume continues from exactly where you left off. Stop &amp; Use saves the full accumulated time.</li>
@@ -1822,6 +1835,11 @@ Custom Range
       <section class="helpSection" data-section="planned-features" hidden>
         <h3>Planned Features</h3>
         <p style="font-size:15px;color:#6b7280;margin-bottom:16px">Here is what is coming. Features are prioritized by clinical value and user feedback.</p>
+
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">✅ Shipped in v9.9.26 — March 18, 2026</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Per-card history isolation</strong> — Every main page card now has its own independent View History mode. Opening BP history no longer affects weight, symptoms, or any other card. One card at a time enforced with a toast and auto-scroll to the open card's Back button. History auto-closes on panel collapse, midnight reset, or global Today switch. <strong>Weight outlier flagging</strong> — Entries deviating 10+ lbs from a 7-day rolling average are automatically flagged with a yellow ⚠️ or red 🚨 banner, grounded in AHA/ACC heart failure thresholds. <strong>Weight jump-to-date picker</strong> — Navigate directly to any date in a 90-entry history list with a single tap. <strong>Critical launch-day regression fix</strong> — All main page panels were showing blank after v9.9.25 due to a duplicate getAllHistoricalData function override. Fully resolved.</p>
+        </div>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
           <strong style="font-size:16px">&#x2705; Release v9.7.0 — Completed March 7, 2026</strong>
@@ -2685,6 +2703,37 @@ Custom Range
 </div>
 
 <script>
+// ── Logo white-background removal ────────────────────────────────────────────
+// Draws the logo onto an offscreen canvas, walks every pixel, and makes any
+// near-white pixel (R>230 AND G>230 AND B>230) fully transparent. The result
+// is written back as a PNG data URL so the logo renders cleanly on any
+// background colour without needing a separate transparent PNG file.
+function removeLogoWhiteBg(img){
+  try{
+    var canvas=document.createElement('canvas');
+    canvas.width=img.naturalWidth||img.width;
+    canvas.height=img.naturalHeight||img.height;
+    if(!canvas.width||!canvas.height) return;
+    var ctx=canvas.getContext('2d');
+    ctx.drawImage(img,0,0);
+    var imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+    var data=imageData.data;
+    // Threshold: treat any pixel with R>230 AND G>230 AND B>230 as background
+    var threshold=230;
+    for(var i=0;i<data.length;i+=4){
+      var r=data[i], g=data[i+1], b=data[i+2];
+      if(r>threshold && g>threshold && b>threshold){
+        data[i+3]=0; // fully transparent
+      }
+    }
+    ctx.putImageData(imageData,0,0);
+    img.src=canvas.toDataURL('image/png');
+  }catch(e){
+    // crossorigin restriction or canvas taint — leave image as-is
+    console.log('Logo bg removal skipped:',e.message);
+  }
+}
+
 // ============================================================
 // VERSION-GATED CACHE BUSTER (runs before anything else)
 // If the browser loaded a stale cached page, this forces a
@@ -3129,6 +3178,12 @@ var bpChart=null,fluidChart=null;
 
 // Date Filter System (v7.1)
 var dateFilterMode='today'; // 'today' or 'all'
+var weightViewMode='today';    // isolated — never affects other panels
+var bpViewMode='today';         // isolated — never affects other panels
+var symptomsViewMode='today';   // isolated — never affects other panels
+var activitiesViewMode='today'; // isolated — never affects other panels
+var mealsViewMode='today';      // isolated — never affects other panels
+var medViewMode='today';        // isolated — never affects other panels
 var DATA_RETENTION_DAYS=90; // Keep data for 90 days max
 
 // Audio Alert System Variables
@@ -3244,67 +3299,35 @@ function setHelpSection(section) {
   var container = document.getElementById('aboutModal');
   if (!container) return;
 
+  // Show matching section, hide all others
   var sections = container.querySelectorAll('.helpSection');
   sections.forEach(function (el) {
-    var isMatch = el.getAttribute('data-section') === section;
-    el.hidden = !isMatch;
+    el.hidden = (el.getAttribute('data-section') !== section);
   });
 
-  var tabs = container.querySelectorAll('.hr-tab[data-help-section]');
-  tabs.forEach(function (btn) {
-    var isMatch = btn.getAttribute('data-help-section') === section;
+  // Update tab active states using direct ID lookup
+  var tabKeys = ['welcome','getting-started','how-to-use','morning-checkin','faq',
+                 'privacy','data-management','known-issues','planned-features','support'];
+  tabKeys.forEach(function(key) {
+    var btn = document.getElementById('htab-'+key);
+    if (!btn) return;
+    var isMatch = (key === section);
     btn.classList.toggle('active', isMatch);
     btn.setAttribute('aria-current', isMatch ? 'true' : 'false');
   });
 
   if (section === 'faq') {
-    renderFAQ();
+    if (typeof renderFAQ === 'function') renderFAQ();
   }
   if (section === 'getting-started') {
-    if(typeof renderWizardEntry==='function'){
-      // If wizard is mid-flow, resume it; otherwise show entry point
-      var wzActive=localStorage.getItem('wizardActivePath');
-      if(wzActive){setTimeout(renderWizardScreen,50);}else{renderWizardEntry();}
+    if (typeof renderWizardEntry === 'function') {
+      var wzActive = localStorage.getItem('wizardActivePath');
+      if (wzActive) { setTimeout(renderWizardScreen, 50); } else { renderWizardEntry(); }
     }
   }
 }
 
-// Tab click wiring for Help modal
-document.addEventListener('click', function (e) {
-  var btn = e.target.closest('.hr-tab[data-help-section]');
-  if (!btn) return;
-
-  var section = btn.getAttribute('data-help-section');
-  var container = document.getElementById('aboutModal');
-  if (!container) return;
-
-  // Show the matching section, hide others
-  var sections = container.querySelectorAll('.helpSection');
-  sections.forEach(function (el) {
-    var isMatch = el.getAttribute('data-section') === section;
-    el.hidden = !isMatch;
-  });
-
-  // Update tab styles
-  var tabs = container.querySelectorAll('.hr-tab[data-help-section]');
-  tabs.forEach(function (tab) {
-    var isMatch = tab.getAttribute('data-help-section') === section;
-    tab.classList.toggle('active', isMatch);
-    tab.setAttribute('aria-current', isMatch ? 'true' : 'false');
-  });
-
-  // Only render FAQ when that tab is selected
-  if (section === 'faq') {
-    if (typeof renderFAQ === 'function') {
-      renderFAQ();
-    }
-  }
-  if (section === 'getting-started') {
-    if (typeof renderWizardEntry === 'function') {
-      renderWizardEntry();
-    }
-  }
-});
+// Tab click wiring handled via direct onclick on each tab button — no delegation needed
     
 
 // ============================================================
@@ -5052,9 +5075,16 @@ document.getElementById('medEffectivenessQuickView').innerHTML=html;
 
 
 function showBP(){
-var data=getFilteredData();
-var bpData=data.bp;
+var isBPHistory=(bpViewMode==='all');
+var bpData=isBPHistory?(getAllHistoricalData().bp||[]):B;
 var h='';
+// History header bar
+if(isBPHistory){
+  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
+  h+='<button onclick="closeBPHistory()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;min-height:44px">← Back to Today</button>';
+  h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day BP history — read only</div>';
+  h+='</div>';
+}
 for(var i=bpData.length-1;i>=0;i--){
 var r=bpData[i];
 var sColor=r.s<settings.systolicMin||r.s>settings.systolicMax?'#dc2626':'#16a34a';
@@ -5062,17 +5092,15 @@ var dColor=r.d<settings.diastolicMin||r.d>settings.diastolicMax?'#dc2626':'#16a3
 var hColor=r.h<settings.hrMin||r.h>settings.hrMax?'#dc2626':'#16a34a';
 h+='<div class="reading">';
 // Only show edit/delete buttons for today's data
-if(dateFilterMode==='today'){
+if(!isBPHistory){
 h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
-h+='<button onclick="editBP('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✏️</button>';
-h+='<button onclick="deleteBP('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✕</button>';
+h+='<button onclick="editBP('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✏️</button>';
+h+='<button onclick="deleteBP('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✕</button>';
 h+='</div>';
 }
-// Show date - always show for context
-if(dateFilterMode==='all'&&r._date){
+if(isBPHistory&&r._date){
 h+='<div style="font-size:14px;color:#3b82f6;font-weight:600;margin-bottom:4px">📅 '+r._date+'</div>';
-}else if(dateFilterMode==='today'){
-// Show today's date for confirmation
+}else if(!isBPHistory){
 var todayDate=getTodayKey();
 h+='<div style="font-size:14px;color:#10b981;font-weight:600;margin-bottom:4px">📅 Today ('+todayDate+')</div>';
 }
@@ -5118,8 +5146,8 @@ h+='<div class="drop">💧 Fluid: <b>'+r.f+' oz</b></div>';
 h+='</div>';
 }
 document.getElementById('bp').innerHTML=h||'<p style="color:#6b7280;text-align:center;font-size:18px">None</p>';
-// Show/hide the card based on data
-if(B.length>0){
+// Show card if today has data OR we are in history mode
+if(B.length>0||bpViewMode==='all'){
 document.getElementById('bpCard').style.display='block';
 }else{
 document.getElementById('bpCard').style.display='none';
@@ -5849,54 +5877,180 @@ alert('✓ Weight logged: '+weight+' '+selectedWeightUnit);
 
 function showWeight(){
 if(!settings.features||!settings.features.weight)return;
-var data=getFilteredData();
-var weightData=data.weight||W;
-var h='';
-for(var i=weightData.length-1;i>=0;i--){
-var r=weightData[i];
-var displayWeight=r.display||r.w;
-var displayUnit=r.unit||'lbs';
-h+='<div class="reading">';
-// Show edit/delete buttons in all modes
-h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
-if(dateFilterMode==='today'){
-h+='<button onclick="editWeight('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✏️</button>';
-h+='<button onclick="deleteWeight('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✕</button>';
+
+// Weight uses its own isolated view mode — never reads dateFilterMode
+var isHistory=(weightViewMode==='all');
+var weightData;
+if(isHistory){
+  var histAll=getAllHistoricalData();
+  weightData=histAll.weight||[];
 }else{
-var wDateKey=r._date||'';
-var wTimeKey=r.t||'';
-h+='<button onclick="editWeightHistorical(\''+wDateKey+'\',\''+wTimeKey+'\')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✏️</button>';
-h+='<button onclick="deleteWeightHistorical(\''+wDateKey+'\',\''+wTimeKey+'\')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✕</button>';
+  weightData=W;
 }
-h+='</div>';
-// Show date
-if(dateFilterMode==='all'&&r._date){
-h+='<div style="font-size:14px;color:#3b82f6;font-weight:600;margin-bottom:4px">📅 '+r._date+'</div>';
-}else if(dateFilterMode==='today'){
-var todayDate=getTodayKey();
-h+='<div style="font-size:14px;color:#10b981;font-weight:600;margin-bottom:4px">📅 Today ('+todayDate+')</div>';
+
+var h='';
+
+if(isHistory&&weightData.length>0){
+  // ── Sort chronologically ascending for rolling-average calculation ──────
+  var sorted=weightData.slice().sort(function(a,b){
+    var da=(a._date||getTodayKey())+'T'+(a.t||'00:00');
+    var db=(b._date||getTodayKey())+'T'+(b.t||'00:00');
+    return da<db?-1:da>db?1:0;
+  });
+
+  // ── 7-day rolling average (trailing, excluding the entry itself) ─────────
+  var rollingAvg=new Array(sorted.length).fill(null);
+  for(var j=0;j<sorted.length;j++){
+    var entryDateStr=sorted[j]._date||getTodayKey();
+    var entryParts=entryDateStr.split('-');
+    var entryDate=new Date(parseInt(entryParts[0]),parseInt(entryParts[1])-1,parseInt(entryParts[2]));
+    var windowStart=new Date(entryDate.getTime()-(7*24*60*60*1000));
+    var windowVals=[];
+    for(var k=0;k<j;k++){
+      var kDateStr=sorted[k]._date||getTodayKey();
+      var kParts=kDateStr.split('-');
+      var kDate=new Date(parseInt(kParts[0]),parseInt(kParts[1])-1,parseInt(kParts[2]));
+      if(kDate>=windowStart&&kDate<entryDate){
+        windowVals.push(sorted[k].w);
+      }
+    }
+    if(windowVals.length>=2){
+      var sum=0;for(var v=0;v<windowVals.length;v++)sum+=windowVals[v];
+      rollingAvg[j]=sum/windowVals.length;
+    }
+  }
+
+  // ── Build outlier map ────────────────────────────────────────────────────
+  var outlierMap={};
+  for(var j=0;j<sorted.length;j++){
+    if(rollingAvg[j]===null)continue;
+    var dev=Math.abs(sorted[j].w-rollingAvg[j]);
+    var oKey=(sorted[j]._date||getTodayKey())+'|'+(sorted[j].t||'');
+    if(dev>=20){
+      outlierMap[oKey]={level:'critical',dev:dev,avg:rollingAvg[j]};
+    }else if(dev>=10){
+      outlierMap[oKey]={level:'warning',dev:dev,avg:rollingAvg[j]};
+    }
+  }
+
+  // ── Header bar: Back button + jump-to-date ───────────────────────────────
+  var outlierCount=Object.keys(outlierMap).length;
+  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:16px">';
+  h+='<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:10px">';
+  h+='<button onclick="closeWeightHistory()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap">← Back to Today</button>';
+  h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day weight history</div>';
+  h+='</div>';
+  h+='<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px">';
+  h+='<div style="font-size:15px;font-weight:700;color:#374151">🗓️ Jump to date:</div>';
+  h+='<input type="date" id="weightJumpDate" style="border:2px solid #d1d5db;border-radius:8px;padding:8px 12px;font-size:15px;color:#374151;background:#fff;cursor:pointer" onchange="jumpToWeightDate(this.value)" />';
+  h+='<button onclick="document.getElementById(\'weightJumpDate\').value=\'\'" style="background:#6b7280;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>';
+  h+='</div>';
+  if(outlierCount>0){
+    h+='<div style="margin-top:10px;font-size:14px;font-weight:600;color:#92400e;background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:8px 12px">';
+    h+='⚠️ '+outlierCount+' possible data '+(outlierCount===1?'error':'errors')+' flagged below — entries that deviate significantly from your 7-day average are marked.';
+    h+='</div>';
+  }
+  h+='</div>';
+
+  // ── Render entries newest-first ──────────────────────────────────────────
+  for(var i=sorted.length-1;i>=0;i--){
+    var r=sorted[i];
+    var displayWeight=r.display||r.w;
+    var displayUnit=r.unit||'lbs';
+    var entryKey=(r._date||getTodayKey())+'|'+(r.t||'');
+    var outlier=outlierMap[entryKey]||null;
+    var anchorId='wentry-'+(r._date||getTodayKey())+'-'+(r.t||'').replace(/:/g,'-');
+    var cardBorder=outlier?(outlier.level==='critical'?'#dc2626':'#f59e0b'):'#e5e7eb';
+    var cardBg=outlier?(outlier.level==='critical'?'#fff1f2':'#fffbeb'):'';
+    var cardStyle='border-color:'+cardBorder+';'+(cardBg?'background:'+cardBg+';':'');
+    h+='<div class="reading" id="'+anchorId+'" style="'+cardStyle+'">';
+    if(outlier){
+      var bannerBg=outlier.level==='critical'?'#dc2626':'#f59e0b';
+      var bannerIcon=outlier.level==='critical'?'🚨':'⚠️';
+      var bannerLabel=outlier.level==='critical'?'Likely data entry error':'Possible data entry error';
+      var devDisplay=(r.unit||'lbs')==='kg'?(outlier.dev/2.20462).toFixed(1)+' kg':outlier.dev.toFixed(1)+' lbs';
+      var avgDisplay=(r.unit||'lbs')==='kg'?(outlier.avg/2.20462).toFixed(1)+' kg':outlier.avg.toFixed(1)+' lbs';
+      h+='<div style="background:'+bannerBg+';color:#fff;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:14px;font-weight:700">';
+      h+=bannerIcon+' '+bannerLabel+' — '+devDisplay+' from your 7-day average of '+avgDisplay;
+      h+='</div>';
+    }
+    h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
+    var wDateKey=r._date||'';
+    var wTimeKey=r.t||'';
+    h+='<button onclick="editWeightHistorical(\''+wDateKey+'\',\''+wTimeKey+'\')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✏️</button>';
+    h+='<button onclick="deleteWeightHistorical(\''+wDateKey+'\',\''+wTimeKey+'\')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✕</button>';
+    h+='</div>';
+    h+='<div style="font-size:14px;color:#3b82f6;font-weight:600;margin-bottom:4px">📅 '+wDateKey+'</div>';
+    h+='<div style="font-size:14px;color:#6b7280;margin-bottom:12px">'+r.t+'</div>';
+    h+='<div class="flex">';
+    h+='<div style="flex:1"><div style="font-size:16px;color:#6b7280">Weight</div><div class="b" style="font-size:32px;color:#f97316">'+displayWeight.toFixed(1)+' '+displayUnit+'</div></div>';
+    if(i>0){
+      var prevW=sorted[i-1].w;
+      var change=r.w-prevW;
+      var changeAbs=Math.abs(change);
+      if(changeAbs>=0.1){
+        var chgArrow=change>0?'↑':'↓';
+        var chgColor=change>0?'#ef4444':'#10b981';
+        h+='<div style="flex:1"><div style="font-size:16px;color:#6b7280">Change</div><div style="font-size:24px;font-weight:700;color:'+chgColor+'">'+chgArrow+' '+changeAbs.toFixed(1)+' lbs</div></div>';
+      }
+    }
+    h+='</div>';
+    if(r.notes){h+='<div class="drop">📝 '+r.notes+'</div>';}
+    h+='</div>';
+  }
+
+}else{
+  // ── Today mode ───────────────────────────────────────────────────────────
+  for(var i=weightData.length-1;i>=0;i--){
+    var r=weightData[i];
+    var displayWeight=r.display||r.w;
+    var displayUnit=r.unit||'lbs';
+    h+='<div class="reading">';
+    h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
+    h+='<button onclick="editWeight('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✏️</button>';
+    h+='<button onclick="deleteWeight('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✕</button>';
+    h+='</div>';
+    var todayDate=getTodayKey();
+    h+='<div style="font-size:14px;color:#10b981;font-weight:600;margin-bottom:4px">📅 Today ('+todayDate+')</div>';
+    h+='<div style="font-size:14px;color:#6b7280;margin-bottom:12px">'+r.t+'</div>';
+    h+='<div class="flex">';
+    h+='<div style="flex:1"><div style="font-size:16px;color:#6b7280">Weight</div><div class="b" style="font-size:32px;color:#f97316">'+displayWeight.toFixed(1)+' '+displayUnit+'</div></div>';
+    if(i<weightData.length-1){
+      var prevWeight=weightData[i+1].w;
+      var change=r.w-prevWeight;
+      var changeAbs=Math.abs(change);
+      if(changeAbs>=0.1){
+        var arrow=change>0?'↑':'↓';
+        var color=change>0?'#ef4444':'#10b981';
+        h+='<div style="flex:1"><div style="font-size:16px;color:#6b7280">Change</div><div style="font-size:24px;font-weight:700;color:'+color+'">'+arrow+' '+changeAbs.toFixed(1)+' lbs</div></div>';
+      }
+    }
+    h+='</div>';
+    if(r.notes){h+='<div class="drop">📝 '+r.notes+'</div>';}
+    h+='</div>';
+  }
 }
-h+='<div style="font-size:14px;color:#6b7280;margin-bottom:12px">'+r.t+'</div>';
-h+='<div class="flex">';
-h+='<div style="flex:1"><div style="font-size:16px;color:#6b7280">Weight</div><div class="b" style="font-size:32px;color:#f97316">'+displayWeight.toFixed(1)+' '+displayUnit+'</div></div>';
-// Show change from previous
-if(i<weightData.length-1){
-var prevWeight=weightData[i+1].w;
-var change=r.w-prevWeight;
-var changeAbs=Math.abs(change);
-if(changeAbs>=0.1){
-var arrow=change>0?'↑':'↓';
-var color=change>0?'#ef4444':'#10b981';
-h+='<div style="flex:1"><div style="font-size:16px;color:#6b7280">Change</div><div style="font-size:24px;font-weight:700;color:'+color+'">'+arrow+' '+changeAbs.toFixed(1)+' lbs</div></div>';
-}
-}
-h+='</div>';
-if(r.notes){
-h+='<div class="drop">📝 '+r.notes+'</div>';
-}
-h+='</div>';
-}
+
 document.getElementById('weight').innerHTML=h||'<p style="color:#6b7280;text-align:center;font-size:18px">No weight entries yet</p>';
+}
+
+// Jump-to-date: scrolls the weight history list to the first entry on the chosen date.
+function jumpToWeightDate(dateStr){
+  if(!dateStr)return;
+  var prefix='wentry-'+dateStr+'-';
+  var allCards=document.getElementById('weight').querySelectorAll('[id^="wentry-"]');
+  var target=null;
+  for(var i=0;i<allCards.length;i++){
+    if(allCards[i].id.indexOf(prefix)===0){target=allCards[i];break;}
+  }
+  if(target){
+    target.scrollIntoView({behavior:'smooth',block:'center'});
+    target.style.transition='box-shadow 0.2s';
+    target.style.boxShadow='0 0 0 4px #6366f1';
+    setTimeout(function(){target.style.boxShadow='';},1800);
+  }else{
+    alert('No weight entry found for '+dateStr+'.\nTry a different date.');
+  }
 }
 
 function deleteWeight(i){
@@ -5961,6 +6115,7 @@ if(!raw){alert('Could not find data for '+dateKey);return;}
 var dayData=JSON.parse(raw);
 var arr=dayData.weight||[];
 if(!arr[idx]){alert('Entry not found.');return;}
+var originalTime=arr[idx].t; // capture original time BEFORE overwriting
 var newWLbs=newUnit==='kg'?newW*2.20462:newW;
 arr[idx]=Object.assign({},arr[idx],{w:newWLbs,unit:newUnit,display:newW,t:newTime,notes:newNotes});
 dayData.weight=arr;
@@ -5969,7 +6124,7 @@ localStorage.setItem(storageKey,JSON.stringify(dayData));
 // reflects the change immediately without requiring a page refresh.
 if(dateKey===getTodayKey()){
   for(var wi=0;wi<W.length;wi++){
-    if(W[wi].t===timeKey){
+    if(W[wi].t===originalTime){
       W[wi]=Object.assign({},W[wi],{w:newWLbs,unit:newUnit,display:newW,t:newTime,notes:newNotes});
       break;
     }
@@ -5994,6 +6149,13 @@ if(idx===-1){alert('Could not find that weight entry.');return;}
 arr.splice(idx,1);
 dayData.weight=arr;
 localStorage.setItem(storageKey,JSON.stringify(dayData));
+// If this is today's entry, also remove it from the in-memory W array so the
+// display doesn't re-add it when getAllHistoricalData re-reads W on the next showWeight() call.
+if(dateKey===getTodayKey()){
+  for(var wi=W.length-1;wi>=0;wi--){
+    if(W[wi].t===timeKey){W.splice(wi,1);break;}
+  }
+}
 showWeight();
 renderWeightChart();
 alert('✓ Weight entry deleted');
@@ -7866,22 +8028,28 @@ takeBPAfterActivity(activityId);
 
 function showActivities(){
 if(!settings.features||!settings.features.exercise)return;
-var data=getFilteredData();
-var activityData=data.activities||A;
+var isActHistory=(activitiesViewMode==='all');
+var activityData=isActHistory?(getAllHistoricalData().activities||[]):A;
 var h='';
+if(isActHistory){
+  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
+  h+='<button onclick="closeActivitiesHistory()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;min-height:44px">← Back to Today</button>';
+  h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day activity history — read only</div>';
+  h+='</div>';
+}
 for(var i=activityData.length-1;i>=0;i--){
 var r=activityData[i];
 var exertionColor=r.exertion==='Light'?'#10b981':r.exertion==='Moderate'?'#f59e0b':'#ef4444';
 h+='<div class="reading">';
-if(dateFilterMode==='today'){
+if(!isActHistory){
 h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
-h+='<button onclick="editActivity('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✏️</button>';
-h+='<button onclick="deleteActivity('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✕</button>';
+h+='<button onclick="editActivity('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✏️</button>';
+h+='<button onclick="deleteActivity('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✕</button>';
 h+='</div>';
 }
-if(dateFilterMode==='all'&&r._date){
+if(isActHistory&&r._date){
 h+='<div style="font-size:14px;color:#3b82f6;font-weight:600;margin-bottom:4px">📅 '+r._date+'</div>';
-}else if(dateFilterMode==='today'){
+}else if(!isActHistory){
 var todayDate=getTodayKey();
 h+='<div style="font-size:14px;color:#10b981;font-weight:600;margin-bottom:4px">📅 Today ('+todayDate+')</div>';
 }
@@ -7903,7 +8071,7 @@ h+='</div>';
 }
 document.getElementById('activity').innerHTML=h||'<div style="padding:24px;text-align:center;color:#6b7280;background:#f3f4f6;border-radius:8px">No activities logged yet</div>';
 // Show/hide the card based on data
-if(A.length>0){
+if(A.length>0||activitiesViewMode==='all'){
 document.getElementById('activityCard').style.display='block';
 }else{
 document.getElementById('activityCard').style.display='none';
@@ -8934,22 +9102,26 @@ setInterval(u,1000);u();updateFluid();
 setTimeout(updateMorningCheckinPrompt, 1500);
 
 function showMeals(){
-var data=getFilteredData();
-var mealsData=data.meals;
+var isMealsHistory=(mealsViewMode==='all');
+var mealsData=isMealsHistory?(getAllHistoricalData().meals||[]):M;
 var h='';
+if(isMealsHistory){
+  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
+  h+='<button onclick="closeMealsHistory()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;min-height:44px">← Back to Today</button>';
+  h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day meal history — read only</div>';
+  h+='</div>';
+}
 for(var i=0;i<mealsData.length;i++){
 h+='<div style="padding:16px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:12px;position:relative;font-size:18px">';
-// Only show edit/delete buttons for today's data
-if(dateFilterMode==='today'){
+if(!isMealsHistory){
 h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
-h+='<button onclick="editMeal('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✏️</button>';
-h+='<button onclick="deleteMeal('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✕</button>';
+h+='<button onclick="editMeal('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✏️</button>';
+h+='<button onclick="deleteMeal('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✕</button>';
 h+='</div>';
 }
-// Show date - always show for context
-if(dateFilterMode==='all'&&mealsData[i]._date){
+if(isMealsHistory&&mealsData[i]._date){
 h+='<div style="font-size:14px;color:#3b82f6;font-weight:600;margin-bottom:4px">📅 '+mealsData[i]._date+'</div>';
-}else if(dateFilterMode==='today'){
+}else if(!isMealsHistory){
 var todayDate=getTodayKey();
 h+='<div style="font-size:14px;color:#10b981;font-weight:600;margin-bottom:4px">📅 Today ('+todayDate+')</div>';
 }
@@ -8966,7 +9138,7 @@ h+='</div>';
 }
 document.getElementById('meals').innerHTML=h||'<p style="color:#6b7280;text-align:center;font-size:18px">None</p>';
 // Show/hide the card based on data
-if(M.length>0){
+if(M.length>0||mealsViewMode==='all'){
 document.getElementById('mealsCard').style.display='block';
 }else{
 document.getElementById('mealsCard').style.display='none';
@@ -9018,26 +9190,30 @@ alert('✓ Meal entry updated');
 }
 
 function showMedicines(){
-var data=getFilteredData();
-var medicinesData=data.medicines;
+var isMedHistory=(medViewMode==='all');
+var medicinesData=isMedHistory?(getAllHistoricalData().medicines||[]):medLog;
 var h='';
+if(isMedHistory){
+  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
+  h+='<button onclick="closeMedHistory()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;min-height:44px">← Back to Today</button>';
+  h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day medicines history — read only</div>';
+  h+='</div>';
+}
 if(medicinesData.length===0){
-h='<p style="color:#6b7280;text-align:center;font-size:18px">None logged today</p>';
+h+='<p style="color:#6b7280;text-align:center;font-size:18px">'+(isMedHistory?'No medicines in history':'None logged today')+'</p>';
 }else{
 for(var i=medicinesData.length-1;i>=0;i--){
 var entry=medicinesData[i];
 h+='<div style="padding:16px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:12px;position:relative;font-size:18px">';
-// Only show edit/delete buttons for today's data
-if(dateFilterMode==='today'){
+if(!isMedHistory){
 h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
-h+='<button onclick="editMedLog('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✏️</button>';
-h+='<button onclick="deleteMedLog('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✕</button>';
+h+='<button onclick="editMedLog('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✏️</button>';
+h+='<button onclick="deleteMedLog('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✕</button>';
 h+='</div>';
 }
-// Show date - always show for context
-if(dateFilterMode==='all'&&entry._date){
+if(isMedHistory&&entry._date){
 h+='<div style="font-size:14px;color:#3b82f6;font-weight:600;margin-bottom:4px">📅 '+entry._date+'</div>';
-}else if(dateFilterMode==='today'){
+}else if(!isMedHistory){
 var todayDate=getTodayKey();
 h+='<div style="font-size:14px;color:#10b981;font-weight:600;margin-bottom:4px">📅 Today ('+todayDate+')</div>';
 }
@@ -9062,7 +9238,7 @@ h+='</div>';
 }
 document.getElementById('medicines').innerHTML=h;
 // Show/hide the card based on data
-if(medLog.length>0){
+if(medLog.length>0||medViewMode==='all'){
 document.getElementById('medicinesCard').style.display='block';
 }else{
 document.getElementById('medicinesCard').style.display='none';
@@ -10984,6 +11160,13 @@ function toggleCardSection(key) {
     }, 60);
   } else {
     panelEl.classList.add('card-panel-hidden');
+    // Reset this card's history mode when user collapses it — clean slate on next open
+    if(key==='bp')         bpViewMode='today';
+    if(key==='symptoms')   symptomsViewMode='today';
+    if(key==='activities') activitiesViewMode='today';
+    if(key==='meals')      mealsViewMode='today';
+    if(key==='meds')       medViewMode='today';
+    if(key==='weight')     weightViewMode='today';
   }
   // Update the action label on the tile
   var chev = document.getElementById('tile-chev-' + key);
@@ -11306,75 +11489,221 @@ var day=('0'+d.getDate()).slice(-2);
 return year+'-'+month+'-'+day;
 }
 
-// Date Filter Functions (v7.1)
-// Switch to History mode and scroll directly to the weight card.
 // Called by the "Edit Past Entries" button on the weight card header.
+// Uses weightViewMode — never touches dateFilterMode or any other panel.
 function showWeightHistory(){
-  // Check whether any historical (non-today) weight data exists
-  var todayKey=getTodayKey();
-  var hasHistory=false;
-  for(var lsKey in localStorage){
-    if(!lsKey.startsWith('BP_TRACKER_')) continue;
-    var dk=lsKey.replace('BP_TRACKER_','');
-    if(dk===todayKey||!/^\d{4}-\d{2}-\d{2}$/.test(dk)) continue;
-    try{
-      var d=JSON.parse(localStorage.getItem(lsKey));
-      if(d && d.weight && d.weight.length>0){hasHistory=true;break;}
-    }catch(e){}
-  }
-
-  if(!hasHistory){
-    // Only today's data exists — stay in Today mode and explain
-    var msg='<div class="modal-title">⚖️ No Past Entries Yet</div>';
-    msg+='<div style="font-size:17px;color:#374151;line-height:1.7;padding:4px 0 16px 0">';
-    msg+='You only have today\'s weight entry so far.<br><br>';
-    msg+='Use the <strong>✏️</strong> button next to today\'s reading below to correct it, ';
-    msg+='or the <strong>✕</strong> button to delete and re-enter it.<br><br>';
-    msg+='Past entries from previous days will appear here once you\'ve been logging for more than one day.';
-    msg+='</div>';
-    msg+='<div class="modal-actions"><button class="modal-ok" onclick="hideModal()">Got It</button></div>';
-    showModal(msg);
-    return;
-  }
-
-  setDateFilter('all');
-  // Give the DOM a tick to re-render before scrolling
+  weightViewMode='all';
+  // Force-reveal the weight panel in case the tile hasn't been opened yet
+  var panelEl=document.getElementById('panel-weight');
+  if(panelEl) panelEl.classList.remove('card-panel-hidden');
+  var chevEl=document.getElementById('tile-chev-weight');
+  if(chevEl) chevEl.textContent='tap to hide ▲';
+  // Update weight header
+  var ws=document.getElementById('weightHeader');
+  if(ws){var sp=ws.querySelector('span');if(sp)sp.textContent='⚖️ Weight History (90 Days)';}
+  showWeight();
   setTimeout(function(){
     var el=document.getElementById('panel-weight');
     if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
-  },80);
+  },60);
+}
+
+// Called by the "← Back to Today" button inside the weight history card.
+// Resets weight view to today without touching any other panel.
+function closeWeightHistory(){
+  weightViewMode='today';
+  var ws=document.getElementById('weightHeader');
+  if(ws){var sp=ws.querySelector('span');if(sp)sp.textContent='⚖️ Weight Tracking';}
+  showWeight();
+  setTimeout(function(){
+    var el=document.getElementById('panel-weight');
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  },60);
+}
+
+// ── Per-card history helpers ─────────────────────────────────────────────────
+// Maps card key → human label used in the one-at-a-time enforcement toast.
+var CARD_HISTORY_LABEL={
+  'bp':'Blood Pressure',
+  'symptoms':'Symptoms',
+  'activities':'Activity',
+  'meals':'Meals',
+  'meds':'Medicines',
+  'weight':'Weight'
+};
+
+// Returns the key of whichever card is currently showing history, or null.
+function getActiveHistoryCard(){
+  if(bpViewMode==='all')         return 'bp';
+  if(symptomsViewMode==='all')   return 'symptoms';
+  if(activitiesViewMode==='all') return 'activities';
+  if(mealsViewMode==='all')      return 'meals';
+  if(medViewMode==='all')        return 'meds';
+  if(weightViewMode==='all')     return 'weight';
+  return null;
+}
+
+// Enforce one-at-a-time. Returns true if OK to proceed, false if blocked.
+function claimHistorySlot(requestingKey){
+  var active=getActiveHistoryCard();
+  if(!active||active===requestingKey) return true;
+  // Tell user and scroll to the open card's Back button
+  showTileToast('Close '+CARD_HISTORY_LABEL[active]+' history first ↑');
+  var panelId=active==='meds'?'panel-meds':'panel-'+active;
+  var el=document.getElementById(panelId);
+  if(el) setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'});},80);
+  return false;
+}
+
+// Resets all viewModes to today — called on midnight reset and setDateFilter('today').
+function resetAllCardHistory(){
+  bpViewMode='today'; symptomsViewMode='today';
+  activitiesViewMode='today'; mealsViewMode='today';
+  medViewMode='today'; weightViewMode='today';
+}
+
+// Generic: open a card's history. Updates the span inside the header, not the whole element.
+function openCardHistory(cardKey, setViewFn, showFn, headerEl, histLabel){
+  if(!claimHistorySlot(cardKey)) return;
+  setViewFn();
+  var panelEl=document.getElementById(cardKey==='meds'?'panel-meds':'panel-'+cardKey);
+  if(panelEl) panelEl.classList.remove('card-panel-hidden');
+  var chevEl=document.getElementById('tile-chev-'+cardKey);
+  if(chevEl) chevEl.textContent='tap to hide ▲';
+  if(headerEl){var sp=headerEl.querySelector('span');if(sp)sp.textContent=histLabel;else headerEl.firstChild.nodeValue=histLabel;}
+  showFn();
+  setTimeout(function(){
+    if(panelEl) panelEl.scrollIntoView({behavior:'smooth',block:'start'});
+  },60);
+}
+
+// Generic: close a card's history back to today. Restores span text only.
+function closeCardHistory(cardKey, setViewFn, showFn, headerEl, todayLabel){
+  setViewFn();
+  if(headerEl){var sp=headerEl.querySelector('span');if(sp)sp.textContent=todayLabel;else headerEl.firstChild.nodeValue=todayLabel;}
+  showFn();
+  setTimeout(function(){
+    var panelEl=document.getElementById(cardKey==='meds'?'panel-meds':'panel-'+cardKey);
+    if(panelEl) panelEl.scrollIntoView({behavior:'smooth',block:'start'});
+  },60);
+}
+
+// ── BP History ─────────────────────────────────────────────────────────────
+function showBPHistory(){
+  openCardHistory('bp',
+    function(){bpViewMode='all';},
+    showBP,
+    document.getElementById('bpHeader'),
+    '📊 Blood Pressure History (90 Days)'
+  );
+}
+function closeBPHistory(){
+  closeCardHistory('bp',
+    function(){bpViewMode='today';},
+    showBP,
+    document.getElementById('bpHeader'),
+    '📊 Today\'s Blood Pressure'
+  );
+}
+
+// ── Symptoms History ───────────────────────────────────────────────────────
+function showSymptomsHistory(){
+  if(!claimHistorySlot('symptoms')) return;
+  symptomsViewMode='all';
+  var panelEl=document.getElementById('panel-symptoms');
+  if(panelEl) panelEl.classList.remove('card-panel-hidden');
+  var chevEl=document.getElementById('tile-chev-symptoms');
+  if(chevEl) chevEl.textContent='tap to hide ▲';
+  // symptomHeader has a nested button — use innerHTML to preserve it
+  var sh=document.getElementById('symptomHeader');
+  if(sh) sh.innerHTML='<span style="flex:1">💊 Symptom History (90 Days)</span>'
+    +'<button onclick="openSymptomReview()" style="margin-left:12px;padding:6px 12px;font-size:14px;border:none;border-radius:999px;background:#3b82f6;color:#fff;cursor:pointer">Review for Doctor</button>';
+  showSymptoms();
+  setTimeout(function(){if(panelEl)panelEl.scrollIntoView({behavior:'smooth',block:'start'});},60);
+}
+function closeSymptomsHistory(){
+  symptomsViewMode='today';
+  var sh=document.getElementById('symptomHeader');
+  if(sh) sh.innerHTML='💊 Symptom Tracking'
+    +'<button onclick="openSymptomReview()" style="margin-left:12px;padding:6px 12px;font-size:14px;border:none;border-radius:999px;background:#3b82f6;color:#fff;cursor:pointer">Review for Doctor</button>';
+  showSymptoms();
+  setTimeout(function(){
+    var p=document.getElementById('panel-symptoms');
+    if(p) p.scrollIntoView({behavior:'smooth',block:'start'});
+  },60);
+}
+
+// ── Activities History ─────────────────────────────────────────────────────
+function showActivitiesHistory(){
+  openCardHistory('activities',
+    function(){activitiesViewMode='all';},
+    showActivities,
+    document.getElementById('activityHeader'),
+    '🏃 Activity History (90 Days)'
+  );
+}
+function closeActivitiesHistory(){
+  closeCardHistory('activities',
+    function(){activitiesViewMode='today';},
+    showActivities,
+    document.getElementById('activityHeader'),
+    '🏃 Activity/Exercise Tracking'
+  );
+}
+
+// ── Meals History ─────────────────────────────────────────────────────────
+function showMealsHistory(){
+  if(!claimHistorySlot('meals')) return;
+  mealsViewMode='all';
+  var panelEl=document.getElementById('panel-meals');
+  if(panelEl) panelEl.classList.remove('card-panel-hidden');
+  var chevEl=document.getElementById('tile-chev-meals');
+  if(chevEl) chevEl.textContent='tap to hide ▲';
+  // mealsHeader has a "View All" button — preserve it
+  var mh=document.getElementById('mealsHeader');
+  if(mh) mh.innerHTML='<span>🍽️ Meals History (90 Days)</span>'
+    +'<button class="btn" style="background:#f59e0b;padding:8px 16px;font-size:14px" onclick="viewAllMeals()">View All</button>';
+  showMeals();
+  setTimeout(function(){if(panelEl)panelEl.scrollIntoView({behavior:'smooth',block:'start'});},60);
+}
+function closeMealsHistory(){
+  mealsViewMode='today';
+  var mh=document.getElementById('mealsHeader');
+  if(mh) mh.innerHTML='<span>🍽️ Meals</span>'
+    +'<button class="btn" style="background:#f59e0b;padding:8px 16px;font-size:14px" onclick="viewAllMeals()">View All</button>';
+  showMeals();
+  setTimeout(function(){
+    var p=document.getElementById('panel-meals');
+    if(p) p.scrollIntoView({behavior:'smooth',block:'start'});
+  },60);
+}
+
+// ── Medicines History ─────────────────────────────────────────────────────
+function showMedHistory(){
+  openCardHistory('meds',
+    function(){medViewMode='all';},
+    showMedicines,
+    document.getElementById('medicinesHeader'),
+    '💊 Medicines History (90 Days)'
+  );
+}
+function closeMedHistory(){
+  closeCardHistory('meds',
+    function(){medViewMode='today';},
+    showMedicines,
+    document.getElementById('medicinesHeader'),
+    '💊 Medicines Taken'
+  );
 }
 
 function setDateFilter(mode){
 dateFilterMode=mode;
-// Update button states
-var buttons=document.querySelectorAll('.date-filter-btn');
-buttons.forEach(function(btn){
-btn.classList.remove('active');
-});
 if(mode==='today'){
-buttons[0].classList.add('active');
-// Update headers to show "Today's"
-document.getElementById('bpHeader').textContent='📊 Today\'s Blood Pressure';
-document.getElementById('mealsHeader').innerHTML='<span>🍽️ Meals</span><button class="btn" style="background:#f59e0b;padding:8px 16px;font-size:14px" onclick="viewAllMeals()">View All</button>';
-document.getElementById('medicinesHeader').textContent='💊 Medicines Taken';
-document.getElementById('notesHeader').innerHTML='<span>📝 Notes</span><button type="button" onclick="openAllNotesView()" style="background:#8b5cf6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer">📋 View All</button>';
-if(document.getElementById('weightHeader')){var ws=document.getElementById('weightHeader').querySelector('span');if(ws)ws.textContent='⚖️ Weight Tracking';}
-if(document.getElementById('symptomHeader'))document.getElementById('symptomHeader').textContent='💊 Symptom Tracking';
-if(document.getElementById('activityHeader'))document.getElementById('activityHeader').textContent='🏃 Activity/Exercise Tracking';
-}else{
-buttons[1].classList.add('active');
-// Update headers to show "All History"
-document.getElementById('bpHeader').textContent='📊 Blood Pressure History (90 Days)';
-document.getElementById('mealsHeader').innerHTML='<span>🍽️ Meals History (90 Days)</span><button class="btn" style="background:#f59e0b;padding:8px 16px;font-size:14px" onclick="viewAllMeals()">View All</button>';
-document.getElementById('medicinesHeader').textContent='💊 Medicines History (90 Days)';
-document.getElementById('notesHeader').innerHTML='<span>📝 Notes History (90 Days)</span><button type="button" onclick="openAllNotesView()" style="background:#8b5cf6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer">📋 View All</button>';
-if(document.getElementById('weightHeader')){var ws=document.getElementById('weightHeader').querySelector('span');if(ws)ws.textContent='⚖️ Weight History (90 Days)';}
-if(document.getElementById('symptomHeader'))document.getElementById('symptomHeader').textContent='💊 Symptom History (90 Days)';
-if(document.getElementById('activityHeader'))document.getElementById('activityHeader').textContent='🏃 Activity History (90 Days)';
+  // Reset ALL per-card history modes so no card is left stuck in history
+  resetAllCardHistory();
+  // Refresh all displays in today mode
+  refreshAllDisplays();
 }
-// Refresh all displays
-refreshAllDisplays();
 }
 
 function getAllHistoricalData(){
@@ -23400,6 +23729,8 @@ event.completed=false;
 });
 savePlan();
 }
+// Reset all per-card history modes for the new day
+resetAllCardHistory();
 // Refresh all displays
 refreshAllDisplays();
 updateFluid();
