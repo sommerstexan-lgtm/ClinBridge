@@ -1,29 +1,36 @@
-const CACHE_NAME = 'clinbridge-v9-9-24';
-const urlsToCache = [
+const CACHE_NAME = 'clinbridge-v9-9-25';
+const ASSETS = [
   './',
   './index.html',
-  './ClinBridgev9_9_24.html',
+  './ClinBridgev9_9_25.html',
   './manifest.json'
 ];
 
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+self.addEventListener('install', function(e) {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(function(cache) {
+      return cache.addAll(ASSETS);
+    })
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    )
+self.addEventListener('activate', function(e) {
+  e.waitUntil(
+    caches.keys().then(function(keys) {
+      return Promise.all(
+        keys.filter(function(k) { return k !== CACHE_NAME; })
+            .map(function(k) { return caches.delete(k); })
+      );
+    })
   );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
+self.addEventListener('fetch', function(e) {
+  e.respondWith(
+    caches.match(e.request).then(function(cached) {
+      return cached || fetch(e.request);
+    })
   );
 });
