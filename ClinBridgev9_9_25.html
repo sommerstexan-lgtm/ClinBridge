@@ -17,6 +17,32 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-H2SESQBPXQ');
+
+  // ── ClinBridge Analytics Helper ──────────────────────────────
+  // Central wrapper so every event goes through one place.
+  // Safe — silently no-ops if gtag isn't loaded (e.g. offline).
+  window.cbTrack = function(eventName, params) {
+    try {
+      if (typeof gtag === 'function') {
+        gtag('event', eventName, Object.assign({ app_version: 'v9.9.25' }, params || {}));
+      }
+    } catch(e) {}
+  };
+
+  // ── First-use detection ───────────────────────────────────────
+  // Fires once ever per device/browser. Uses a separate key from
+  // CLINBRIDGE_FIRST_RUN_DONE so it doesn't interfere with the
+  // welcome modal logic.
+  (function() {
+    var GA_FIRST_USE_KEY = 'CB_GA_FIRST_USE_SENT';
+    if (!localStorage.getItem(GA_FIRST_USE_KEY)) {
+      // Delay until gtag is ready
+      setTimeout(function() {
+        cbTrack('first_use');
+        try { localStorage.setItem(GA_FIRST_USE_KEY, new Date().toISOString()); } catch(e) {}
+      }, 2000);
+    }
+  })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
 <title>ClinBridge</title>
@@ -3322,6 +3348,7 @@ function openWizardPathMenu(){
 }
 
 function startWizardPath(pathId){
+  cbTrack('wizard_started', { path: pathId });
   localStorage.setItem('wizardActivePath',pathId);
   localStorage.setItem('wizardCurrentStep',0);
   renderWizardScreen();
@@ -3503,6 +3530,7 @@ function _wzA_end(el){
   localStorage.setItem('wizardCompletedPaths',JSON.stringify(completed));
   localStorage.removeItem('wizardActivePath');
   localStorage.removeItem('wizardCurrentStep');
+  cbTrack('wizard_completed', { path: 'A' });
 
   // Load checklist state — auto-detect from settings what's actually been configured
   var cl=JSON.parse(localStorage.getItem('wizardChecklist_A')||'{"bp":false,"fluid":false,"reminder":false,"firstBP":false,"firstFluid":false}');
@@ -3653,6 +3681,7 @@ function _wzEndScreen(el,pathId,config){
   localStorage.setItem('wizardCompletedPaths',JSON.stringify(completed));
   localStorage.removeItem('wizardActivePath');
   localStorage.removeItem('wizardCurrentStep');
+  cbTrack('wizard_completed', { path: pathId });
 
   // Auto-detect checklist state
   var cl=JSON.parse(localStorage.getItem('wizardChecklist_'+pathId)||'{}');
@@ -4864,6 +4893,7 @@ reading.medicationRelated=false;
 reading.medicationTiming='none';
 }
 
+cbTrack('log_bp', { med_related: medRelated });
 B.push(reading);
 if(f>0){
 dailyFluid+=f;
@@ -5375,6 +5405,7 @@ return;
 dailyFluid+=amount;
 var entry={time:getTime(),amount:amount};
 if(eventId)entry.eventId=eventId;
+cbTrack('log_fluid', { amount_oz: amount });
 fluidLog.push(entry);
 saveDailyData();
 if(activeReminderEvt) eventFluidLogged=true; // prevent fluid re-arming on reminder reshow
@@ -5795,6 +5826,7 @@ var weightLbs=weight;
 if(selectedWeightUnit==='kg'){
 weightLbs=weight*2.20462;
 }
+cbTrack('log_weight', { unit: selectedWeightUnit });
 W.push({w:weightLbs,unit:selectedWeightUnit,display:weight,t:getTime(),notes:notes});
 saveDailyData();
 completeAndCloseModal();
@@ -6745,6 +6777,7 @@ if(activityLinked){
 var matchedAct=A.find(function(a){return(a.id||a.t)===activityLinked;});
 if(matchedAct) activityLinkedName=(matchedAct.activity||matchedAct.type||'Activity')+' @ '+(matchedAct.t||'');
 }
+cbTrack('log_symptom', { severity: severity, is_expected: isExpected, condition_linked: !!conditionLinked });
 S.push({
 symptom:symptom,
 severity:severity,
@@ -7786,6 +7819,7 @@ activityName=activity+' ('+workDesc+')';
 }
 // Generate unique ID for activity
 var activityId='act_'+Date.now()+'_'+Math.floor(Math.random()*1000);
+cbTrack('log_activity', { exertion: selectedExertion, duration_min: duration });
 A.push({
 id:activityId,
 activity:activityName,
@@ -13714,6 +13748,7 @@ if(B.length===0&&M.length===0&&medLog.length===0&&fluidLog.length===0&&notes.len
 alert('No data to export');
 return;
 }
+cbTrack('data_exported');
 
 // Create tab-separated format with header (TSV works better for pasting)
 var tsv='Date\tType\tTime\tMeal Timing\tSystolic\tDiastolic\tPulse\tBarometric\tPre-Fluid\tDROP_Sys\tDROP_Dia\tFluid_Amount\tMedicine\tNote\n';
@@ -15363,6 +15398,7 @@ function generateReportPreview(){
 const range=getDateRangeData();
 if(!range)return;
 const{startDate,endDate}=range;
+cbTrack('doctors_report_opened', { range_days: Math.round((endDate - startDate) / (1000*60*60*24)) });
 
 // Get ALL historical data, not just today's
 const allData=getAllHistoricalData();
@@ -16940,6 +16976,7 @@ document.getElementById('hrMedicationResults').innerHTML=html;
 
 function openAnalyticsDashboard(){
 document.getElementById('analyticsDashboardModal').style.display='block';
+cbTrack('analytics_opened');
 _syncFab();
 // Load saved notes
 const savedNotes=localStorage.getItem('analyticsNotes');
@@ -17330,6 +17367,7 @@ function saveMorningCheckin() {
   // Keep 90 days max to match main data retention
   records = records.slice(-90);
   saveMorningCheckins(records);
+  cbTrack('morning_checkin', { feeling: mciState.feeling, symptom_count: mciState.symptoms.length });
 
   closeMorningCheckin();
   updateMorningCheckinPrompt();
