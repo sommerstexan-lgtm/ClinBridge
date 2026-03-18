@@ -59,16 +59,6 @@ body{font-family:-apple-system,sans-serif;background:#f9fafb;padding:16px;margin
 .flex{display:flex;justify-content:space-between}
 .b{font-weight:700}
 .del{position:absolute;top:8px;right:8px;background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer}
-.logo-img{
-  display:block;
-  margin:48px auto 24px auto;
-  width:60%;
-  max-width:720px;
-  height:auto;
-  border:none;
-}
-
-
 /* Weight Alert Styles */
 .weight-alert{
   background:#fef3c7;
@@ -736,16 +726,37 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
 </div>
 
 
-<div style="max-width:900px;margin:0 auto;text-align:center;">
-  <img class="logo-img" id="clinbridgeLogo" src="ClinBridge-App-logo.JPG" alt="ClinBridge Logo" crossorigin="anonymous" onload="removeLogoWhiteBg(this)">
+<!-- ── ClinBridge Hero Header ─────────────────────────────────────── -->
+<div style="max-width:900px;margin:0 auto 20px auto;">
+  <div style="background:linear-gradient(135deg,#0f2a4a 0%,#1e3a5f 50%,#0e7490 100%);border-radius:18px;padding:28px 24px 22px 24px;text-align:center;box-shadow:0 8px 32px rgba(15,42,74,0.25)">
 
-  <div class="hdr" style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-    <div style="display:flex;flex-direction:column;align-items:flex-start;">
-      <span>v9.9.26 · Medical Grade - Free</span>
-      <!-- VERSION UPDATE INSTRUCTION: When updating to a new version, ONLY change the date below. The version number is in the title above. Format: "Updated MMM DD, YYYY" -->
-      <span style="font-size:14px;color:#6b7280;font-weight:normal;">Updated Mar 18, 2026</span>
+    <!-- App name -->
+    <div style="font-size:38px;font-weight:800;color:#fff;letter-spacing:-0.5px;line-height:1.1;margin-bottom:6px">
+      📊 ClinBridge
     </div>
-    <div id="t" style="font-size:18px;color:#6b7280;text-align:right;"></div>
+
+    <!-- Slogan -->
+    <div style="font-size:16px;font-weight:500;color:#7dd3fc;letter-spacing:0.04em;margin-bottom:18px;line-height:1.5">
+      Your health data. Your doctor's best tool.
+    </div>
+
+    <!-- Stat pills row -->
+    <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+      <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:999px;padding:5px 14px;font-size:13px;font-weight:600;color:#e0f2fe">❤️ Cardiac Grade</div>
+      <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:999px;padding:5px 14px;font-size:13px;font-weight:600;color:#e0f2fe">🔒 100% Private</div>
+      <div style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:999px;padding:5px 14px;font-size:13px;font-weight:600;color:#e0f2fe">🆓 Always Free</div>
+    </div>
+
+    <!-- Version + clock row -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid rgba(255,255,255,0.15);padding-top:12px">
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
+        <span style="font-size:13px;font-weight:700;color:#7dd3fc">v9.9.26 · Medical Grade - Free</span>
+        <!-- VERSION UPDATE INSTRUCTION: When updating to a new version, ONLY change the date below. Format: "Updated MMM DD, YYYY" -->
+        <span style="font-size:12px;color:#94a3b8;font-weight:400">Updated Mar 18, 2026</span>
+      </div>
+      <div id="t" style="font-size:14px;color:#94a3b8;text-align:right;font-weight:600"></div>
+    </div>
+
   </div>
 </div>
 <!-- End ClinBridge header -->
@@ -2717,37 +2728,6 @@ Custom Range
 </div>
 
 <script>
-// ── Logo white-background removal ────────────────────────────────────────────
-// Draws the logo onto an offscreen canvas, walks every pixel, and makes any
-// near-white pixel (R>230 AND G>230 AND B>230) fully transparent. The result
-// is written back as a PNG data URL so the logo renders cleanly on any
-// background colour without needing a separate transparent PNG file.
-function removeLogoWhiteBg(img){
-  try{
-    var canvas=document.createElement('canvas');
-    canvas.width=img.naturalWidth||img.width;
-    canvas.height=img.naturalHeight||img.height;
-    if(!canvas.width||!canvas.height) return;
-    var ctx=canvas.getContext('2d');
-    ctx.drawImage(img,0,0);
-    var imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
-    var data=imageData.data;
-    // Threshold: treat any pixel with R>230 AND G>230 AND B>230 as background
-    var threshold=230;
-    for(var i=0;i<data.length;i+=4){
-      var r=data[i], g=data[i+1], b=data[i+2];
-      if(r>threshold && g>threshold && b>threshold){
-        data[i+3]=0; // fully transparent
-      }
-    }
-    ctx.putImageData(imageData,0,0);
-    img.src=canvas.toDataURL('image/png');
-  }catch(e){
-    // crossorigin restriction or canvas taint — leave image as-is
-    console.log('Logo bg removal skipped:',e.message);
-  }
-}
-
 // ============================================================
 // VERSION-GATED CACHE BUSTER (runs before anything else)
 // If the browser loaded a stale cached page, this forces a
@@ -14086,18 +14066,42 @@ try{
     localStorage.setItem(k,allData[k]);
     count++;
   });
-  loadSettings();
-  loadMedicineList();
-  try{ localStorage.setItem('CLINBRIDGE_APP_VERSION',CURRENT_VERSION); }catch(ex){}
+  // Show "importing" overlay
+  hideModal();
+  var msg=document.createElement('div');
+  msg.id='importOverlay';
+  msg.style='position:fixed;top:0;left:0;right:0;bottom:0;background:#0f2a4a;color:white;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:99999;text-align:center;padding:30px';
+  msg.innerHTML='✅ '+count+' items imported!<br><br><span style="font-size:16px;opacity:0.8">Restoring your data...</span>';
+  document.body.appendChild(msg);
+  // Reload all data in-place — works on file://, https://, and every device
   setTimeout(function(){
-    var msg=document.createElement('div');
-    msg.style='position:fixed;top:0;left:0;right:0;bottom:0;background:#0f2a4a;color:white;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:99999;text-align:center;padding:30px';
-    msg.innerHTML='✅ '+count+' items imported!<br><br><span style="font-size:16px;opacity:0.8">Reloading your data...</span>';
-    document.body.appendChild(msg);
+    try{
+      loadSettings();
+      loadMedicineList();
+      loadDailyData();
+      loadProcedures();
+      loadPlan();
+      applyFeatureVisibility();
+      refreshAllDisplays();
+      updateFluid();
+      showTodayZone();
+      renderBPChart();
+      renderWeightChart();
+      renderSymptomChart();
+      renderActivityChart();
+      renderRateDetector();
+    }catch(e){ console.error('Post-import refresh error:',e); }
+    // Remove overlay and show success
     setTimeout(function(){
-      window.location.href = window.location.href.split('?')[0] + '?imported=' + Date.now();
-    }, 800);
-  }, 200);
+      var overlay=document.getElementById('importOverlay');
+      if(overlay) overlay.parentNode.removeChild(overlay);
+      var toast=document.createElement('div');
+      toast.textContent='✅ Data imported successfully!';
+      toast.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#059669;color:#fff;padding:14px 22px;border-radius:10px;font-size:16px;font-weight:600;z-index:99999;max-width:90%;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.3)';
+      document.body.appendChild(toast);
+      setTimeout(function(){if(toast.parentNode)toast.parentNode.removeChild(toast);},4000);
+    },600);
+  },300);
 }catch(err){
   alert('❌ Import failed: '+err.message);
 }
