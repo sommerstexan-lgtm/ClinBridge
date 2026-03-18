@@ -221,12 +221,19 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
   font-size:15px;
   cursor:pointer;
   transition:all 0.2s;
+  min-height:44px;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-appearance:none;
 }
 .hr-tab.active{
   background:#fff;
   color:#7c3aed;
   box-shadow:0 2px 4px rgba(0,0,0,0.1);
 }
+/* Ensure helpSection visibility is controlled by style.display, not just hidden attr */
+.helpSection[hidden]{display:none!important;}
+.helpSection{display:block;}
 .hr-stat-card{
   background:rgba(255,255,255,0.2);
   padding:10px;
@@ -1091,7 +1098,7 @@ Custom Range
         </p>
       </section>
 
-      <section class="helpSection" data-section="getting-started" hidden>
+      <section class="helpSection" data-section="getting-started" hidden style="display:none">
         <div id="wizardEntryPoint"></div>
         <h3>Getting Started — Why Settings Come First</h3>
         <p style="font-size:17px;line-height:1.7;color:#374151;margin-bottom:16px">
@@ -1197,7 +1204,7 @@ Custom Range
         </div>
       </section>
 
-      <section class="helpSection" data-section="how-to-use" hidden>
+      <section class="helpSection" data-section="how-to-use" hidden style="display:none">
         <h3>How to Use</h3>
 
         <div style="background:#f0f9ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:16px">
@@ -1244,7 +1251,7 @@ Custom Range
         </div>
       </section>
 
-      <section class="helpSection" data-section="morning-checkin" hidden>
+      <section class="helpSection" data-section="morning-checkin" hidden style="display:none">
         <h3>🌅 Morning Check-In &amp; Pattern Tracking</h3>
 
         <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;padding:20px;margin-bottom:20px;border:2px solid #f59e0b">
@@ -1316,7 +1323,7 @@ Custom Range
         </div>
       </section>
 
-      <section class="helpSection" data-section="faq" hidden>
+      <section class="helpSection" data-section="faq" hidden style="display:none">
         <h3>FAQ</h3>
         <div id="helpFaqContainer"></div>
       
@@ -1342,7 +1349,7 @@ Custom Range
 
 </section>
 
-      <section class="helpSection" data-section="privacy" hidden>
+      <section class="helpSection" data-section="privacy" hidden style="display:none">
         <h3>About &amp; Privacy</h3>
 
         <div style="background:linear-gradient(135deg,#065f46,#047857);padding:20px;border-radius:12px;margin-bottom:20px;color:white">
@@ -1375,6 +1382,7 @@ Custom Range
               <li><strong>🐛 Fix: Historical Weight Entries Now Editable</strong> — Weight entries from previous days can now be edited and deleted. Previously only today's entries showed ✏️ and ✕ buttons. All weight records across all dates now support full edit and delete.</li>
             </ul>
         </div>
+        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);padding:20px;border-radius:12px;margin-bottom:20px;color:white">
           <h3 style="margin:0 0 4px 0;font-size:22px">🚀 New in v9.9.23 <span style="font-size:14px;font-weight:400;opacity:0.85">— March 12, 2026</span></h3>
             <ul style="margin:8px 0 0 0;padding-left:20px;line-height:1.8">
               <li><strong>📊 Anchor Date Investigation — 3-Stat Summary Bar on Every Chart</strong> — Each chart (Systolic BP, Diastolic BP, Heart Rate, Weight, Fluid Intake) now shows three context pills above the chart area: <em>Prior to target date 14-day avg</em>, <em>On target date</em>, and <em>After target date 5-day avg</em>. All the investigative insight that tooltips were supposed to deliver is now always visible at a glance — no tapping required, no cross-chart interference possible. The tooltip system has been removed entirely.</li>
@@ -1396,15 +1404,21 @@ Custom Range
               <li><strong>✅ Event Reminder Card — Per-Action Stubs (Fix #1)</strong> — Tapping an action button replaces only that button with a grayed ✅ Done stub while remaining actions stay active. Done — Dismiss and Save as Missed remain throughout.</li>
               <li><strong>🔧 Service Worker + Manifest Deployed</strong> — sw.js and manifest.json now ship as companion files, laying groundwork for future server-push notifications.</li>
             </ul>
-          <h3 style="margin:16px 0 4px 0;font-size:22px">🚀 New in v9.8.9 <span style="font-size:14px;font-weight:400;opacity:0.85">— March 8, 2026</span></h3>
+        </div>
+        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);padding:20px;border-radius:12px;margin-bottom:20px;color:white">
+          <h3 style="margin:0 0 4px 0;font-size:22px">🚀 New in v9.8.9 <span style="font-size:14px;font-weight:400;opacity:0.85">— March 8, 2026</span></h3>
             <ul style="margin:8px 0 0 0;padding-left:20px;line-height:1.8">
               <li><strong>📊 Tile Grid — 4-Column Layout Guaranteed</strong> — Switched to fully inline grid styles (same approach as the button grid) so the 4-column layout renders correctly on Chromebook and desktop regardless of any stylesheet conflicts.</li>
             </ul>
-          <h3 style="margin:16px 0 4px 0;font-size:22px">🚀 New in v9.8.8 <span style="font-size:14px;font-weight:400;opacity:0.85">— March 8, 2026</span></h3>
+        </div>
+        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);padding:20px;border-radius:12px;margin-bottom:20px;color:white">
+          <h3 style="margin:0 0 4px 0;font-size:22px">🚀 New in v9.8.8 <span style="font-size:14px;font-weight:400;opacity:0.85">— March 8, 2026</span></h3>
             <ul style="margin:8px 0 0 0;padding-left:20px;line-height:1.8">
               <li><strong>👆 Pointer Cursor on Tiles</strong> — Finger/pointer cursor now always appears when hovering over tappable tiles on Chromebook and desktop. cursor:pointer is now inline so it can’t be overridden by the stylesheet.</li>
             </ul>
-          <h3 style="margin:16px 0 4px 0;font-size:22px">🚀 New in v9.8.6 <span style="font-size:14px;font-weight:400;opacity:0.85">— March 8, 2026</span></h3>
+        </div>
+        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);padding:20px;border-radius:12px;margin-bottom:20px;color:white">
+          <h3 style="margin:0 0 4px 0;font-size:22px">🚀 New in v9.8.6 <span style="font-size:14px;font-weight:400;opacity:0.85">— March 8, 2026</span></h3>
             <ul style="margin:8px 0 0 0;padding-left:20px;line-height:1.8">
               <li><strong>📱 iPhone Layout Fixes</strong> — Three mobile issues resolved: tile action text (tap to view/log) now locked to correct small size with !important; Events Done tile text is now correctly centered; body overflow-x:hidden prevents horizontal page shifting on iPhone.</li>
             </ul>
@@ -1578,7 +1592,7 @@ Custom Range
       </section>
 
       <!-- Add known-issues section if you plan to populate it -->
-      <section class="helpSection" data-section="data-management" hidden>
+      <section class="helpSection" data-section="data-management" hidden style="display:none">
         <h3>🗂️ Data Management</h3>
         <p style="color:#4b5563;margin-bottom:20px">
           Use the tools below to clear your health data stored on this device.
@@ -1658,7 +1672,7 @@ Custom Range
       </section>
 
       <!-- Add known-issues section if you plan to populate it -->
-      <section class="helpSection" data-section="known-issues" hidden>
+      <section class="helpSection" data-section="known-issues" hidden style="display:none">
         <h3>Known Issues</h3>
         <p style="font-size:15px;color:#6b7280;margin-bottom:16px">We track issues openly so you always know the current state of the app.</p>
 
@@ -1832,7 +1846,7 @@ Custom Range
         </div>
       </section>
 
-      <section class="helpSection" data-section="planned-features" hidden>
+      <section class="helpSection" data-section="planned-features" hidden style="display:none">
         <h3>Planned Features</h3>
         <p style="font-size:15px;color:#6b7280;margin-bottom:16px">Here is what is coming. Features are prioritized by clinical value and user feedback.</p>
 
@@ -1934,7 +1948,7 @@ Custom Range
         </div>
       </section>
 
-      <section class="helpSection" data-section="support" hidden>
+      <section class="helpSection" data-section="support" hidden style="display:none">
         <h3 style="margin:0 0 6px 0">&#9749; Support ClinBridge</h3>
         <p style="color:#4b5563;font-size:15px;margin-bottom:20px">ClinBridge is free, open-source, and built by a cardiac patient for cardiac patients. There is no subscription, no ads, and no paywall — ever. If it helps you manage your health, a small contribution means a lot.</p>
 
@@ -3299,10 +3313,12 @@ function setHelpSection(section) {
   var container = document.getElementById('aboutModal');
   if (!container) return;
 
-  // Show matching section, hide all others
+  // Show matching section, hide all others — use style.display for mobile reliability
   var sections = container.querySelectorAll('.helpSection');
   sections.forEach(function (el) {
-    el.hidden = (el.getAttribute('data-section') !== section);
+    var isMatch = el.getAttribute('data-section') === section;
+    el.style.display = isMatch ? 'block' : 'none';
+    el.hidden = !isMatch; // belt-and-suspenders
   });
 
   // Update tab active states using direct ID lookup
@@ -6983,25 +6999,29 @@ showSymptomFollowUp(symptom,severity,notes);
 
 function showSymptoms(){
 if(!settings.features||!settings.features.symptoms)return;
-var data=getFilteredData();
-var symptomData=data.symptoms||S;
+var isSympHistory=(symptomsViewMode==='all');
+var symptomData=isSympHistory?(getAllHistoricalData().symptoms||[]):S;
 var h='';
+if(isSympHistory){
+  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
+  h+='<button onclick="closeSymptomsHistory()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;min-height:44px">← Back to Today</button>';
+  h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day symptom history — read only</div>';
+  h+='</div>';
+}
 for(var i=symptomData.length-1;i>=0;i--){
 var r=symptomData[i];
 var severityColor=r.severity<=3?'#10b981':r.severity<=6?'#f59e0b':'#ef4444';
 var severityLabel=r.severity<=3?'Mild':r.severity<=6?'Moderate':'Severe';
 h+='<div class="reading">';
-// Only show edit/delete buttons for today's data
-if(dateFilterMode==='today'){
+if(!isSympHistory){
 h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
-h+='<button onclick="editSymptom('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✏️</button>';
-h+='<button onclick="deleteSymptom('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✕</button>';
+h+='<button onclick="editSymptom('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✏️</button>';
+h+='<button onclick="deleteSymptom('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✕</button>';
 h+='</div>';
 }
-// Show date
-if(dateFilterMode==='all'&&r._date){
+if(isSympHistory&&r._date){
 h+='<div style="font-size:14px;color:#3b82f6;font-weight:600;margin-bottom:4px">📅 '+r._date+'</div>';
-}else if(dateFilterMode==='today'){
+}else if(!isSympHistory){
 var todayDate=getTodayKey();
 h+='<div style="font-size:14px;color:#10b981;font-weight:600;margin-bottom:4px">📅 Today ('+todayDate+')</div>';
 }
@@ -7064,7 +7084,7 @@ document.getElementById('symptom').innerHTML =
 // Card visibility: always show if feature is enabled (let user see "none logged" state)
 // Hide only if feature is explicitly off
 var featureOn = settings.features && settings.features.symptoms;
-if(featureOn){
+if(featureOn||symptomsViewMode==='all'){
   document.getElementById('symptomCard').style.display = 'block';
 } else {
   document.getElementById('symptomCard').style.display = 'none';
@@ -14068,7 +14088,7 @@ try{
   });
   loadSettings();
   loadMedicineList();
-  try{ localStorage.setItem('CLINBRIDGE_APP_VERSION','v9.6.5'); }catch(ex){}
+  try{ localStorage.setItem('CLINBRIDGE_APP_VERSION',CURRENT_VERSION); }catch(ex){}
   setTimeout(function(){
     var msg=document.createElement('div');
     msg.style='position:fixed;top:0;left:0;right:0;bottom:0;background:#0f2a4a;color:white;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:99999;text-align:center;padding:30px';
