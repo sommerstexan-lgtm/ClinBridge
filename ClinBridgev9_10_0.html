@@ -27600,39 +27600,58 @@ function _injectPPPins() {
   var banner = document.getElementById('ppStatusBanner');
   if(!banner) { var el=document.getElementById('pp-pin-section');if(el)el.style.display='none';return; }
   var bannerText = banner.textContent || '';
-  // Match exact statusTitle strings from analyzePulsePressure
-  var isRed    = bannerText.indexOf('Critically Narrow') !== -1;
-  var isYellow = bannerText.indexOf('Narrow — Monitor') !== -1 ||
-                 bannerText.indexOf('Wide — Monitor')   !== -1 ||
-                 bannerText.indexOf('Narrowing Trend')  !== -1 ||
-                 bannerText.indexOf('Widening Trend')   !== -1;
-  if(!isRed && !isYellow) { var el2=document.getElementById('pp-pin-section');if(el2)el2.style.display='none';return; }
 
-  // Find most recent BP date with valid PP
+  // Match all current statusTitle strings from analyzePulsePressure
+  var isChronic = bannerText.indexOf('Chronically Narrow') !== -1;
+  var isRed     = bannerText.indexOf('Reduced Pulse Pressure') !== -1;
+  var isYellow  = bannerText.indexOf('Narrow Pulse Pressure')  !== -1 ||
+                  bannerText.indexOf('Wide Pulse Pressure')    !== -1 ||
+                  bannerText.indexOf('Narrowing Trend')        !== -1 ||
+                  bannerText.indexOf('Widening Trend')         !== -1;
+
+  if(!isChronic && !isRed && !isYellow) {
+    var el2=document.getElementById('pp-pin-section');if(el2)el2.style.display='none';return;
+  }
+
   var hist = getAllHistoricalData();
   var allBP = (hist.bp||[]).filter(function(r){return r.s>0&&r.d>0;}).sort(function(a,b){
     var da=a._date||'';var db=b._date||'';return da<db?1:da>db?-1:0;
   });
   var eventDate = allBP.length>0 ? allBP[0]._date : getTodayKey();
-  var sev = isRed ? 'red' : 'yellow';
-
-  // Pull the status title text from the banner's second div (the bold title line)
   var titleEl = banner.querySelector('div:nth-child(2)');
-  var statusTitle = titleEl ? titleEl.textContent.trim() : (isRed ? 'Critically Narrow PP' : 'PP Watch Alert');
-
-  // Get avg PP from recent readings
+  var statusTitle = titleEl ? titleEl.textContent.trim() : 'Pulse Pressure Finding';
   var recent10 = allBP.slice(0,10);
   var avgPP = recent10.length>0 ? recent10.reduce(function(s,r){return s+(r.s-r.d);},0)/recent10.length : 0;
-  var summaryStr = 'Status: ' + statusTitle + ' · Avg PP ' + avgPP.toFixed(1) + ' mmHg (last ' + recent10.length + ' readings)';
 
-  renderPinSuggestion('pp-pin-section', [{
-    source:'pulse_pressure', sourceLabel:'Pulse Pressure Detector',
-    eventDate: eventDate,
-    title: '📌 ' + statusTitle + ' — ' + fmtPinDate(eventDate),
-    summary: summaryStr,
-    severity: sev,
-    detectorData: {avgPP: avgPP, statusTitle: statusTitle}
-  }]);
+  var suggestions = [];
+
+  if(isChronic) {
+    var allPPVals = allBP.map(function(r){return r.s-r.d;});
+    var overallAvg = allPPVals.reduce(function(s,v){return s+v;},0)/allPPVals.length;
+    var belowCount = allPPVals.filter(function(v){return v<40;}).length;
+    suggestions.push({
+      source:'pulse_pressure', sourceLabel:'Pulse Pressure Detector',
+      eventDate: eventDate,
+      title: '📊 Established PP Baseline — ' + fmtPinDate(eventDate),
+      summary: 'Chronically narrow pulse pressure: avg ' + overallAvg.toFixed(1) + ' mmHg across ' + allBP.length + ' readings (' + belowCount + ' of ' + allPPVals.length + ' below 40 mmHg). This is your established baseline — clinically relevant for any new cardiologist reviewing your history.',
+      severity: 'yellow',
+      detectorData: {avgPP: overallAvg, statusTitle: statusTitle, chronic: true}
+    });
+  }
+
+  if(isRed || isYellow) {
+    var sev2 = isRed ? 'red' : 'yellow';
+    suggestions.push({
+      source:'pulse_pressure', sourceLabel:'Pulse Pressure Detector',
+      eventDate: eventDate,
+      title: (isRed?'⚠️':'📉') + ' ' + statusTitle + ' — ' + fmtPinDate(eventDate),
+      summary: 'Status: ' + statusTitle + ' · Recent avg PP ' + avgPP.toFixed(1) + ' mmHg (last ' + recent10.length + ' readings)',
+      severity: sev2,
+      detectorData: {avgPP: avgPP, statusTitle: statusTitle}
+    });
+  }
+
+  renderPinSuggestion('pp-pin-section', suggestions);
 }
 
 // 4. HR RATE DETECTOR — called directly from renderPatternPanel
