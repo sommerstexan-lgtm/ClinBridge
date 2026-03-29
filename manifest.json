@@ -1,22 +1,26 @@
 {
   "name": "ClinBridge",
   "short_name": "ClinBridge",
-  "description": "Medical-grade cardiac health tracking — free, private, no account required.",
-  "start_url": "/ClinBridgev9_9_26.html",
+  "description": "Free cardiac health tracking — blood pressure, heart rate, symptoms, and advanced pattern detection. Built by a cardiac patient, for cardiac patients.",
+  "start_url": "./ClinBridgev9_10_0.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#dc2626",
-  "orientation": "portrait",
+  "theme_color": "#1a3a5c",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "clinbridge-logo.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "clinbridge-logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "categories": ["health", "medical", "lifestyle"],
+  "lang": "en-US"
 }

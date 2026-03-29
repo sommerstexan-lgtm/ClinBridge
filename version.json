@@ -1,6 +1,6 @@
 {
-  "version": "v9.9.26",
-  "releaseDate": "2026-03-18",
-  "filename": "ClinBridgev9_9_26.html",
-  "changelog": "Critical fix: all main page panels (BP, Weight, Symptoms, Activities, Meals, Medicines) restored. Duplicate getAllHistoricalData function override caused all data to show empty. Edit Past Entries button fixed. All History mode fixed. Doctor Report and Analytics historical data restored."
+  "version": "v9.10.0",
+  "released": "2026-03-29",
+  "filename": "ClinBridgev9_10_0.html",
+  "notes": "Tier C Pattern Ripening, Tier D Urgent Convergence, Glossary tab, full Help rewrite"
 }

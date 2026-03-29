@@ -1,66 +1,86 @@
-// ClinBridge Service Worker — v9.9.26
-const CACHE_NAME = 'clinbridge-v9-9-26';
-const ASSETS = [
-  '/ClinBridgev9_9_26.html',
-  '/index.html',
-  '/manifest.json'
+// ClinBridge Service Worker v9.10.0
+// Cache name MUST be bumped on every release
+const CACHE_NAME = 'clinbridge-v9-10-0';
+
+const PRECACHE_URLS = [
+  './',
+  './index.html',
+  './ClinBridgev9_10_0.html',
+  './manifest.json'
 ];
 
-self.addEventListener('install', function(event) {
+// Install: cache core files
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(PRECACHE_URLS))
+      .then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-self.addEventListener('activate', function(event) {
+// Activate: delete old caches
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(function(keys) {
-      return Promise.all(
-        keys.filter(function(k) { return k !== CACHE_NAME; })
-            .map(function(k) { return caches.delete(k); })
-      );
-    })
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', function(event) {
+// Fetch: network-first for HTML (always get latest), cache-first for assets
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  // Always go network-first for the main HTML and version.json
+  if (url.pathname.endsWith('.html') || url.pathname.endsWith('version.json')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Cache-first for everything else
   event.respondWith(
-    caches.match(event.request).then(function(cached) {
-      return cached || fetch(event.request);
+    caches.match(event.request)
+      .then(cached => cached || fetch(event.request))
+  );
+});
+
+// Push notifications (future server-side implementation)
+self.addEventListener('push', event => {
+  if (!event.data) return;
+  const data = event.data.json();
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'ClinBridge', {
+      body: data.body || '',
+      icon: 'clinbridge-logo.png',
+      badge: 'clinbridge-logo.png',
+      tag: data.tag || 'clinbridge-alert',
+      data: data
     })
   );
 });
 
-// Push notification support
-self.addEventListener('push', function(event) {
-  var data = event.data ? event.data.json() : {};
-  var title = data.title || 'ClinBridge Reminder';
-  var options = {
-    body: data.body || 'Time for your scheduled check-in.',
-    icon: data.icon || '/icon-192.png',
-    badge: '/icon-192.png',
-    tag: data.tag || 'clinbridge-reminder',
-    requireInteraction: data.requireInteraction || false
-  };
-  event.waitUntil(self.registration.showNotification(title, options));
-});
-
-self.addEventListener('notificationclick', function(event) {
+// Notification click
+self.addEventListener('notificationclick', event => {
   event.notification.close();
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(list) {
-      for (var i = 0; i < list.length; i++) {
-        if (list[i].url.indexOf('ClinBridge') !== -1 && 'focus' in list[i]) {
-          return list[i].focus();
-        }
+    clients.matchAll({ type: 'window' }).then(list => {
+      for (const client of list) {
+        if (client.url.includes('clinbridge') && 'focus' in client)
+          return client.focus();
       }
-      if (clients.openWindow) {
-        return clients.openWindow('/ClinBridgev9_9_26.html');
-      }
+      if (clients.openWindow) return clients.openWindow('./ClinBridgev9_10_0.html');
     })
   );
 });
