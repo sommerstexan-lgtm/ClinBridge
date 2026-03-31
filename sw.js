@@ -1,86 +1,60 @@
-// ClinBridge Service Worker v9.10.0
-// Cache name MUST be bumped on every release
-const CACHE_NAME = 'clinbridge-v9-10-0';
-
-const PRECACHE_URLS = [
-  './',
+// ClinBridge Service Worker — v9.10.1
+const CACHE_NAME = 'clinbridge-v9-10-1';
+const ASSETS = [
+  './ClinBridgev9_10_1.html',
   './index.html',
-  './ClinBridgev9_10_0.html',
   './manifest.json'
 ];
 
-// Install: cache core files
-self.addEventListener('install', event => {
+self.addEventListener('install', function(event) {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(PRECACHE_URLS))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(function(cache) {
+      return cache.addAll(ASSETS);
+    })
   );
+  self.skipWaiting();
 });
 
-// Activate: delete old caches
-self.addEventListener('activate', event => {
+self.addEventListener('activate', function(event) {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      )
-    ).then(() => self.clients.claim())
-  );
-});
-
-// Fetch: network-first for HTML (always get latest), cache-first for assets
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-
-  // Always go network-first for the main HTML and version.json
-  if (url.pathname.endsWith('.html') || url.pathname.endsWith('version.json')) {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
-          return response;
+    caches.keys().then(function(keys) {
+      return Promise.all(
+        keys.filter(function(key) {
+          return key !== CACHE_NAME;
+        }).map(function(key) {
+          return caches.delete(key);
         })
-        .catch(() => caches.match(event.request))
-    );
-    return;
-  }
-
-  // Cache-first for everything else
-  event.respondWith(
-    caches.match(event.request)
-      .then(cached => cached || fetch(event.request))
+      );
+    })
   );
+  self.clients.claim();
 });
 
-// Push notifications (future server-side implementation)
-self.addEventListener('push', event => {
-  if (!event.data) return;
-  const data = event.data.json();
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'ClinBridge', {
-      body: data.body || '',
-      icon: 'clinbridge-logo.png',
-      badge: 'clinbridge-logo.png',
-      tag: data.tag || 'clinbridge-alert',
-      data: data
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request).then(function(cached) {
+      return cached || fetch(event.request);
     })
   );
 });
 
-// Notification click
-self.addEventListener('notificationclick', event => {
+// Push notification support (groundwork for future server-push)
+self.addEventListener('push', function(event) {
+  var data = {};
+  try { data = event.data ? event.data.json() : {}; } catch(e) {}
+  var title = data.title || 'ClinBridge';
+  var options = {
+    body: data.body || 'You have a ClinBridge reminder.',
+    icon: data.icon || './icon-192.png',
+    badge: data.badge || './icon-192.png',
+    data: data.data || {}
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', function(event) {
   event.notification.close();
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then(list => {
-      for (const client of list) {
-        if (client.url.includes('clinbridge') && 'focus' in client)
-          return client.focus();
-      }
-      if (clients.openWindow) return clients.openWindow('./ClinBridgev9_10_0.html');
-    })
+    clients.openWindow('./')
   );
 });

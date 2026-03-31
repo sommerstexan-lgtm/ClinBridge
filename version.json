@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.0",
-  "released": "2026-03-29",
-  "filename": "ClinBridgev9_10_0.html",
-  "notes": "Tier C Pattern Ripening, Tier D Urgent Convergence, Glossary tab, full Help rewrite"
+  "version": "v9.10.1",
+  "date": "2026-03-31",
+  "file": "ClinBridgev9_10_1.html",
+  "notes": "Symptom system overhaul, fuzzy matching, bulk rename, 4 bug fixes"
 }
