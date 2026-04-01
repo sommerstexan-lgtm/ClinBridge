@@ -1,6 +1,6 @@
 {
   "version": "v9.10.1",
-  "date": "2026-03-31",
+  "date": "2026-04-01",
   "file": "ClinBridgev9_10_1.html",
-  "notes": "Symptom system overhaul, fuzzy matching, bulk rename, 4 bug fixes"
+  "notes": "Living Cards (decompensation + PP baseline consolidate to 1 pin each), pinned events sorted by date, bulk rename sweeps pinned snapshots, Step 2 canonical dropdown, stale symptom name auto-repair on load"
 }

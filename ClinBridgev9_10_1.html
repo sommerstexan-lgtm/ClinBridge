@@ -11137,6 +11137,23 @@ function openBulkRenameSymptom(){
   var hist = getAllHistoricalData();
   (hist.symptoms||[]).forEach(function(s){ var n=s.symptom||''; if(n) counts[n]=(counts[n]||0)+1; });
   S.forEach(function(s){ var n=s.symptom||''; if(n) counts[n]=(counts[n]||0)+1; });
+  // Also include symptom names frozen in pinned event snapshots — these may no longer exist in daily data
+  var pinnedSymptomCounts = {};
+  try {
+    var pins = JSON.parse(localStorage.getItem('clinbridge_pinned_events') || '[]');
+    pins.forEach(function(evt) {
+      if(evt.rawData && evt.rawData.symptoms) {
+        evt.rawData.symptoms.forEach(function(s) {
+          var n = s.symptom||'';
+          if(n) pinnedSymptomCounts[n] = (pinnedSymptomCounts[n]||0)+1;
+        });
+      }
+    });
+  } catch(e) {}
+  // Add pinned-only names to counts with a marker so we can label them distinctly
+  Object.keys(pinnedSymptomCounts).forEach(function(n) {
+    if(!counts[n]) counts['📌 ' + n + ' [pinned only]'] = pinnedSymptomCounts[n];
+  });
   var names = Object.keys(counts).sort();
   if(names.length===0){
     showModal('<div class="modal-title">🔄 Rename Symptom in History</div><p style="color:#6b7280;text-align:center;padding:20px">No symptom history found.</p><div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Close</button></div>');
@@ -11150,11 +11167,51 @@ function openBulkRenameSymptom(){
   names.forEach(function(n){ html+='<option value="'+n.replace(/"/g,"&quot;")+'">'+n+' ('+counts[n]+' entr'+(counts[n]===1?'y':'ies')+')</option>'; });
   html+='</select>';
   html+='<div id="bulkRenameCountMsg" style="margin-bottom:12px;font-size:14px;color:#7c3aed;font-weight:600;min-height:20px"></div>';
-  html+='<label style="display:block;font-size:15px;font-weight:700;color:#374151;margin-bottom:8px">Step 2 — New name:</label>';
-  html+='<input type="text" id="bulkRenameTarget" class="modal-input" placeholder="e.g. Congestive Cough" style="margin-bottom:4px" />';
-  html+='<div style="font-size:12px;color:#9ca3af;margin-bottom:16px">You can type a new name or use an existing symptom name</div>';
+  // Build canonical target list: predefined + condition-specific + custom — sorted, deduped, excluding historical names already in Step 1
+  var canonicalSet = {};
+  // Predefined symptoms
+  if(typeof PREDEFINED_SYMPTOMS !== 'undefined') {
+    PREDEFINED_SYMPTOMS.forEach(function(s){ canonicalSet[s] = true; });
+  }
+  // Condition-specific symptoms
+  if(typeof CONDITION_SYMPTOMS !== 'undefined' && settings.conditions) {
+    settings.conditions.forEach(function(cond){
+      var list = CONDITION_SYMPTOMS[cond];
+      if(list) list.forEach(function(item){ canonicalSet[typeof item==='object'?item.name:item] = true; });
+    });
+  }
+  // Custom symptoms
+  if(settings.customSymptoms) {
+    settings.customSymptoms.forEach(function(s){ canonicalSet[s] = true; });
+  }
+  var canonicalNames = Object.keys(canonicalSet).sort();
+
+  html+='<label style="display:block;font-size:15px;font-weight:700;color:#374151;margin-bottom:8px">Step 2 — Rename to:</label>';
+  html+='<select id="bulkRenameTarget" style="width:100%;padding:12px;font-size:15px;border:2px solid #d1d5db;border-radius:8px;margin-bottom:6px;background:white">';
+  html+='<option value="">— Choose correct name —</option>';
+  canonicalNames.forEach(function(n){
+    html+='<option value="'+n.replace(/"/g,'&quot;')+'">'+n+'</option>';
+  });
+  html+='</select>';
+  html+='<div style="font-size:12px;color:#9ca3af;margin-bottom:8px">Showing all known symptom names — select the correct one.</div>';
+  html+='<div id="bulkCustomToggleRow" style="margin-bottom:16px">';
+  html+='<button type="button" onclick="_toggleBulkCustomInput()" style="background:none;border:none;color:#7c3aed;font-size:13px;font-weight:600;cursor:pointer;padding:0;text-decoration:underline">✏️ Name not in list? Type a custom name instead</button>';
+  html+='<div id="bulkCustomInputRow" style="display:none;margin-top:8px">';
+  html+='<input type="text" id="bulkRenameCustomInput" class="modal-input" placeholder="Type exact new symptom name..." style="margin-bottom:4px" />';
+  html+='<div style="font-size:12px;color:#e57400;margin-top:2px">⚠️ Custom names are not in your symptom lists — double-check spelling before confirming.</div>';
+  html+='</div></div>';
   html+='<div class="modal-actions"><button class="modal-cancel" onclick="manageSymptoms()">← Back</button><button class="modal-ok" onclick="confirmBulkRename()">🔄 Rename All Entries</button></div>';
   showModal(html);
+}
+
+function _toggleBulkCustomInput() {
+  var row = document.getElementById('bulkCustomInputRow');
+  var sel = document.getElementById('bulkRenameTarget');
+  if(!row || !sel) return;
+  var showing = row.style.display !== 'none';
+  row.style.display = showing ? 'none' : 'block';
+  // When showing custom input, clear the dropdown selection to avoid ambiguity
+  if(!showing) { sel.value = ''; setTimeout(function(){ var inp=document.getElementById('bulkRenameCustomInput'); if(inp) inp.focus(); }, 50); }
 }
 
 function updateBulkRenameCount(){
@@ -11171,12 +11228,15 @@ function updateBulkRenameCount(){
 
 function confirmBulkRename(){
   var sel=document.getElementById('bulkRenameSource');
-  var inp=document.getElementById('bulkRenameTarget');
-  if(!sel||!inp)return;
+  var targetSel=document.getElementById('bulkRenameTarget');
+  var customInp=document.getElementById('bulkRenameCustomInput');
+  if(!sel||!targetSel)return;
   var oldName=sel.value.trim();
-  var newName=inp.value.trim();
+  // New name: prefer dropdown selection; fall back to custom input if visible
+  var newName = (targetSel.value||'').trim();
+  if(!newName && customInp) newName = (customInp.value||'').trim();
   if(!oldName){alert('Please select a symptom to rename.');return;}
-  if(!newName){alert('Please enter the new name.');inp.focus();return;}
+  if(!newName){alert('Please choose a new name from the list, or type a custom name.');return;}
   if(oldName===newName){alert('New name is the same as the current name.');return;}
   var hist=getAllHistoricalData();
   var count=(hist.symptoms||[]).filter(function(s){return s.symptom===oldName;}).length;
@@ -11197,6 +11257,9 @@ function confirmBulkRename(){
 }
 
 function executeBulkRename(oldName,newName){
+  // Strip the [pinned only] marker if user selected a pinned-snapshot-only name
+  var pinnedOnlyMatch = oldName.match(/^📌 (.+) \[pinned only\]$/);
+  if(pinnedOnlyMatch) oldName = pinnedOnlyMatch[1];
   var renamedCount=0;
   // Rename in today session
   S.forEach(function(s){ if(s.symptom===oldName){s.symptom=newName;renamedCount++;} });
@@ -11214,6 +11277,23 @@ function executeBulkRename(oldName,newName){
       if(changed)localStorage.setItem(key,JSON.stringify(dayData));
     }catch(e){}
   }
+  // Rename in pinned events rawData snapshots
+  try {
+    var pins = JSON.parse(localStorage.getItem('clinbridge_pinned_events') || '[]');
+    var pinsChanged = false;
+    pins.forEach(function(evt) {
+      if(evt.rawData && evt.rawData.symptoms && evt.rawData.symptoms.length) {
+        evt.rawData.symptoms.forEach(function(s) {
+          if(s.symptom === oldName) { s.symptom = newName; pinsChanged = true; renamedCount++; }
+        });
+      }
+      if(evt.summary && evt.summary.indexOf(oldName) !== -1) {
+        evt.summary = evt.summary.split(oldName).join(newName);
+        pinsChanged = true;
+      }
+    });
+    if(pinsChanged) localStorage.setItem('clinbridge_pinned_events', JSON.stringify(pins));
+  } catch(e) {}
   // Rename in custom symptoms list if present
   if(settings.customSymptoms){
     var idx=settings.customSymptoms.indexOf(oldName);
@@ -27985,7 +28065,21 @@ function deletePinnedEventById(id) {
   updateAnalyticsBadges();
 }
 
+// ── LIVING CARDS ──────────────────────────────────────────────────────────────
+// These detector sources represent ongoing conditions, not discrete episodes.
+// Only ONE card per source is ever created — subsequent pins UPDATE it in place.
+// Episodic detectors (hr_detector, symptom_convergence) keep individual cards.
+var LIVING_CARD_SOURCES = ['decompensation', 'pulse_pressure'];
+
+function isLivingCardSource(source) {
+  return LIVING_CARD_SOURCES.indexOf(source) !== -1;
+}
+
 function isPinnedEvent(source, eventDate) {
+  if(isLivingCardSource(source)) {
+    // For living cards, any existing card for this source counts as already pinned
+    return getPinnedEvents().some(function(e){ return e.source === source; });
+  }
   return getPinnedEvents().some(function(e){ return e.source === source && e.eventDate === eventDate; });
 }
 
@@ -28007,6 +28101,54 @@ function pinEvent(source, sourceLabel, eventDate, title, summary, severity, dete
   var eventDateDisplay = fmtPinDate(eventDate);
   var rawData = getRawDataForDate(eventDate);
 
+  var list = getPinnedEvents();
+
+  // ── LIVING CARD: merge-in-place for ongoing condition sources ────────────────
+  if(isLivingCardSource(source)) {
+    var livingIdx = -1;
+    for(var i=0;i<list.length;i++){
+      if(list[i].source === source){ livingIdx = i; break; }
+    }
+    if(livingIdx >= 0) {
+      // Update the existing card — preserve activeSince/id/pinnedAt, refresh everything else
+      var existing = list[livingIdx];
+      existing.title         = title;
+      existing.summary       = summary;
+      existing.severity      = severity;
+      existing.eventDate     = eventDate;
+      existing.eventDateDisplay = eventDateDisplay;
+      existing.rawData       = rawData;
+      existing.detectorData  = detectorData || {};
+      existing.lastUpdated   = now.toISOString();
+      existing.lastUpdatedDisplay = pinnedAtDisplay;
+      existing.updateCount   = (existing.updateCount || 1) + 1;
+      // activeSince preserved from original pinnedAt
+      return _savePinnedEventsList(list);
+    }
+    // First time pinning this living card — create fresh with activeSince marker
+    var newEvt = {
+      id: 'pin_' + Date.now() + '_' + Math.floor(Math.random()*10000),
+      pinnedAt: now.toISOString(),
+      pinnedAtDisplay: pinnedAtDisplay,
+      activeSince: now.toISOString(),
+      activeSinceDisplay: pinnedAtDisplay,
+      source: source,
+      sourceLabel: sourceLabel,
+      eventDate: eventDate,
+      eventDateDisplay: eventDateDisplay,
+      title: title,
+      summary: summary,
+      severity: severity,
+      rawData: rawData,
+      detectorData: detectorData || {},
+      isLivingCard: true,
+      updateCount: 1
+    };
+    list.unshift(newEvt);
+    return _savePinnedEventsList(list);
+  }
+
+  // ── EPISODIC CARD: standard upsert by source+date ───────────────────────────
   var evt = {
     id: 'pin_' + Date.now() + '_' + Math.floor(Math.random()*10000),
     pinnedAt: now.toISOString(),
@@ -28021,12 +28163,9 @@ function pinEvent(source, sourceLabel, eventDate, title, summary, severity, dete
     rawData: rawData,
     detectorData: detectorData || {}
   };
-
-  var list = getPinnedEvents();
-  // Upsert: replace if same source+date already pinned
   var idx = -1;
-  for(var i=0;i<list.length;i++){
-    if(list[i].source === source && list[i].eventDate === eventDate){ idx = i; break; }
+  for(var j=0;j<list.length;j++){
+    if(list[j].source === source && list[j].eventDate === eventDate){ idx = j; break; }
   }
   if(idx >= 0) { list[idx] = evt; } else { list.unshift(evt); }
   return _savePinnedEventsList(list);
@@ -28094,6 +28233,13 @@ function renderPinnedEventsModal() {
   emptyEl.style.display = 'none';
   contentEl.style.display = 'flex';
 
+  // Sort by eventDate descending — most recent clinical event at top
+  list = list.slice().sort(function(a,b){
+    var da = a.eventDate || '';
+    var db = b.eventDate || '';
+    return db.localeCompare(da);
+  });
+
   var sevColor = { red:'#dc2626', yellow:'#d97706', green:'#059669', grey:'#9ca3af' };
   var sevBg    = { red:'#fef2f2', yellow:'#fffbeb', green:'#ecfdf5', grey:'#f9fafb' };
   var sevIcon  = { red:'🚨', yellow:'⚠️', green:'✅', grey:'⬜' };
@@ -28128,6 +28274,19 @@ function renderPinnedEventsModal() {
       '</div>' +
       '<div style="font-size:14px;color:#374151;line-height:1.5">' + evt.summary + '</div>' +
       rdSummary +
+      (evt.isLivingCard ? (function(){
+        var activeSinceStr = '';
+        if(evt.activeSince) {
+          var aDate = new Date(evt.activeSince);
+          var ageD = Math.max(1, Math.round((Date.now() - aDate.getTime()) / 86400000));
+          activeSinceStr = '<div style="margin-top:8px;padding:8px 10px;background:rgba(0,0,0,0.04);border-radius:6px;font-size:12px;color:#6b7280;line-height:1.6">' +
+            '🔄 <strong>Living Card</strong> — updates in place, never duplicates<br>' +
+            '📅 First pinned: ' + evt.activeSinceDisplay + ' · Active ' + ageD + ' day' + (ageD!==1?'s':'') +
+            (evt.lastUpdatedDisplay && evt.updateCount > 1 ? '<br>🕐 Last updated: ' + evt.lastUpdatedDisplay + ' (' + evt.updateCount + ' updates)' : '') +
+          '</div>';
+        }
+        return activeSinceStr;
+      })() : '') +
       '<button onclick="togglePinDrill(\'' + drillId + '\',this)" style="margin-top:10px;background:' + col + ';color:white;border:none;padding:7px 14px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer">📋 View Details ▾</button>' +
       '<div id="' + drillId + '" style="display:none;margin-top:12px;background:white;border-radius:8px;padding:12px;border:1px solid ' + col + '44;font-size:13px;color:#374151">' +
         _buildPinDrillDown(evt) +
@@ -28943,8 +29102,97 @@ function _silentDecompAnalysis() {
   }
 }
 
+// ── PINNED EVENT SYMPTOM NAME REPAIR ─────────────────────────────────────────
+// On load, sweep pinned event rawData for symptom names that are known synonyms
+// of canonical names (e.g. "Cardiac Cough" → "Congestive Cough").
+// Uses SYMPTOM_SYNONYMS map — safe to run repeatedly, only writes if changed.
+function _repairPinnedSymptomNames() {
+  if(typeof SYMPTOM_SYNONYMS === 'undefined') return;
+  // Build reverse map: old name → canonical name
+  var reverseMap = {};
+  Object.keys(SYMPTOM_SYNONYMS).forEach(function(term) {
+    var targets = SYMPTOM_SYNONYMS[term];
+    if(targets && targets.length === 1) {
+      // Only auto-apply when there's exactly one canonical target — unambiguous
+      reverseMap[term.toLowerCase()] = targets[0];
+    }
+  });
+  // Also build from known renames: predefined list is authoritative
+  // Map "Cardiac Cough" → "Congestive Cough" explicitly since it's a known migration
+  var knownRenames = { 'Cardiac Cough': 'Congestive Cough' };
+  try {
+    var pins = JSON.parse(localStorage.getItem('clinbridge_pinned_events') || '[]');
+    var changed = false;
+    pins.forEach(function(evt) {
+      if(evt.rawData && evt.rawData.symptoms) {
+        evt.rawData.symptoms.forEach(function(s) {
+          var n = s.symptom || '';
+          // Check known renames first
+          if(knownRenames[n]) { s.symptom = knownRenames[n]; changed = true; }
+          // Then check synonym reverse map
+          else if(reverseMap[n.toLowerCase()]) { s.symptom = reverseMap[n.toLowerCase()]; changed = true; }
+        });
+      }
+      // Also fix summary text for known renames
+      if(evt.summary) {
+        Object.keys(knownRenames).forEach(function(old) {
+          if(evt.summary.indexOf(old) !== -1) {
+            evt.summary = evt.summary.split(old).join(knownRenames[old]);
+            changed = true;
+          }
+        });
+      }
+    });
+    if(changed) localStorage.setItem('clinbridge_pinned_events', JSON.stringify(pins));
+  } catch(e) {}
+}
+
+
+// One-time consolidation: if a user has multiple pins for the same living card
+// source (e.g. 3x decompensation, 2x pulse_pressure from before this feature),
+// keep only the most recent one and mark it as a living card.
+function _migrateLivingCards() {
+  var list = getPinnedEvents();
+  var changed = false;
+  LIVING_CARD_SOURCES.forEach(function(source) {
+    var matches = list.filter(function(e){ return e.source === source; });
+    if(matches.length <= 1) {
+      // If exactly one exists and isn't marked yet, mark it
+      if(matches.length === 1 && !matches[0].isLivingCard) {
+        matches[0].isLivingCard = true;
+        matches[0].activeSince = matches[0].pinnedAt;
+        matches[0].activeSinceDisplay = matches[0].pinnedAtDisplay;
+        matches[0].updateCount = 1;
+        changed = true;
+      }
+      return;
+    }
+    // Multiple: keep most recently pinnedAt, remove the rest
+    matches.sort(function(a,b){ return b.pinnedAt.localeCompare(a.pinnedAt); });
+    var keeper = matches[0];
+    // activeSince = oldest original pin
+    var oldest = matches[matches.length-1];
+    keeper.isLivingCard = true;
+    keeper.activeSince = oldest.pinnedAt;
+    keeper.activeSinceDisplay = oldest.pinnedAtDisplay;
+    keeper.updateCount = matches.length;
+    keeper.lastUpdated = keeper.pinnedAt;
+    keeper.lastUpdatedDisplay = keeper.pinnedAtDisplay;
+    // Remove duplicates from list
+    var keeperIds = [keeper.id];
+    list = list.filter(function(e){
+      if(e.source !== source) return true;
+      return keeperIds.indexOf(e.id) !== -1;
+    });
+    changed = true;
+  });
+  if(changed) _savePinnedEventsList(list);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(function(){
+    _repairPinnedSymptomNames();
+    _migrateLivingCards();
     _silentDecompAnalysis();
     updateAnalyticsBadges();
     updatePinsBadge();
@@ -28954,6 +29202,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 if(document.readyState !== 'loading') {
   setTimeout(function(){
+    _repairPinnedSymptomNames();
+    _migrateLivingCards();
     _silentDecompAnalysis();
     updateAnalyticsBadges();
     updatePinsBadge();
