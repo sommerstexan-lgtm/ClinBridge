@@ -1,22 +1,21 @@
 {
   "name": "ClinBridge",
   "short_name": "ClinBridge",
-  "description": "Cardiac health tracking — free, private, medical grade",
-  "start_url": "./ClinBridgev9_10_1.html",
+  "description": "Cardiac Health Tracking — Medical Grade, Free",
+  "start_url": "/ClinBridgev9_10_3.html",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
-  "orientation": "portrait",
+  "background_color": "#f9fafb",
+  "theme_color": "#10b981",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "ClinBridge-App-logo.JPG",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/jpeg"
     },
     {
-      "src": "icon-512.png",
+      "src": "ClinBridge-App-logo.JPG",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/jpeg"
     }
   ]
 }

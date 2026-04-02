@@ -1,6 +1,5 @@
 {
-  "version": "v9.10.1",
-  "date": "2026-04-01",
-  "file": "ClinBridgev9_10_1.html",
-  "notes": "Living Cards (decompensation + PP baseline consolidate to 1 pin each), pinned events sorted by date, bulk rename sweeps pinned snapshots, Step 2 canonical dropdown, stale symptom name auto-repair on load"
+  "version": "v9.10.3",
+  "date": "2026-04-02",
+  "notes": "BP-before button in manual mode, manual mode info card, recent BP card at activity log open"
 }

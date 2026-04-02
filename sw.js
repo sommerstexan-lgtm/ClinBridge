@@ -1,15 +1,17 @@
-// ClinBridge Service Worker — v9.10.1b
-const CACHE_NAME = 'clinbridge-v9-10-1b';
-const ASSETS = [
-  './ClinBridgev9_10_1.html',
+// ClinBridge Service Worker — v9.10.3
+const CACHE_NAME = 'clinbridge-v9.10.3';
+const urlsToCache = [
+  './',
   './index.html',
-  './manifest.json'
+  './ClinBridgev9_10_3.html',
+  './manifest.json',
+  './ClinBridge-App-logo.JPG'
 ];
 
 self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(ASSETS);
+      return cache.addAll(urlsToCache);
     })
   );
   self.skipWaiting();
@@ -17,12 +19,12 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('activate', function(event) {
   event.waitUntil(
-    caches.keys().then(function(keys) {
+    caches.keys().then(function(cacheNames) {
       return Promise.all(
-        keys.filter(function(key) {
-          return key !== CACHE_NAME;
-        }).map(function(key) {
-          return caches.delete(key);
+        cacheNames.filter(function(name) {
+          return name !== CACHE_NAME;
+        }).map(function(name) {
+          return caches.delete(name);
         })
       );
     })
@@ -32,29 +34,18 @@ self.addEventListener('activate', function(event) {
 
 self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches.match(event.request).then(function(cached) {
-      return cached || fetch(event.request);
+    caches.match(event.request).then(function(response) {
+      if (response) return response;
+      return fetch(event.request).then(function(response) {
+        if (!response || response.status !== 200 || response.type !== 'basic') {
+          return response;
+        }
+        var responseToCache = response.clone();
+        caches.open(CACHE_NAME).then(function(cache) {
+          cache.put(event.request, responseToCache);
+        });
+        return response;
+      });
     })
-  );
-});
-
-// Push notification support (groundwork for future server-push)
-self.addEventListener('push', function(event) {
-  var data = {};
-  try { data = event.data ? event.data.json() : {}; } catch(e) {}
-  var title = data.title || 'ClinBridge';
-  var options = {
-    body: data.body || 'You have a ClinBridge reminder.',
-    icon: data.icon || './icon-192.png',
-    badge: data.badge || './icon-192.png',
-    data: data.data || {}
-  };
-  event.waitUntil(self.registration.showNotification(title, options));
-});
-
-self.addEventListener('notificationclick', function(event) {
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow('./')
   );
 });
