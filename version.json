@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.3",
+  "version": "v9.10.4",
   "date": "2026-04-02",
-  "notes": "BP-before button in manual mode, manual mode info card, recent BP card at activity log open"
+  "notes": "Help & About tabs updated (Known Issues + Planned Features catch-up through v9.10.3), already-linked BP card dismiss button"
 }
