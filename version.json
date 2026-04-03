@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.4",
-  "date": "2026-04-02",
-  "notes": "Help & About tabs updated (Known Issues + Planned Features catch-up through v9.10.3), already-linked BP card dismiss button"
+  "version": "v9.10.6",
+  "updated": "2026-04-03",
+  "changelog": "Fix: All Notes search box single-character typing bug (v9.10.5). Fix: Numeric fields accepting scientific notation characters e/E/+/- (v9.10.6)."
 }
