@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.6",
+  "version": "v9.10.7",
   "updated": "2026-04-03",
-  "changelog": "Fix: All Notes search box single-character typing bug (v9.10.5). Fix: Numeric fields accepting scientific notation characters e/E/+/- (v9.10.6)."
+  "changelog": "Pinned Events Communication Layer \u2014 Log Communication (who/date/response/status) and Add Question (per-pin, asked checkbox, response log) built into each pin. All data archives with the pin."
 }
