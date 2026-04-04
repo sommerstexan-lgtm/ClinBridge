@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.14",
+  "version": "v9.10.15",
   "updated": "2026-04-04",
-  "changelog": "Fix: Sentinel modal footer and disclaimer now always visible (flexbox layout). Fix: grammar corrected — 1 stream is / 2 streams are. New: Sentinel fully documented in Help & About with dedicated tab covering what Sentinel watches, Footprints, the Clinical Event Log, why this approach is clinically novel, and what Sentinel is not."
+  "changelog": "Fix: Help & About tabs broken after tapping Sentinel. Tab bar now scrolls horizontally in a single row (flex-wrap:nowrap + overflow-x:auto) — full content height always preserved regardless of tab count. Scroll reset moved to after section toggle for correct mobile behavior. Sentinel added to search labels."
 }
