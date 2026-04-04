@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.11",
+  "version": "v9.10.14",
   "updated": "2026-04-04",
-  "changelog": "Fix: Pinned Events question UI — three interaction bugs fixed. Add Question now shows saved question immediately. Mark Asked checkbox reflects state instantly. Delete (x) now confirms before removing and always takes effect. All three operations re-render the pin card in place."
+  "changelog": "Fix: Sentinel modal footer and disclaimer now always visible (flexbox layout). Fix: grammar corrected — 1 stream is / 2 streams are. New: Sentinel fully documented in Help & About with dedicated tab covering what Sentinel watches, Footprints, the Clinical Event Log, why this approach is clinically novel, and what Sentinel is not."
 }
