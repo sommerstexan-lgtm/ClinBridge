@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.10",
+  "version": "v9.10.11",
   "updated": "2026-04-04",
-  "changelog": "Fix: Button spacing audit — all main logging modals now meet minimum 12px gap between tappable buttons. Morning Check-In symptom grid, Yes/No pairs, and waking-hours selectors raised from 6-8px to 12px. Log Symptom recent chips, Log Fluid quick-add row, and Log Activity BP-before button also corrected. Senior touchscreen usability fix. No font or button size changes."
+  "changelog": "Fix: Pinned Events question UI — three interaction bugs fixed. Add Question now shows saved question immediately. Mark Asked checkbox reflects state instantly. Delete (x) now confirms before removing and always takes effect. All three operations re-render the pin card in place."
 }
