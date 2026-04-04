@@ -2,7 +2,7 @@
   "name": "ClinBridge",
   "short_name": "ClinBridge",
   "description": "Cardiac health tracking PWA — BP, HR, weight, fluid, symptoms, and pattern detection.",
-  "start_url": "/ClinBridgev9_10_7.html",
+  "start_url": "/ClinBridgev9_10_8.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",

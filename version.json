@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.7",
+  "version": "v9.10.8",
   "updated": "2026-04-03",
-  "changelog": "Pinned Events Communication Layer \u2014 Log Communication (who/date/response/status) and Add Question (per-pin, asked checkbox, response log) built into each pin. All data archives with the pin."
+  "changelog": "Fix: Pinned Events comm layer UI freeze \u2014 all 6 operations now update in-place with toast confirmation. No modal rebuild."
 }
