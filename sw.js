@@ -1,27 +1,40 @@
-// ClinBridge Service Worker — v9.10.15
-const CACHE_NAME = 'clinbridge-v9.10.15';
-const urlsToCache = [
+// ClinBridge Service Worker v9.10.20
+const CACHE_NAME = 'clinbridge-v9-10-20';
+const ASSETS = [
   './',
   './index.html',
-  './ClinBridgev9_10_15.html',
-  './manifest.json',
-  './ClinBridge-App-logo.JPG'
+  './ClinBridgev9_10_20.html',
+  './manifest.json'
 ];
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache)));
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+  );
   self.skipWaiting();
 });
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(
-    keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-  )));
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      )
+    )
+  );
   self.clients.claim();
 });
-self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(res => {
-    if (!res || res.status !== 200 || res.type !== 'basic') return res;
-    const clone = res.clone();
-    caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
-    return res;
-  })));
+
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).then(response => {
+        if (!response || response.status !== 200 || response.type !== 'basic') return response;
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        return response;
+      });
+    })
+  );
 });

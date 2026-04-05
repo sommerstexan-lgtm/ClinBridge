@@ -1,5 +1,6 @@
 {
-  "version": "v9.10.15",
-  "updated": "2026-04-04",
-  "changelog": "Fix: Help & About tabs broken after tapping Sentinel. Tab bar now scrolls horizontally in a single row (flex-wrap:nowrap + overflow-x:auto) — full content height always preserved regardless of tab count. Scroll reset moved to after section toggle for correct mobile behavior. Sentinel added to search labels."
+  "version": "v9.10.20",
+  "released": "2026-04-04",
+  "file": "ClinBridgev9_10_20.html",
+  "notes": "Documentation update: Sentinel added to Welcome feature grid, Help & About navigation guide completed, Known Issues cleaned of developer jargon. All 14 tabs documented."
 }
