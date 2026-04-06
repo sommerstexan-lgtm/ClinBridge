@@ -1,7 +1,7 @@
-// ClinBridge Service Worker — v9.10.32
+// ClinBridge Service Worker — v9.10.33
 // Cache-first strategy for app shell, network-first for data
 
-const CACHE_NAME = 'clinbridge-v9.10.32';
+const CACHE_NAME = 'clinbridge-v9.10.33';
 const ASSETS = [
   './',
   './index.html'
