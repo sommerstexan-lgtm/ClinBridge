@@ -1,7 +1,7 @@
 // ClinBridge Service Worker v9.10.36
 // Handles push notifications and caching for PWA home screen installs.
 
-const CACHE_NAME = 'clinbridge-v9.10.36';
+const CACHE_NAME = 'clinbridge-v9.10.40';
 const URLS_TO_CACHE = [
   './',
   './index.html'
