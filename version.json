@@ -1,10 +1,1 @@
-{
-  "version": "v9.10.40",
-  "releaseDate": "April 8, 2026",
-  "summary": "Wizard banner and save button no longer hijack Settings after wizard is done",
-  "fixes": [
-    "Stale Getting Started Wizard flag (step=0) no longer shows 'Save & Return to Wizard' button or redirects to wizard on save",
-    "Settings banner now auto-clears the stale wizard flag silently on open",
-    "Added 'Wizard done — dismiss' button to banner for manual one-tap dismissal"
-  ]
-}
+{"version":"v9.10.43","updated":"2026-04-09"}

@@ -1,24 +1,12 @@
 {
   "name": "ClinBridge",
   "short_name": "ClinBridge",
-  "description": "Cardiac health tracking — BP, HR, weight, symptoms, fluid, medications. Built by a cardiac patient, for cardiac patients.",
-  "start_url": "./",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f2a4a",
-  "theme_color": "#0f2a4a",
-  "orientation": "portrait-primary",
+  "background_color": "#f9fafb",
+  "theme_color": "#1a3a5c",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "ClinBridge-App-logo.JPG", "sizes": "192x192", "type": "image/jpeg" },
+    { "src": "ClinBridge-App-logo.JPG", "sizes": "512x512", "type": "image/jpeg" }
   ]
 }
