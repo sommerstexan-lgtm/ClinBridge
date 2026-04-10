@@ -1,1 +1,5 @@
-{"version":"v9.10.43","updated":"2026-04-09"}
+{
+  "version": "v9.10.48",
+  "date": "2026-04-10",
+  "notes": "Hotfix: Getting Started Open Settings button was hidden behind Help modal. Fixed to closeHelpModal() first."
+}

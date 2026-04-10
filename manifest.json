@@ -3,10 +3,10 @@
   "short_name": "ClinBridge",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f9fafb",
-  "theme_color": "#1a3a5c",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
   "icons": [
-    { "src": "ClinBridge-App-logo.JPG", "sizes": "192x192", "type": "image/jpeg" },
-    { "src": "ClinBridge-App-logo.JPG", "sizes": "512x512", "type": "image/jpeg" }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
