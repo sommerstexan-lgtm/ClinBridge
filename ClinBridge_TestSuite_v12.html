@@ -397,7 +397,7 @@ let ifw = null;           // iframe contentWindow
 let suiteHTML = '';       // raw HTML of loaded file
 let results = [];
 let totalTests = 0;
-let TOTAL_EXPECTED = 442;  // updated at end
+let TOTAL_EXPECTED = 458;  // updated at end
 
 const delay = ms => new Promise(r => setTimeout(r, ms));
 
@@ -6067,7 +6067,9 @@ var _ALL_NUDGES = [
   'doctor_report_never_used','morning_checkin_never_used','activity_never_logged',
   'fluid_never_logged','pulse_pressure_never_viewed','appointment_never_saved',
   'sentinel_never_viewed','setup_no_conditions','setup_no_patient_name',
-  'setup_bp_not_customized','heat_advisory_conditions_disabled','heat_advisory_feature_unused'
+  'setup_bp_not_customized','heat_advisory_conditions_disabled','heat_advisory_feature_unused',
+  'pre_appointment_snapshot','post_visit_clinical_event',
+  'hr_shift_no_clinical_event','clinical_event_log_unknown'
 ];
 var _ALL_UNLOCKS = [
   'anchor_investigation_close','activity_impact_one_away','doctor_report_richer_now',
@@ -6602,6 +6604,307 @@ test('51. Getting Started Rewrite & Version Integrity', "VERSION UPDATE CHECKLIS
 });
 
 // ── END SECTION 51 ────────────────────────────────────────────────────────────
+
+
+// =============================================================================
+// SECTION 52 — CLINICAL EVENT & APPOINTMENT INTELLIGENCE (v9.10.49)
+// Guards _openSentinelToEventLog helper and all 4 new nudge rules.
+// Rules read cardiacAppointments and clinbridge_sentinel_events directly from
+// localStorage — tests seed and clean those keys explicitly.
+// Uses _makeSetupSeed + _suppressAll. All 4 rules also need _ALL_NUDGES
+// updated (done via the shared list at the top of Section 48).
+// =============================================================================
+
+// ── Helper: build a date string N days from today ────────────────────────────
+function _dateOffset(days) {
+  var d = new Date(Date.now() + days * 86400000);
+  return d.toISOString().slice(0, 10);
+}
+
+// ── _openSentinelToEventLog ───────────────────────────────────────────────────
+
+test('52. Clinical Event & Appointment Intelligence', "_openSentinelToEventLog function is defined on window", async () => {
+  assert(typeof ifw._openSentinelToEventLog === 'function',
+    '_openSentinelToEventLog not defined — clinical event deep-link helper missing');
+});
+
+// ── pre_appointment_snapshot ─────────────────────────────────────────────────
+
+test('52. Clinical Event & Appointment Intelligence', "pre_appointment_snapshot: fires when appointment in 1 day, no recent snapshot, bp>=14", async () => {
+  var seed = _makeSetupSeed(20, {}, { bp: { count: 20, lastDate: new Date().toISOString() } });
+  var appt = [{ id: 'appt1', date: _dateOffset(1), reason: 'Cardiology follow-up' }];
+  ifw.localStorage.setItem('cardiacAppointments', JSON.stringify(appt));
+  ifw.localStorage.removeItem('clinbridge_timeline_snapshots');
+  var othersToSuppress = _ALL_NUDGES.filter(function(id){ return id !== 'pre_appointment_snapshot'; });
+  othersToSuppress.forEach(function(id){ seed.nudgeHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  _ALL_UNLOCKS.forEach(function(id){ seed.unlockHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  _ALL_ENCOURAGEMENTS.forEach(function(id){ seed.encourageHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('cardiacAppointments');
+  assert(card !== null && card.id === 'pre_appointment_snapshot',
+    'pre_appointment_snapshot should fire, got: ' + (card && card.id));
+  assertEqual(card.type, 'nudge', 'card type should be nudge, got ' + (card && card.type));
+  assert(card.btnLabel === '📅 Open Timeline & Snapshot',
+    'btnLabel wrong, got: ' + (card && card.btnLabel));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "pre_appointment_snapshot: fires when appointment is today (daysUntil=0)", async () => {
+  var seed = _makeSetupSeed(20, {}, { bp: { count: 20, lastDate: new Date().toISOString() } });
+  var appt = [{ id: 'appt2', date: _dateOffset(0), reason: 'Device check' }];
+  ifw.localStorage.setItem('cardiacAppointments', JSON.stringify(appt));
+  ifw.localStorage.removeItem('clinbridge_timeline_snapshots');
+  var othersToSuppress = _ALL_NUDGES.filter(function(id){ return id !== 'pre_appointment_snapshot'; });
+  othersToSuppress.forEach(function(id){ seed.nudgeHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  _ALL_UNLOCKS.forEach(function(id){ seed.unlockHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  _ALL_ENCOURAGEMENTS.forEach(function(id){ seed.encourageHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('cardiacAppointments');
+  assert(card !== null && card.id === 'pre_appointment_snapshot',
+    'pre_appointment_snapshot should fire for same-day appointment, got: ' + (card && card.id));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "pre_appointment_snapshot: does NOT fire when appointment is 5+ days away", async () => {
+  var seed = _makeSetupSeed(20, {}, { bp: { count: 20, lastDate: new Date().toISOString() } });
+  var appt = [{ id: 'appt3', date: _dateOffset(5), reason: 'Follow-up' }];
+  ifw.localStorage.setItem('cardiacAppointments', JSON.stringify(appt));
+  ifw.localStorage.removeItem('clinbridge_timeline_snapshots');
+  _suppressAll(seed);
+  seed.nudgeHistory = seed.nudgeHistory.filter(function(h){ return h.id !== 'pre_appointment_snapshot'; });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('cardiacAppointments');
+  assert(card === null || card.id !== 'pre_appointment_snapshot',
+    'pre_appointment_snapshot must NOT fire when appointment is 5 days away, got: ' + (card && card.id));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "pre_appointment_snapshot: does NOT fire when recent snapshot exists (within 7 days)", async () => {
+  var seed = _makeSetupSeed(20, {}, { bp: { count: 20, lastDate: new Date().toISOString() } });
+  var appt = [{ id: 'appt4', date: _dateOffset(1), reason: 'Follow-up' }];
+  var recentSnap = [{ savedAt: new Date().toISOString(), totalBPReadings: 50 }];
+  ifw.localStorage.setItem('cardiacAppointments', JSON.stringify(appt));
+  ifw.localStorage.setItem('clinbridge_timeline_snapshots', JSON.stringify(recentSnap));
+  _suppressAll(seed);
+  seed.nudgeHistory = seed.nudgeHistory.filter(function(h){ return h.id !== 'pre_appointment_snapshot'; });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('cardiacAppointments');
+  ifw.localStorage.removeItem('clinbridge_timeline_snapshots');
+  assert(card === null || card.id !== 'pre_appointment_snapshot',
+    'pre_appointment_snapshot must NOT fire when recent snapshot exists, got: ' + (card && card.id));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "pre_appointment_snapshot: does NOT fire when bp.count < 14", async () => {
+  var seed = _makeSetupSeed(20, {}, { bp: { count: 10, lastDate: new Date().toISOString() } });
+  var appt = [{ id: 'appt5', date: _dateOffset(1), reason: 'Follow-up' }];
+  ifw.localStorage.setItem('cardiacAppointments', JSON.stringify(appt));
+  ifw.localStorage.removeItem('clinbridge_timeline_snapshots');
+  _suppressAll(seed);
+  seed.nudgeHistory = seed.nudgeHistory.filter(function(h){ return h.id !== 'pre_appointment_snapshot'; });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('cardiacAppointments');
+  assert(card === null || card.id !== 'pre_appointment_snapshot',
+    'pre_appointment_snapshot must NOT fire when bp.count < 14, got: ' + (card && card.id));
+});
+
+// ── post_visit_clinical_event ─────────────────────────────────────────────────
+
+test('52. Clinical Event & Appointment Intelligence', "post_visit_clinical_event: fires when appointment was 2 days ago and no clinical event logged", async () => {
+  var seed = _makeSetupSeed(20, {}, { bp: { count: 20, lastDate: new Date().toISOString() } });
+  var pastAppt = [{ id: 'pv1', date: _dateOffset(-2), reason: 'Cardiology' }];
+  ifw.localStorage.setItem('cardiacAppointments', JSON.stringify(pastAppt));
+  ifw.localStorage.setItem('clinbridge_sentinel_events', JSON.stringify([]));
+  var othersToSuppress = _ALL_NUDGES.filter(function(id){ return id !== 'post_visit_clinical_event'; });
+  othersToSuppress.forEach(function(id){ seed.nudgeHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  _ALL_UNLOCKS.forEach(function(id){ seed.unlockHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  _ALL_ENCOURAGEMENTS.forEach(function(id){ seed.encourageHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('cardiacAppointments');
+  ifw.localStorage.removeItem('clinbridge_sentinel_events');
+  assert(card !== null && card.id === 'post_visit_clinical_event',
+    'post_visit_clinical_event should fire, got: ' + (card && card.id));
+  assert(card.btnLabel === '🏥 Log Clinical Event',
+    'btnLabel wrong, got: ' + (card && card.btnLabel));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "post_visit_clinical_event: does NOT fire when clinical event already logged after visit", async () => {
+  var seed = _makeSetupSeed(20, {}, { bp: { count: 20, lastDate: new Date().toISOString() } });
+  var visitDate = _dateOffset(-2);
+  var pastAppt = [{ id: 'pv2', date: visitDate, reason: 'Cardiology' }];
+  var evts = [{ id: 'se1', date: _dateOffset(-1), type: 'pacemaker_adjustment', resetBaseline: true, createdAt: new Date().toISOString() }];
+  ifw.localStorage.setItem('cardiacAppointments', JSON.stringify(pastAppt));
+  ifw.localStorage.setItem('clinbridge_sentinel_events', JSON.stringify(evts));
+  _suppressAll(seed);
+  seed.nudgeHistory = seed.nudgeHistory.filter(function(h){ return h.id !== 'post_visit_clinical_event'; });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('cardiacAppointments');
+  ifw.localStorage.removeItem('clinbridge_sentinel_events');
+  assert(card === null || card.id !== 'post_visit_clinical_event',
+    'post_visit_clinical_event must NOT fire when event already logged, got: ' + (card && card.id));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "post_visit_clinical_event: does NOT fire when appointment was 5+ days ago", async () => {
+  var seed = _makeSetupSeed(20, {}, { bp: { count: 20, lastDate: new Date().toISOString() } });
+  var pastAppt = [{ id: 'pv3', date: _dateOffset(-5), reason: 'Cardiology' }];
+  ifw.localStorage.setItem('cardiacAppointments', JSON.stringify(pastAppt));
+  ifw.localStorage.setItem('clinbridge_sentinel_events', JSON.stringify([]));
+  _suppressAll(seed);
+  seed.nudgeHistory = seed.nudgeHistory.filter(function(h){ return h.id !== 'post_visit_clinical_event'; });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('cardiacAppointments');
+  ifw.localStorage.removeItem('clinbridge_sentinel_events');
+  assert(card === null || card.id !== 'post_visit_clinical_event',
+    'post_visit_clinical_event must NOT fire when appointment was 5+ days ago, got: ' + (card && card.id));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "post_visit_clinical_event: does NOT fire when bp.count < 7", async () => {
+  var seed = _makeSetupSeed(20, {}, { bp: { count: 4, lastDate: new Date().toISOString() } });
+  var pastAppt = [{ id: 'pv4', date: _dateOffset(-2), reason: 'Cardiology' }];
+  ifw.localStorage.setItem('cardiacAppointments', JSON.stringify(pastAppt));
+  ifw.localStorage.setItem('clinbridge_sentinel_events', JSON.stringify([]));
+  _suppressAll(seed);
+  seed.nudgeHistory = seed.nudgeHistory.filter(function(h){ return h.id !== 'post_visit_clinical_event'; });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('cardiacAppointments');
+  ifw.localStorage.removeItem('clinbridge_sentinel_events');
+  assert(card === null || card.id !== 'post_visit_clinical_event',
+    'post_visit_clinical_event must NOT fire when bp.count < 7, got: ' + (card && card.id));
+});
+
+// ── hr_shift_no_clinical_event ────────────────────────────────────────────────
+
+test('52. Clinical Event & Appointment Intelligence', "hr_shift_no_clinical_event: fires when pinned hr_detector event exists and no clinical event logged", async () => {
+  var seed = _makeSetupSeed(20, { hasConditions: true }, { bp: { count: 20, lastDate: new Date().toISOString() } });
+  var pins = [{ id: 'pin1', source: 'hr_detector', eventDate: _dateOffset(-10), pinnedAt: new Date().toISOString() }];
+  ifw.localStorage.setItem('clinbridge_pinned_events', JSON.stringify(pins));
+  ifw.localStorage.setItem('clinbridge_sentinel_events', JSON.stringify([]));
+  var othersToSuppress = _ALL_NUDGES.filter(function(id){ return id !== 'hr_shift_no_clinical_event'; });
+  othersToSuppress.forEach(function(id){ seed.nudgeHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  _ALL_UNLOCKS.forEach(function(id){ seed.unlockHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  _ALL_ENCOURAGEMENTS.forEach(function(id){ seed.encourageHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('clinbridge_pinned_events');
+  ifw.localStorage.removeItem('clinbridge_sentinel_events');
+  assert(card !== null && card.id === 'hr_shift_no_clinical_event',
+    'hr_shift_no_clinical_event should fire, got: ' + (card && card.id));
+  assert(card.btnLabel === '🏥 Log Clinical Event',
+    'btnLabel wrong, got: ' + (card && card.btnLabel));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "hr_shift_no_clinical_event: does NOT fire when clinical event exists within 30 days of shift", async () => {
+  var seed = _makeSetupSeed(20, { hasConditions: true }, { bp: { count: 20, lastDate: new Date().toISOString() } });
+  var shiftDate = _dateOffset(-10);
+  var pins = [{ id: 'pin2', source: 'hr_detector', eventDate: shiftDate, pinnedAt: new Date().toISOString() }];
+  var evts = [{ id: 'se2', date: _dateOffset(-8), type: 'pacemaker_adjustment', resetBaseline: true, createdAt: new Date().toISOString() }];
+  ifw.localStorage.setItem('clinbridge_pinned_events', JSON.stringify(pins));
+  ifw.localStorage.setItem('clinbridge_sentinel_events', JSON.stringify(evts));
+  _suppressAll(seed);
+  seed.nudgeHistory = seed.nudgeHistory.filter(function(h){ return h.id !== 'hr_shift_no_clinical_event'; });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('clinbridge_pinned_events');
+  ifw.localStorage.removeItem('clinbridge_sentinel_events');
+  assert(card === null || card.id !== 'hr_shift_no_clinical_event',
+    'hr_shift_no_clinical_event must NOT fire when event exists within 30 days, got: ' + (card && card.id));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "hr_shift_no_clinical_event: does NOT fire when no hr_detector pins exist", async () => {
+  var seed = _makeSetupSeed(20, { hasConditions: true }, { bp: { count: 20, lastDate: new Date().toISOString() } });
+  // Pin from different source
+  var pins = [{ id: 'pin3', source: 'decompensation', eventDate: _dateOffset(-10), pinnedAt: new Date().toISOString() }];
+  ifw.localStorage.setItem('clinbridge_pinned_events', JSON.stringify(pins));
+  ifw.localStorage.setItem('clinbridge_sentinel_events', JSON.stringify([]));
+  _suppressAll(seed);
+  seed.nudgeHistory = seed.nudgeHistory.filter(function(h){ return h.id !== 'hr_shift_no_clinical_event'; });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('clinbridge_pinned_events');
+  ifw.localStorage.removeItem('clinbridge_sentinel_events');
+  assert(card === null || card.id !== 'hr_shift_no_clinical_event',
+    'hr_shift_no_clinical_event must NOT fire when no hr_detector pins, got: ' + (card && card.id));
+});
+
+// ── clinical_event_log_unknown ────────────────────────────────────────────────
+
+test('52. Clinical Event & Appointment Intelligence', "clinical_event_log_unknown: fires when age>=30, bp>=20, hasConditions, no events ever logged", async () => {
+  var seed = _makeSetupSeed(35, { hasConditions: true }, { bp: { count: 25, lastDate: new Date().toISOString() } });
+  ifw.localStorage.setItem('clinbridge_sentinel_events', JSON.stringify([]));
+  var othersToSuppress = _ALL_NUDGES.filter(function(id){ return id !== 'clinical_event_log_unknown'; });
+  othersToSuppress.forEach(function(id){ seed.nudgeHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  _ALL_UNLOCKS.forEach(function(id){ seed.unlockHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  _ALL_ENCOURAGEMENTS.forEach(function(id){ seed.encourageHistory.push({id:id,shownAt:new Date().toISOString(),msgIndex:0}); });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('clinbridge_sentinel_events');
+  assert(card !== null && card.id === 'clinical_event_log_unknown',
+    'clinical_event_log_unknown should fire, got: ' + (card && card.id));
+  assert(card.btnLabel === '🏥 Open Clinical Event Log',
+    'btnLabel wrong, got: ' + (card && card.btnLabel));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "clinical_event_log_unknown: does NOT fire when at least one clinical event exists", async () => {
+  var seed = _makeSetupSeed(35, { hasConditions: true }, { bp: { count: 25, lastDate: new Date().toISOString() } });
+  var evts = [{ id: 'se3', date: _dateOffset(-20), type: 'new_medication', resetBaseline: false, createdAt: new Date().toISOString() }];
+  ifw.localStorage.setItem('clinbridge_sentinel_events', JSON.stringify(evts));
+  _suppressAll(seed);
+  seed.nudgeHistory = seed.nudgeHistory.filter(function(h){ return h.id !== 'clinical_event_log_unknown'; });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('clinbridge_sentinel_events');
+  assert(card === null || card.id !== 'clinical_event_log_unknown',
+    'clinical_event_log_unknown must NOT fire when events exist, got: ' + (card && card.id));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "clinical_event_log_unknown: does NOT fire when app age < 30 days", async () => {
+  var seed = _makeSetupSeed(20, { hasConditions: true }, { bp: { count: 25, lastDate: new Date().toISOString() } });
+  ifw.localStorage.setItem('clinbridge_sentinel_events', JSON.stringify([]));
+  _suppressAll(seed);
+  seed.nudgeHistory = seed.nudgeHistory.filter(function(h){ return h.id !== 'clinical_event_log_unknown'; });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('clinbridge_sentinel_events');
+  assert(card === null || card.id !== 'clinical_event_log_unknown',
+    'clinical_event_log_unknown must NOT fire when app age < 30, got: ' + (card && card.id));
+});
+
+test('52. Clinical Event & Appointment Intelligence', "clinical_event_log_unknown: does NOT fire when hasConditions=false", async () => {
+  var seed = _makeSetupSeed(35, { hasConditions: false }, { bp: { count: 25, lastDate: new Date().toISOString() } });
+  ifw.localStorage.setItem('clinbridge_sentinel_events', JSON.stringify([]));
+  _suppressAll(seed);
+  seed.nudgeHistory = seed.nudgeHistory.filter(function(h){ return h.id !== 'clinical_event_log_unknown'; });
+  ifw.localStorage.setItem('CB_BEHAVIOR', JSON.stringify(seed));
+  var card = ifw.cbBehavior.evalCard();
+  ifw.localStorage.removeItem('CB_BEHAVIOR');
+  ifw.localStorage.removeItem('clinbridge_sentinel_events');
+  assert(card === null || card.id !== 'clinical_event_log_unknown',
+    'clinical_event_log_unknown must NOT fire when hasConditions=false, got: ' + (card && card.id));
+});
+
+// ── END SECTION 52 ────────────────────────────────────────────────────────────
+
+
 
 
 
