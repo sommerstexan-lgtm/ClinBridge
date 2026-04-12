@@ -334,7 +334,7 @@ body {
   <div class="topbar-sep">|</div>
   <div class="topbar-sub">Automated QA Runner</div>
   <div class="topbar-spacer"></div>
-  <div class="suite-version">suite v4.2.0 · 54 sections · 506 tests</div>
+  <div class="suite-version">suite v4.3.0 · 55 sections · 523 tests</div>
 </div>
 
 <!-- MAIN -->
@@ -7252,6 +7252,189 @@ test('54. iPhone FAB Ask Panel Fix', "openAskPanel hides FAB and it stays hidden
 });
 
 // ── END SECTION 54 ────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// SECTION 55 — Ask Context Data Integrity (v9.10.53)
+// Guards the buildAskContext() serialization fixes:
+//   (a) BP readings use r.s / r.d / r.h / r.t (not r.sys/r.dia/r.hr/r.time)
+//   (b) Weight time uses lw.t (not lw.time)
+//   (c) Meal data is included in context (today + 14-day history)
+// ══════════════════════════════════════════════════════════════════════════════
+
+test('55. Ask Context Data Integrity', "buildAskContext output does NOT contain 'undefined/undefined' for BP", async () => {
+  // Inject a real BP reading using the correct field names
+  var origB = ifw.B;
+  ifw.B = [{ s: 118, d: 76, h: 62, t: '09:30', f: 0 }];
+  var ctx = ifw.buildAskContext();
+  ifw.B = origB;
+  assert(ctx.indexOf('undefined/undefined') === -1,
+    'buildAskContext output contains undefined/undefined — BP fields are wrong. ' +
+    'r.sys/r.dia must be r.s/r.d. Got context excerpt: ' + ctx.slice(0, 500));
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext serializes BP systolic and diastolic correctly (r.s / r.d)", async () => {
+  var origB = ifw.B;
+  ifw.B = [{ s: 118, d: 76, h: 62, t: '09:30', f: 0 }];
+  var ctx = ifw.buildAskContext();
+  ifw.B = origB;
+  assert(ctx.indexOf('118/76') !== -1,
+    'buildAskContext should contain "118/76" for BP reading {s:118,d:76}. ' +
+    'r.sys/r.dia will return undefined — must use r.s/r.d. Context: ' + ctx.slice(0, 600));
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext serializes HR correctly (r.h, not r.hr)", async () => {
+  var origB = ifw.B;
+  ifw.B = [{ s: 118, d: 76, h: 62, t: '09:30', f: 0 }];
+  var ctx = ifw.buildAskContext();
+  ifw.B = origB;
+  assert(ctx.indexOf('HR: 62') !== -1,
+    'buildAskContext should contain "HR: 62" for reading with h:62. ' +
+    'r.hr will return undefined — must use r.h.');
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext serializes reading time correctly (r.t, not r.time)", async () => {
+  var origB = ifw.B;
+  ifw.B = [{ s: 118, d: 76, h: 62, t: '09:30', f: 0 }];
+  var ctx = ifw.buildAskContext();
+  ifw.B = origB;
+  assert(ctx.indexOf('at 09:30') !== -1,
+    'buildAskContext should contain "at 09:30" for reading with t:"09:30". ' +
+    'r.time will return undefined — must use r.t.');
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext pulse pressure calculation uses r.s and r.d (not r.sys/r.dia)", async () => {
+  var origB = ifw.B;
+  // PP = 120 - 80 = 40
+  ifw.B = [{ s: 120, d: 80, h: 60, t: '08:00', f: 0 }];
+  var ctx = ifw.buildAskContext();
+  ifw.B = origB;
+  assert(ctx.indexOf('40') !== -1 && ctx.toLowerCase().indexOf('pulse pressure') !== -1,
+    'buildAskContext should calculate pulse pressure as 40 mmHg for s:120,d:80. ' +
+    'If r.sys/r.dia used, result is NaN. Context: ' + ctx.slice(0, 600));
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext historical BP average uses r.s and r.d (not r.sys/r.dia)", async () => {
+  // The historical summary reduce uses r.s and r.d — if wrong, avg shows as 0/0 or NaN
+  var ctx = ifw.buildAskContext();
+  // Find the historical section and check it doesn't say "NaN" or "0/0"
+  var histIdx = ctx.indexOf('Average BP (all history):');
+  if (histIdx !== -1) {
+    var histLine = ctx.slice(histIdx, histIdx + 60);
+    assert(histLine.indexOf('NaN') === -1,
+      'Historical average BP contains NaN — r.sys/r.dia used instead of r.s/r.d. Line: ' + histLine);
+  }
+  // If no history exists, test passes (no readings to average)
+  assert(true, 'Historical BP average check passed');
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext includes meals section", async () => {
+  var origM = ifw.M;
+  ifw.M = [{ m: 'Oatmeal', t: '07:45' }, { m: 'Chicken salad', t: '12:30' }];
+  var ctx = ifw.buildAskContext();
+  ifw.M = origM;
+  assert(ctx.indexOf('Meals logged today') !== -1,
+    'buildAskContext should include a "Meals logged today" section. Meal context is missing entirely.');
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext meal entries use m field (not name)", async () => {
+  var origM = ifw.M;
+  ifw.M = [{ m: 'Oatmeal', t: '07:45' }];
+  var ctx = ifw.buildAskContext();
+  ifw.M = origM;
+  assert(ctx.indexOf('Oatmeal') !== -1,
+    'buildAskContext should include meal name "Oatmeal" from {m:"Oatmeal"}. ' +
+    'Meal object uses m field, not name. Context: ' + ctx.slice(0, 600));
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext with empty B array shows 'none logged' not undefined", async () => {
+  var origB = ifw.B;
+  ifw.B = [];
+  var ctx = ifw.buildAskContext();
+  ifw.B = origB;
+  assert(ctx.indexOf('BP readings today: none logged') !== -1,
+    'buildAskContext with empty B should say "none logged". Got: ' + ctx.slice(0, 400));
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext output contains USER SETTINGS, TODAY, and HISTORICAL SUMMARY sections", async () => {
+  var ctx = ifw.buildAskContext();
+  assert(ctx.indexOf('=== USER SETTINGS ===') !== -1, 'USER SETTINGS section missing');
+  assert(ctx.indexOf('=== TODAY') !== -1, 'TODAY section missing');
+  assert(ctx.indexOf('=== HISTORICAL SUMMARY ===') !== -1, 'HISTORICAL SUMMARY section missing');
+});
+
+
+test('55. Ask Context Data Integrity', "buildAskContext symptoms use s.symptom field (not s.name)", async () => {
+  var origS = ifw.S;
+  ifw.S = [{ symptom: 'Shortness of breath', severity: 3, t: '10:00', notes: '', expected: false }];
+  var ctx = ifw.buildAskContext();
+  ifw.S = origS;
+  assert(ctx.indexOf('Shortness of breath') !== -1,
+    'buildAskContext should include symptom name from {symptom:"Shortness of breath"}. ' +
+    's.name will return undefined — symptom object uses s.symptom field.');
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext symptoms do NOT contain 'undefined' from wrong field name", async () => {
+  var origS = ifw.S;
+  ifw.S = [{ symptom: 'Dizziness', severity: 2, t: '08:30', notes: '', expected: false }];
+  var ctx = ifw.buildAskContext();
+  ifw.S = origS;
+  var symIdx = ctx.indexOf('Symptoms today:');
+  if (symIdx !== -1) {
+    var symLine = ctx.slice(symIdx, symIdx + 80);
+    assert(symLine.indexOf('undefined') === -1,
+      'Symptoms today line contains "undefined" — s.name used instead of s.symptom. Line: ' + symLine);
+  }
+  assert(true, 'Symptoms field name check passed');
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext medications use m.medicine field (not m.name)", async () => {
+  var origMed = ifw.medLog;
+  ifw.medLog = [{ medicine: 'Metoprolol', timing: 'Morning', time: '08:00', date: ifw.getTodayKey() }];
+  var ctx = ifw.buildAskContext();
+  ifw.medLog = origMed;
+  assert(ctx.indexOf('Metoprolol') !== -1,
+    'buildAskContext should include medication name from {medicine:"Metoprolol"}. ' +
+    'm.name will return undefined — medLog entry uses m.medicine field.');
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext medications do NOT contain 'undefined' from wrong field name", async () => {
+  var origMed = ifw.medLog;
+  ifw.medLog = [{ medicine: 'Lisinopril', timing: 'Morning', time: '09:00', date: ifw.getTodayKey() }];
+  var ctx = ifw.buildAskContext();
+  ifw.medLog = origMed;
+  var medIdx = ctx.indexOf('Medications logged today:');
+  if (medIdx !== -1) {
+    var medLine = ctx.slice(medIdx, medIdx + 80);
+    assert(medLine.indexOf('undefined') === -1,
+      'Medications line contains "undefined" — m.name used instead of m.medicine. Line: ' + medLine);
+  }
+  assert(true, 'Medication field name check passed');
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext pinned events use p.eventDate (not p.date)", async () => {
+  // Verify source code uses p.eventDate — guards against regression to p.date
+  var html = ifw.document.documentElement.innerHTML;
+  assert(html.indexOf('p.eventDate') !== -1,
+    'buildAskContext pinned events section must use p.eventDate. ' +
+    'Pinned event objects have no top-level "date" field — it is "eventDate".');
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext pinned events use p.commLog.to for doctor (not p.doctor)", async () => {
+  var html = ifw.document.documentElement.innerHTML;
+  assert(html.indexOf('p.commLog') !== -1,
+    'buildAskContext pinned events must access doctor/status via p.commLog. ' +
+    'Pinned event objects have no top-level "doctor" or "status" field.');
+});
+
+test('55. Ask Context Data Integrity', "buildAskContext pinned events include p.summary (detector summary text)", async () => {
+  var html = ifw.document.documentElement.innerHTML;
+  assert(html.indexOf('p.summary') !== -1,
+    'buildAskContext pinned events should include p.summary (detector clinical summary). ' +
+    'This field exists on all pinned events and is important context for Ask.');
+});
+
+// ── END SECTION 55 ────────────────────────────────────────────────────────────
+
+
 
 
 
