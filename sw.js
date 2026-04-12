@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clinbridge-v9.10.49';
+const CACHE_NAME = 'clinbridge-v9.10.51';
 const ASSETS = [
   './',
   './index.html',
