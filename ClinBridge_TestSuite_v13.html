@@ -334,7 +334,7 @@ body {
   <div class="topbar-sep">|</div>
   <div class="topbar-sub">Automated QA Runner</div>
   <div class="topbar-spacer"></div>
-  <div class="suite-version">suite v4.3.0 · 55 sections · 523 tests</div>
+  <div class="suite-version">suite v4.3.0 · 56 sections · 530 tests</div>
 </div>
 
 <!-- MAIN -->
@@ -6583,11 +6583,11 @@ test('51. Getting Started Rewrite & Version Integrity', "Welcome tab does NOT co
     'Old Getting Started bullet still present in Welcome tab navigation list');
 });
 
-test('51. Getting Started Rewrite & Version Integrity', "Main page date stamp shows Apr 12, 2026", async () => {
+test('51. Getting Started Rewrite & Version Integrity', "Main page date stamp shows Apr 13, 2026", async () => {
   var body = ifw.document.body;
   var html = body.innerHTML;
-  assert(html.indexOf('Updated Apr 12, 2026') !== -1,
-    'Date stamp should show "Updated Apr 12, 2026" — found stale date or date not updated');
+  assert(html.indexOf('Updated Apr 13, 2026') !== -1,
+    'Date stamp should show "Updated Apr 13, 2026" — found stale date or date not updated');
 });
 
 test('51. Getting Started Rewrite & Version Integrity', "VERSION UPDATE CHECKLIST comment references the date span as a required update location", async () => {
@@ -7433,6 +7433,99 @@ test('55. Ask Context Data Integrity', "buildAskContext pinned events include p.
 });
 
 // ── END SECTION 55 ────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// SECTION 56 — Ask Usage Analytics (v9.10.54)
+// Guards the 3 GA4 tracking calls and session counter added to the Ask system.
+// ══════════════════════════════════════════════════════════════════════════════
+
+test('56. Ask Usage Analytics', "_askSessionQuestionCount variable is defined", async () => {
+  assert(typeof ifw._askSessionQuestionCount !== 'undefined',
+    '_askSessionQuestionCount not defined — session question counter missing.');
+});
+
+test('56. Ask Usage Analytics', "_askSessionQuestionCount starts at 0", async () => {
+  // Close panel first to ensure clean state
+  ifw.closeAskPanel();
+  assertEqual(ifw._askSessionQuestionCount, 0,
+    '_askSessionQuestionCount should be 0 after closeAskPanel. Got: ' + ifw._askSessionQuestionCount);
+});
+
+test('56. Ask Usage Analytics', "openAskPanel resets _askSessionQuestionCount to 0", async () => {
+  // Manually set it to a non-zero value then open panel
+  ifw._askSessionQuestionCount = 5;
+  ifw.openAskPanel();
+  var count = ifw._askSessionQuestionCount;
+  ifw.closeAskPanel();
+  assertEqual(count, 0,
+    'openAskPanel should reset _askSessionQuestionCount to 0. Got: ' + count);
+});
+
+test('56. Ask Usage Analytics', "openAskPanel fires cbTrack ask_panel_opened", async () => {
+  var tracked = [];
+  var origTrack = ifw.cbTrack;
+  ifw.cbTrack = function(name, params) { tracked.push(name); };
+  ifw.openAskPanel();
+  ifw.closeAskPanel();
+  ifw.cbTrack = origTrack;
+  assert(tracked.indexOf('ask_panel_opened') !== -1,
+    'openAskPanel should call cbTrack("ask_panel_opened"). Tracked events: ' + tracked.join(', '));
+});
+
+test('56. Ask Usage Analytics', "submitAskQuestion fires cbTrack ask_question_submitted", async () => {
+  var tracked = [];
+  var trackedParams = [];
+  var origTrack = ifw.cbTrack;
+  ifw.cbTrack = function(name, params) { tracked.push(name); if(params) trackedParams.push(params); };
+  // Mock fetch to avoid real network call
+  var origFetch = ifw.fetch;
+  ifw.fetch = function() { return Promise.reject(new Error('test mock')); };
+  var inp = ifw.document.getElementById('askInput');
+  if (inp) inp.value = 'test question';
+  ifw.openAskPanel();
+  await ifw.submitAskQuestion();
+  ifw.cbTrack = origTrack;
+  ifw.fetch = origFetch;
+  ifw.closeAskPanel();
+  assert(tracked.indexOf('ask_question_submitted') !== -1,
+    'submitAskQuestion should call cbTrack("ask_question_submitted"). Tracked: ' + tracked.join(', '));
+});
+
+test('56. Ask Usage Analytics', "ask_question_submitted event includes session_q_count parameter", async () => {
+  var trackedParams = [];
+  var origTrack = ifw.cbTrack;
+  ifw.cbTrack = function(name, params) { if(name === 'ask_question_submitted' && params) trackedParams.push(params); };
+  var origFetch = ifw.fetch;
+  ifw.fetch = function() { return Promise.reject(new Error('test mock')); };
+  var inp = ifw.document.getElementById('askInput');
+  if (inp) inp.value = 'test question';
+  ifw.openAskPanel();
+  await ifw.submitAskQuestion();
+  ifw.cbTrack = origTrack;
+  ifw.fetch = origFetch;
+  ifw.closeAskPanel();
+  assert(trackedParams.length > 0 && typeof trackedParams[0].session_q_count !== 'undefined',
+    'ask_question_submitted should include session_q_count param. Got: ' + JSON.stringify(trackedParams));
+});
+
+test('56. Ask Usage Analytics', "_askSessionQuestionCount increments on each question submitted", async () => {
+  ifw._askSessionQuestionCount = 0;
+  var origFetch = ifw.fetch;
+  ifw.fetch = function() { return Promise.reject(new Error('test mock')); };
+  var inp = ifw.document.getElementById('askInput');
+  if (inp) inp.value = 'first question';
+  await ifw.submitAskQuestion();
+  var countAfterFirst = ifw._askSessionQuestionCount;
+  if (inp) inp.value = 'second question';
+  await ifw.submitAskQuestion();
+  var countAfterSecond = ifw._askSessionQuestionCount;
+  ifw.fetch = origFetch;
+  assertEqual(countAfterFirst, 1, 'Count should be 1 after first question. Got: ' + countAfterFirst);
+  assertEqual(countAfterSecond, 2, 'Count should be 2 after second question. Got: ' + countAfterSecond);
+});
+
+// ── END SECTION 56 ────────────────────────────────────────────────────────────
+
+
 
 
 
