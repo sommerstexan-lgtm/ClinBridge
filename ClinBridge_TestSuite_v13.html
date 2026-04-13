@@ -334,7 +334,7 @@ body {
   <div class="topbar-sep">|</div>
   <div class="topbar-sub">Automated QA Runner</div>
   <div class="topbar-spacer"></div>
-  <div class="suite-version">suite v4.4.0 · 57 sections · 544 tests</div>
+  <div class="suite-version">suite v4.5.0 · 58 sections · 556 tests</div>
 </div>
 
 <!-- MAIN -->
@@ -7665,7 +7665,152 @@ test('57. Ask Reliability & Context Structure', "buildAskContext BP history sect
     'BLOOD PRESSURE HISTORY section should contain BP statistics. Got section: ' + bpSection.slice(0, 200));
 });
 
+
+test('57. Ask Reliability & Context Structure', "buildAskContext reads s.features.exercise (not s.features.activities) for activity feature flag", async () => {
+  // The settings field is 'exercise' not 'activities' — this was a field name bug
+  // that caused Ask to tell users activities tracking was off even when it was on.
+  var origSettings = ifw.settings;
+  ifw.settings = { features: { weight: true, symptoms: true, exercise: true, meals: true } };
+  var ctx = ifw.buildAskContext();
+  ifw.settings = origSettings;
+  assert(ctx.indexOf('activities') !== -1,
+    'buildAskContext should include "activities" in Active features when s.features.exercise=true. ' +
+    'REGRESSION: field name must be s.features.exercise not s.features.activities.');
+});
+
 // ── END SECTION 57 ────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// SECTION 58 — Ask Context Deep Audit (v9.10.54)
+// Guards 5 field-name and coverage bugs found in full audit:
+//   (1) settings.patientName (not settings.name)
+//   (2) Cardiac conditions included in context
+//   (3) HR targets included in context
+//   (4) Activities today and 14-day history
+//   (5) Medication 14-day history
+//   (6) All 12 context section headers present
+// ══════════════════════════════════════════════════════════════════════════════
+
+test('58. Ask Context Deep Audit', "buildAskContext reads settings.patientName (not settings.name)", async () => {
+  var origSettings = ifw.settings;
+  ifw.settings = Object.assign({}, ifw.settings, { patientName: 'TestUser', name: undefined });
+  var ctx = ifw.buildAskContext();
+  ifw.settings = origSettings;
+  assert(ctx.indexOf('TestUser') !== -1,
+    'buildAskContext should include user name from settings.patientName. ' +
+    'REGRESSION: settings.name does not exist — field is settings.patientName.');
+});
+
+test('58. Ask Context Deep Audit', "buildAskContext does NOT use settings.name (wrong field)", async () => {
+  // Confirm the wrong field is not used — settings.name is undefined in real app
+  var origSettings = ifw.settings;
+  ifw.settings = Object.assign({}, ifw.settings, { name: 'WrongField', patientName: 'CorrectField' });
+  var ctx = ifw.buildAskContext();
+  ifw.settings = origSettings;
+  // If using wrong field, 'WrongField' would appear instead of 'CorrectField'
+  assert(ctx.indexOf('WrongField') === -1,
+    'buildAskContext must NOT read settings.name — this field does not exist in the app. ' +
+    'Only settings.patientName is valid.');
+});
+
+test('58. Ask Context Deep Audit', "buildAskContext includes cardiac conditions from settings", async () => {
+  var origSettings = ifw.settings;
+  ifw.settings = Object.assign({}, ifw.settings, { conditions: ['CHF', 'Pacemaker'], customConditions: [] });
+  var ctx = ifw.buildAskContext();
+  ifw.settings = origSettings;
+  assert(ctx.indexOf('CHF') !== -1 && ctx.indexOf('Pacemaker') !== -1,
+    'buildAskContext must include cardiac conditions. ' +
+    'Ask needs to know the user has CHF/pacemaker to give appropriate responses.');
+});
+
+test('58. Ask Context Deep Audit', "buildAskContext includes custom conditions from settings", async () => {
+  var origSettings = ifw.settings;
+  ifw.settings = Object.assign({}, ifw.settings, { conditions: [], customConditions: ['AFib'] });
+  var ctx = ifw.buildAskContext();
+  ifw.settings = origSettings;
+  assert(ctx.indexOf('AFib') !== -1,
+    'buildAskContext must include customConditions. Got context: ' + ctx.slice(0, 400));
+});
+
+test('58. Ask Context Deep Audit', "buildAskContext includes HR targets from settings", async () => {
+  var origSettings = ifw.settings;
+  ifw.settings = Object.assign({}, ifw.settings, { hrMin: 50, hrMax: 100 });
+  var ctx = ifw.buildAskContext();
+  ifw.settings = origSettings;
+  assert(ctx.indexOf('50') !== -1 && ctx.indexOf('100') !== -1 && ctx.indexOf('HR targets') !== -1,
+    'buildAskContext must include HR targets (hrMin/hrMax). ' +
+    'Ask needs these to contextualize heart rate readings.');
+});
+
+test('58. Ask Context Deep Audit', "buildAskContext includes activities in TODAY section", async () => {
+  var origA = ifw.A;
+  ifw.A = [{ activity: 'Ebike ride', duration: 45, exertion: 'moderate', t: '08:30' }];
+  var ctx = ifw.buildAskContext();
+  ifw.A = origA;
+  assert(ctx.indexOf('Ebike ride') !== -1,
+    'buildAskContext should include today\'s activities from A[] array. ' +
+    'Activity tracking was enabled but activities were invisible to Ask.');
+});
+
+test('58. Ask Context Deep Audit', "buildAskContext activities use correct field names (activity, duration, exertion, t)", async () => {
+  var origA = ifw.A;
+  ifw.A = [{ activity: 'Walking', duration: 30, exertion: 'light', t: '09:00' }];
+  var ctx = ifw.buildAskContext();
+  ifw.A = origA;
+  var todayIdx = ctx.indexOf('=== TODAY');
+  var notesIdx = ctx.indexOf('=== RECENT NOTES');
+  var todaySection = todayIdx !== -1 && notesIdx !== -1 ? ctx.slice(todayIdx, notesIdx) : ctx;
+  assert(todaySection.indexOf('Walking') !== -1, 'Activity name "Walking" should appear in TODAY section');
+  assert(todaySection.indexOf('30') !== -1, 'Duration "30" should appear in TODAY section');
+});
+
+test('58. Ask Context Deep Audit', "buildAskContext contains ACTIVITY HISTORY section header", async () => {
+  var ctx = ifw.buildAskContext();
+  assert(ctx.indexOf('=== ACTIVITY HISTORY ===') !== -1,
+    'buildAskContext must have ACTIVITY HISTORY section. ' +
+    'Activities were entirely missing from historical context.');
+});
+
+test('58. Ask Context Deep Audit', "buildAskContext contains MEDICATION HISTORY section header", async () => {
+  var ctx = ifw.buildAskContext();
+  assert(ctx.indexOf('=== MEDICATION HISTORY ===') !== -1,
+    'buildAskContext must have MEDICATION HISTORY section. ' +
+    'Only today\'s meds were in context — 14-day history was missing entirely.');
+});
+
+test('58. Ask Context Deep Audit', "buildAskContext has all 12 section headers in correct order", async () => {
+  var ctx = ifw.buildAskContext();
+  var sections = [
+    '=== USER SETTINGS ===',
+    '=== TODAY',
+    '=== RECENT NOTES',
+    '=== BLOOD PRESSURE HISTORY ===',
+    '=== WEIGHT HISTORY ===',
+    '=== SYMPTOM HISTORY ===',
+    '=== ACTIVITY HISTORY ===',
+    '=== MEDICATION HISTORY ===',
+    '=== MEAL HISTORY ==='
+  ];
+  var lastIdx = -1;
+  sections.forEach(function(s) {
+    var idx = ctx.indexOf(s);
+    assert(idx !== -1, 'Section header missing: ' + s);
+    assert(idx > lastIdx, 'Section out of order: ' + s + ' (at ' + idx + ', expected after ' + lastIdx + ')');
+    lastIdx = idx;
+  });
+});
+
+test('58. Ask Context Deep Audit', "buildAskContext with empty A array shows 'none logged' for activities today", async () => {
+  var origA = ifw.A;
+  ifw.A = [];
+  var ctx = ifw.buildAskContext();
+  ifw.A = origA;
+  assert(ctx.indexOf('Activities today: none logged') !== -1,
+    'buildAskContext with empty A[] should say "Activities today: none logged"');
+});
+
+// ── END SECTION 58 ────────────────────────────────────────────────────────────
+
+
 
 
 

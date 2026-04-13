@@ -33721,7 +33721,7 @@ function buildAskContext() {
   ctx.push('=== USER SETTINGS ===');
   try {
     var s = (typeof settings !== 'undefined') ? settings : {};
-    if (s.name) ctx.push('User name: ' + s.name);
+    if (s.patientName) ctx.push('User name: ' + s.patientName);
     if (s.systolicMin) ctx.push('BP targets: ' + s.systolicMin + '–' + s.systolicMax + ' sys / ' + s.diastolicMin + '–' + s.diastolicMax + ' dia');
     if (s.fluidMode && s.fluidMode !== 'none') {
       ctx.push('Fluid mode: ' + s.fluidMode + ' | Min: ' + (s.fluidMin||0) + ' oz | Max: ' + (s.fluidMax||0) + ' oz');
@@ -33730,10 +33730,16 @@ function buildAskContext() {
       var feats = [];
       if (s.features.weight) feats.push('weight');
       if (s.features.symptoms) feats.push('symptoms');
-      if (s.features.activities) feats.push('activities');
+      if (s.features.exercise) feats.push('activities');
       if (s.features.meals) feats.push('meals');
       if (feats.length) ctx.push('Active features: ' + feats.join(', '));
     }
+    // Cardiac conditions — critical clinical context for Ask
+    var allConds = (s.conditions||[]).concat(s.customConditions||[]);
+    if (allConds.length > 0) ctx.push('Cardiac conditions: ' + allConds.join(', '));
+    else ctx.push('Cardiac conditions: not configured');
+    // HR targets
+    if (s.hrMin && s.hrMax) ctx.push('HR targets: ' + s.hrMin + '–' + s.hrMax + ' bpm');
   } catch(e) {}
 
   ctx.push('\n=== TODAY (' + today + ') ===');
@@ -33793,6 +33799,21 @@ function buildAskContext() {
     if (mArr.length > 0) {
       ctx.push('Medications logged today: ' + mArr.map(function(m){ return m.medicine + (m.time ? ' at ' + m.time : ''); }).join(', '));
     } else { ctx.push('Medications today: none logged'); }
+  } catch(e) {}
+
+  // Activities today
+  try {
+    var aArr = (typeof A !== 'undefined') ? A : [];
+    if (aArr.length > 0) {
+      ctx.push('Activities logged today (' + aArr.length + '):');
+      aArr.forEach(function(act, i) {
+        var line = '  ' + (i+1) + '. ' + (act.activity||'activity');
+        if (act.duration) line += ' — ' + act.duration + ' min';
+        if (act.exertion) line += ' (exertion: ' + act.exertion + ')';
+        if (act.t) line += ' at ' + act.t;
+        ctx.push(line);
+      });
+    } else { ctx.push('Activities today: none logged'); }
   } catch(e) {}
 
   // Meals today
@@ -33879,6 +33900,55 @@ function buildAskContext() {
       } else { ctx.push('Symptoms logged last 14 days: none'); }
     } else { ctx.push('Symptoms logged last 14 days: none'); }
   } catch(e) { ctx.push('Symptom history: unavailable'); }
+
+  // ── ACTIVITY HISTORY ────────────────────────────────────────────────────────
+  ctx.push('\n=== ACTIVITY HISTORY ===');
+  try {
+    var hAllA = (typeof getAllHistoricalData === 'function') ? getAllHistoricalData() : {};
+    var allActs = hAllA.activities || [];
+    if (allActs.length > 0) {
+      var cutoff14a = new Date(); cutoff14a.setDate(cutoff14a.getDate() - 14);
+      var recentActs = allActs.filter(function(a) {
+        if (!a._date) return false;
+        var parts = a._date.split('-');
+        return new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2])) >= cutoff14a;
+      });
+      if (recentActs.length > 0) {
+        ctx.push('Activities last 14 days (' + recentActs.length + ' entries):');
+        recentActs.slice(-20).forEach(function(a) {
+          var line = '  [' + (a._date||'') + '] ' + (a.activity||'activity');
+          if (a.duration) line += ' ' + a.duration + ' min';
+          if (a.exertion) line += ' exertion:' + a.exertion;
+          ctx.push(line);
+        });
+      } else { ctx.push('Activities last 14 days: none'); }
+    } else { ctx.push('Activities last 14 days: none'); }
+  } catch(e) { ctx.push('Activity history: unavailable'); }
+
+  // ── MEDICATION HISTORY ───────────────────────────────────────────────────────
+  ctx.push('\n=== MEDICATION HISTORY ===');
+  try {
+    var hAllMed = (typeof getAllHistoricalData === 'function') ? getAllHistoricalData() : {};
+    var allMeds = hAllMed.medicines || [];
+    if (allMeds.length > 0) {
+      var cutoff14med = new Date(); cutoff14med.setDate(cutoff14med.getDate() - 14);
+      var recentMeds = allMeds.filter(function(m) {
+        if (!m._date) return false;
+        var parts = m._date.split('-');
+        return new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2])) >= cutoff14med;
+      });
+      if (recentMeds.length > 0) {
+        // Group by medicine name for clarity
+        var medCounts = {};
+        recentMeds.forEach(function(m) {
+          var name = m.medicine || 'unknown';
+          medCounts[name] = (medCounts[name]||0) + 1;
+        });
+        ctx.push('Medications taken last 14 days: ' +
+          Object.keys(medCounts).map(function(k){ return k + ' (' + medCounts[k] + 'x)'; }).join(', '));
+      } else { ctx.push('Medications last 14 days: none recorded'); }
+    } else { ctx.push('Medications last 14 days: none recorded'); }
+  } catch(e) { ctx.push('Medication history: unavailable'); }
 
   // ── MEAL HISTORY ─────────────────────────────────────────────────────────────
   ctx.push('\n=== MEAL HISTORY ===');
