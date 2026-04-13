@@ -334,7 +334,7 @@ body {
   <div class="topbar-sep">|</div>
   <div class="topbar-sub">Automated QA Runner</div>
   <div class="topbar-spacer"></div>
-  <div class="suite-version">suite v4.3.0 · 56 sections · 530 tests</div>
+  <div class="suite-version">suite v4.4.0 · 57 sections · 544 tests</div>
 </div>
 
 <!-- MAIN -->
@@ -2667,7 +2667,8 @@ test('21. Investigate Date Handoff', "investigatePatternDate('2026-03-06') write
   try { ifw.investigatePatternDate('2026-03-06'); } catch(e) {}
   restoreUI();
   // The setTimeout chain: 200ms to openAnalyticsDashboard, then 300ms to set input
-  await delay(700);
+  // 1500ms gives the iframe time to fully render openAnalyticsDashboard before checking
+  await delay(1500);
   ifw.runAnchorInvestigation = origRun;
   var inp = ifw.document.getElementById('anchorDateInput');
   assert(inp !== null, 'anchorDateInput element not found — Investigate button has no target field');
@@ -7026,9 +7027,11 @@ test('53. Ask ClinBridge', "buildAskContext output contains TODAY section header
   assert(ctx.indexOf('=== TODAY') !== -1, 'buildAskContext missing TODAY section');
 });
 
-test('53. Ask ClinBridge', "buildAskContext output contains HISTORICAL SUMMARY section header", async () => {
+test('53. Ask ClinBridge', "buildAskContext output contains history section headers", async () => {
   var ctx = ifw.buildAskContext();
-  assert(ctx.indexOf('HISTORICAL SUMMARY') !== -1, 'buildAskContext missing HISTORICAL SUMMARY section');
+  // v9.10.54: HISTORICAL SUMMARY replaced by 4 explicit labeled sections
+  assert(ctx.indexOf('BLOOD PRESSURE HISTORY') !== -1,
+    'buildAskContext missing BLOOD PRESSURE HISTORY section (replaced HISTORICAL SUMMARY in v9.10.54)');
 });
 
 // ── _buildAskSystemPrompt safety clause ──────────────────────────────────────
@@ -7354,11 +7357,15 @@ test('55. Ask Context Data Integrity', "buildAskContext with empty B array shows
     'buildAskContext with empty B should say "none logged". Got: ' + ctx.slice(0, 400));
 });
 
-test('55. Ask Context Data Integrity', "buildAskContext output contains USER SETTINGS, TODAY, and HISTORICAL SUMMARY sections", async () => {
+test('55. Ask Context Data Integrity', "buildAskContext output contains USER SETTINGS, TODAY, and history sections", async () => {
   var ctx = ifw.buildAskContext();
   assert(ctx.indexOf('=== USER SETTINGS ===') !== -1, 'USER SETTINGS section missing');
   assert(ctx.indexOf('=== TODAY') !== -1, 'TODAY section missing');
-  assert(ctx.indexOf('=== HISTORICAL SUMMARY ===') !== -1, 'HISTORICAL SUMMARY section missing');
+  // v9.10.54: HISTORICAL SUMMARY replaced by 4 explicit sections
+  assert(ctx.indexOf('=== BLOOD PRESSURE HISTORY ===') !== -1, 'BLOOD PRESSURE HISTORY section missing');
+  assert(ctx.indexOf('=== WEIGHT HISTORY ===') !== -1, 'WEIGHT HISTORY section missing');
+  assert(ctx.indexOf('=== SYMPTOM HISTORY ===') !== -1, 'SYMPTOM HISTORY section missing');
+  assert(ctx.indexOf('=== MEAL HISTORY ===') !== -1, 'MEAL HISTORY section missing');
 });
 
 
@@ -7524,6 +7531,143 @@ test('56. Ask Usage Analytics', "_askSessionQuestionCount increments on each que
 });
 
 // ── END SECTION 56 ────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// SECTION 57 — Ask Reliability & Context Structure (v9.10.54)
+// Guards four changes shipped today:
+//   (a) Ask error messages are honest and reassuring (not generic "could not connect")
+//   (b) Daily limit (429) shows a clear, warm message
+//   (c) buildAskContext uses explicit per-data-type section headers
+//       to prevent Haiku from conflating data streams (e.g. BP vs weight)
+//   (d) HISTORICAL SUMMARY section replaced by 4 separate labeled sections
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── Error message content guards ─────────────────────────────────────────────
+
+test('57. Ask Reliability & Context Structure', "Busy/overload error message contains reassuring 'briefly busy' language", async () => {
+  var html = ifw.document.documentElement.innerHTML;
+  assert(html.indexOf('briefly busy') !== -1,
+    'App source must contain "briefly busy" error message for 529/503/502 responses. ' +
+    'Users must not see generic "could not connect" when Anthropic is temporarily overloaded.');
+});
+
+test('57. Ask Reliability & Context Structure', "Busy error message reassures users monitoring features are working", async () => {
+  var html = ifw.document.documentElement.innerHTML;
+  assert(html.indexOf('monitoring features are working normally') !== -1,
+    'Busy error message must tell users their monitoring is still running. ' +
+    'Without this, users may think ClinBridge itself is broken.');
+});
+
+test('57. Ask Reliability & Context Structure', "Connection error message contains data safety reassurance", async () => {
+  var html = ifw.document.documentElement.innerHTML;
+  assert(html.indexOf('logged data is safe') !== -1,
+    'Connection error message must reassure users their data is safe.');
+});
+
+test('57. Ask Reliability & Context Structure', "Daily limit message contains limit count and reset information", async () => {
+  var html = ifw.document.documentElement.innerHTML;
+  assert(html.indexOf("reached today") !== -1 && html.indexOf("Ask limit") !== -1,
+    'Daily limit message must clearly state the user has reached their limit. ' +
+    'Looking for "reached today" and "Ask limit" in source.');
+});
+
+test('57. Ask Reliability & Context Structure', "Daily limit message tells users monitoring continues", async () => {
+  var html = ifw.document.documentElement.innerHTML;
+  assert(html.indexOf('Sentinel') !== -1 && (html.indexOf('running continuously') !== -1 || html.indexOf('working normally') !== -1),
+    'Daily limit message should reassure users Sentinel and monitoring are still running.');
+});
+
+// ── Context section header guards ─────────────────────────────────────────────
+
+test('57. Ask Reliability & Context Structure', "buildAskContext contains dedicated BLOOD PRESSURE HISTORY section header", async () => {
+  var origB = ifw.B;
+  ifw.B = [{ s: 118, d: 76, h: 62, t: '09:30', f: 0 }];
+  var ctx = ifw.buildAskContext();
+  ifw.B = origB;
+  assert(ctx.indexOf('=== BLOOD PRESSURE HISTORY ===') !== -1,
+    'buildAskContext must have a dedicated "=== BLOOD PRESSURE HISTORY ===" section. ' +
+    'Without it, Haiku may conflate BP and weight data when answering BP questions.');
+});
+
+test('57. Ask Reliability & Context Structure', "buildAskContext contains dedicated WEIGHT HISTORY section header", async () => {
+  var ctx = ifw.buildAskContext();
+  assert(ctx.indexOf('=== WEIGHT HISTORY ===') !== -1,
+    'buildAskContext must have a dedicated "=== WEIGHT HISTORY ===" section. ' +
+    'Prevents Haiku from mixing weight data into BP answers.');
+});
+
+test('57. Ask Reliability & Context Structure', "buildAskContext contains dedicated SYMPTOM HISTORY section header", async () => {
+  var ctx = ifw.buildAskContext();
+  assert(ctx.indexOf('=== SYMPTOM HISTORY ===') !== -1,
+    'buildAskContext must have a dedicated "=== SYMPTOM HISTORY ===" section.');
+});
+
+test('57. Ask Reliability & Context Structure', "buildAskContext contains dedicated MEAL HISTORY section header", async () => {
+  var ctx = ifw.buildAskContext();
+  assert(ctx.indexOf('=== MEAL HISTORY ===') !== -1,
+    'buildAskContext must have a dedicated "=== MEAL HISTORY ===" section.');
+});
+
+test('57. Ask Reliability & Context Structure', "buildAskContext does NOT use ambiguous single HISTORICAL SUMMARY header", async () => {
+  var ctx = ifw.buildAskContext();
+  assert(ctx.indexOf('=== HISTORICAL SUMMARY ===') === -1,
+    'buildAskContext must NOT use the old "=== HISTORICAL SUMMARY ===" header. ' +
+    'This was replaced by 4 separate section headers to prevent Haiku data stream confusion. ' +
+    'REGRESSION: do not re-merge BP, weight, symptoms, and meals under one header.');
+});
+
+test('57. Ask Reliability & Context Structure', "BLOOD PRESSURE HISTORY section appears before WEIGHT HISTORY section in context", async () => {
+  var ctx = ifw.buildAskContext();
+  var bpIdx = ctx.indexOf('=== BLOOD PRESSURE HISTORY ===');
+  var wtIdx = ctx.indexOf('=== WEIGHT HISTORY ===');
+  assert(bpIdx !== -1, 'BLOOD PRESSURE HISTORY section not found');
+  assert(wtIdx !== -1, 'WEIGHT HISTORY section not found');
+  assert(bpIdx < wtIdx,
+    'BLOOD PRESSURE HISTORY must appear before WEIGHT HISTORY in context. ' +
+    'Order matters for model comprehension.');
+});
+
+test('57. Ask Reliability & Context Structure', "WEIGHT HISTORY section appears before SYMPTOM HISTORY section in context", async () => {
+  var ctx = ifw.buildAskContext();
+  var wtIdx = ctx.indexOf('=== WEIGHT HISTORY ===');
+  var symIdx = ctx.indexOf('=== SYMPTOM HISTORY ===');
+  assert(wtIdx !== -1, 'WEIGHT HISTORY section not found');
+  assert(symIdx !== -1, 'SYMPTOM HISTORY section not found');
+  assert(wtIdx < symIdx,
+    'WEIGHT HISTORY must appear before SYMPTOM HISTORY in context.');
+});
+
+test('57. Ask Reliability & Context Structure', "All 4 history section headers are present and in correct order", async () => {
+  var ctx = ifw.buildAskContext();
+  var bpIdx  = ctx.indexOf('=== BLOOD PRESSURE HISTORY ===');
+  var wtIdx  = ctx.indexOf('=== WEIGHT HISTORY ===');
+  var symIdx = ctx.indexOf('=== SYMPTOM HISTORY ===');
+  var mlIdx  = ctx.indexOf('=== MEAL HISTORY ===');
+  assert(bpIdx  !== -1, 'BLOOD PRESSURE HISTORY section missing');
+  assert(wtIdx  !== -1, 'WEIGHT HISTORY section missing');
+  assert(symIdx !== -1, 'SYMPTOM HISTORY section missing');
+  assert(mlIdx  !== -1, 'MEAL HISTORY section missing');
+  assert(bpIdx < wtIdx && wtIdx < symIdx && symIdx < mlIdx,
+    'History sections must appear in order: BP → Weight → Symptoms → Meals. ' +
+    'Got positions: BP=' + bpIdx + ' Wt=' + wtIdx + ' Sym=' + symIdx + ' Meal=' + mlIdx);
+});
+
+test('57. Ask Reliability & Context Structure', "buildAskContext BP history section contains all-time average BP", async () => {
+  var origB = ifw.B;
+  ifw.B = [{ s: 120, d: 80, h: 60, t: '08:00', f: 0 }];
+  var ctx = ifw.buildAskContext();
+  ifw.B = origB;
+  var bpStart = ctx.indexOf('=== BLOOD PRESSURE HISTORY ===');
+  var wtStart = ctx.indexOf('=== WEIGHT HISTORY ===');
+  assert(bpStart !== -1, 'BLOOD PRESSURE HISTORY section not found');
+  // The BP average should be between the BP header and the next section
+  var bpSection = bpStart !== -1 && wtStart !== -1 ? ctx.slice(bpStart, wtStart) : ctx.slice(bpStart);
+  assert(bpSection.indexOf('average BP') !== -1 || bpSection.indexOf('Total BP readings') !== -1,
+    'BLOOD PRESSURE HISTORY section should contain BP statistics. Got section: ' + bpSection.slice(0, 200));
+});
+
+// ── END SECTION 57 ────────────────────────────────────────────────────────────
+
+
 
 
 

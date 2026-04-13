@@ -33831,7 +33831,8 @@ function buildAskContext() {
   } catch(e) { ctx.push('Recent notes: unavailable'); }
 
   // Historical BP summary
-  ctx.push('\n=== HISTORICAL SUMMARY ===');
+  // ── BLOOD PRESSURE HISTORY ─────────────────────────────────────────────────
+  ctx.push('\n=== BLOOD PRESSURE HISTORY ===');
   try {
     var hAll = (typeof getAllHistoricalData === 'function') ? getAllHistoricalData() : {};
     var allBP = hAll.bp || [];
@@ -33839,9 +33840,15 @@ function buildAskContext() {
     if (allBP.length > 0) {
       var avgS = allBP.reduce(function(s,r){ return s+(r.s||0); },0)/allBP.length;
       var avgD = allBP.reduce(function(s,r){ return s+(r.d||0); },0)/allBP.length;
-      ctx.push('Average BP (all history): ' + Math.round(avgS) + '/' + Math.round(avgD));
+      ctx.push('All-time average BP: ' + Math.round(avgS) + '/' + Math.round(avgD) + ' mmHg');
     }
-    var allW = hAll.weight || [];
+  } catch(e) { ctx.push('Blood pressure history: unavailable'); }
+
+  // ── WEIGHT HISTORY ───────────────────────────────────────────────────────────
+  ctx.push('\n=== WEIGHT HISTORY ===');
+  try {
+    var hAllW2 = (typeof getAllHistoricalData === 'function') ? getAllHistoricalData() : {};
+    var allW = hAllW2.weight || [];
     if (allW.length > 0) {
       var cutoff7 = new Date(); cutoff7.setDate(cutoff7.getDate() - 7);
       var wRecent = allW.filter(function(w){
@@ -33850,10 +33857,16 @@ function buildAskContext() {
         return new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2])) >= cutoff7;
       });
       if (wRecent.length > 0) {
-        ctx.push('Weight readings last 7 days: ' + wRecent.map(function(w){ return w.w+'lbs ('+w._date+')'; }).join(', '));
-      }
-    }
-    var allSym = hAll.symptoms || [];
+        ctx.push('Weight readings last 7 days: ' + wRecent.map(function(w){ return w.w+' lbs ('+w._date+')'; }).join(', '));
+      } else { ctx.push('Weight readings last 7 days: none'); }
+    } else { ctx.push('Weight readings last 7 days: none'); }
+  } catch(e) { ctx.push('Weight history: unavailable'); }
+
+  // ── SYMPTOM HISTORY ──────────────────────────────────────────────────────────
+  ctx.push('\n=== SYMPTOM HISTORY ===');
+  try {
+    var hAllS2 = (typeof getAllHistoricalData === 'function') ? getAllHistoricalData() : {};
+    var allSym = hAllS2.symptoms || [];
     if (allSym.length > 0) {
       var cutoff14 = new Date(); cutoff14.setDate(cutoff14.getDate() - 14);
       var symRecent = allSym.filter(function(s){
@@ -33862,12 +33875,13 @@ function buildAskContext() {
         return new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2])) >= cutoff14;
       });
       if (symRecent.length > 0) {
-        ctx.push('Symptoms last 14 days: ' + symRecent.map(function(s){ return s.symptom+' ('+s._date+')'; }).join(', '));
-      }
-    }
-  } catch(e) { ctx.push('Historical summary: unavailable'); }
+        ctx.push('Symptoms logged last 14 days: ' + symRecent.map(function(s){ return s.symptom+' ('+s._date+')'; }).join(', '));
+      } else { ctx.push('Symptoms logged last 14 days: none'); }
+    } else { ctx.push('Symptoms logged last 14 days: none'); }
+  } catch(e) { ctx.push('Symptom history: unavailable'); }
 
-  // Recent meals — last 14 days from history
+  // ── MEAL HISTORY ─────────────────────────────────────────────────────────────
+  ctx.push('\n=== MEAL HISTORY ===');
   try {
     var hAllM = (typeof getAllHistoricalData === 'function') ? getAllHistoricalData() : {};
     var allMeals = hAllM.meals || [];
@@ -33879,13 +33893,13 @@ function buildAskContext() {
         return new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2])) >= cutoff14m;
       });
       if (recentMeals.length > 0) {
-        ctx.push('Meals last 14 days (' + recentMeals.length + ' entries):');
+        ctx.push('Meals logged last 14 days (' + recentMeals.length + ' entries):');
         recentMeals.slice(-20).forEach(function(ml) {
           ctx.push('  [' + (ml._date||'') + '] ' + (ml.m||'unnamed') + (ml.t ? ' at ' + ml.t : ''));
         });
-      } else { ctx.push('Meals last 14 days: none recorded'); }
-    } else { ctx.push('Meals last 14 days: none recorded'); }
-  } catch(e) {}
+      } else { ctx.push('Meals logged last 14 days: none'); }
+    } else { ctx.push('Meals logged last 14 days: none'); }
+  } catch(e) { ctx.push('Meal history: unavailable'); }
 
   // Fluid log entries today
   try {
@@ -33973,11 +33987,40 @@ async function submitAskQuestion() {
 
     if (!resp.ok) {
       var errText = await resp.text();
-      throw new Error('Worker error ' + resp.status + ': ' + errText.slice(0,200));
+      var errStatus = resp.status;
+      // Handle specific status codes with user-friendly messages
+      if (errStatus === 529 || errStatus === 503 || errStatus === 502) {
+        var loadElBusy = document.getElementById(loadingId);
+        if (loadElBusy) loadElBusy.remove();
+        _addAskBubble('assistant', '⏳ The Ask service is briefly busy right now — this happens occasionally with high demand. Please try your question again in a minute. Your ClinBridge data and all monitoring features are working normally.');
+        if (_askConversation.length > 0 && _askConversation[_askConversation.length-1].role === 'user') {
+          _askConversation.pop();
+        }
+        _askLoading = false;
+        var sendBtnBusy = document.getElementById('askSendBtn');
+        if (sendBtnBusy) sendBtnBusy.style.opacity = '1';
+        cbTrack('ask_service_busy', { status: errStatus });
+        return;
+      }
+      throw new Error('Worker error ' + errStatus + ': ' + errText.slice(0,200));
     }
 
     var data = await resp.json();
     var answer = '';
+    // Handle daily limit reached (429 from Worker)
+    if (resp.status === 429 && data.error === 'daily_limit_reached') {
+      var loadElLimit = document.getElementById(loadingId);
+      if (loadElLimit) loadElLimit.remove();
+      _addAskBubble('assistant', '✋ You\'ve reached today\'s Ask limit (10 questions). Your limit resets at midnight. Your data is always available in the main app — Sentinel, HR Detector, and Advanced Analytics are running continuously.');
+      if (_askConversation.length > 0 && _askConversation[_askConversation.length-1].role === 'user') {
+        _askConversation.pop();
+      }
+      _askLoading = false;
+      var sendBtnLimit = document.getElementById('askSendBtn');
+      if (sendBtnLimit) sendBtnLimit.style.opacity = '1';
+      cbTrack('ask_daily_limit_reached');
+      return;
+    }
     if (data.content && data.content[0] && data.content[0].text) {
       answer = data.content[0].text.trim();
     } else if (data.error) {
@@ -34014,11 +34057,11 @@ async function submitAskQuestion() {
   } catch(e) {
     var loadEl2 = document.getElementById(loadingId);
     if (loadEl2) loadEl2.remove();
-    var errMsg = 'Sorry, I could not connect right now.';
+    var errMsg = '⏳ Ask is briefly unavailable — please try again in a moment. All your ClinBridge monitoring features are working normally.';
     if (e.message && e.message.indexOf('YOUR_SUBDOMAIN') !== -1) {
       errMsg = 'Ask is not configured yet. The Cloudflare Worker URL needs to be set up before this feature is live.';
     } else if (e.message && e.message.indexOf('Failed to fetch') !== -1) {
-      errMsg = 'Could not reach the Ask service. Please check your internet connection and try again.';
+      errMsg = '📶 Could not reach Ask — please check your internet connection and try again. Your logged data is safe and all monitoring is running.';
     }
     _addAskBubble('assistant', errMsg);
     // Don\'t add error to conversation history
