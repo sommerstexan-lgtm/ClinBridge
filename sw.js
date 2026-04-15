@@ -1,6 +1,6 @@
 // ClinBridge Service Worker
 // CACHE_NAME must be updated every release — see VERSION UPDATE CHECKLIST item 8
-const CACHE_NAME = 'clinbridge-v9.10.55';
+const CACHE_NAME = 'clinbridge-v9.10.56';
 
 const ASSETS = [
   './',
