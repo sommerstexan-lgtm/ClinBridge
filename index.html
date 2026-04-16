@@ -1229,7 +1229,7 @@ Custom Range
     </div><!-- closes fixed header -->
 
     <!-- Scrollable body — only this part scrolls -->
-    <div class="modal-body" id="helpModalBody" style="flex:1;overflow-y:auto;padding:16px 20px 24px 20px;-webkit-overflow-scrolling:touch">
+    <div class="modal-body" id="helpModalBody" style="flex:1;overflow-y:scroll;padding:16px 20px 24px 20px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain">
 
       <!-- Search results panel — shows instead of tab content when searching -->
       <div id="helpSearchResults" style="display:none;margin-bottom:8px"></div>
@@ -4425,19 +4425,11 @@ function setHelpSection(section) {
     el.hidden = !isMatch;
   });
 
-  // Reset scroll — use requestAnimationFrame to fire AFTER browser paint,
-  // which beats Chrome's scroll position restoration. Triple-layer for safety.
-  if (body) {
-    body.style.scrollBehavior = 'auto';   // disable smooth so reset is instant
-    body.scrollTop = 0;                    // immediate attempt
-    requestAnimationFrame(function() {
-      body.scrollTop = 0;                  // post-paint attempt
-      requestAnimationFrame(function() {
-        body.scrollTop = 0;               // second frame — covers Chrome restoration
-        body.style.scrollBehavior = '';   // restore smooth scrolling
-      });
-    });
-  }
+  // Reset scroll — single synchronous reset only.
+  // Do NOT use requestAnimationFrame or manipulate scrollBehavior here —
+  // on iOS with -webkit-overflow-scrolling:touch, multiple programmatic
+  // scrollTop sets via rAF break native momentum scroll permanently.
+  if (body) body.scrollTop = 0;
 
   // Update tab active states — inline styles override all CSS specificity issues
   var tabKeys = ['welcome','getting-started','how-to-use','pinned-events','sentinel','ask','morning-checkin','breathing-logger','heat-advisory','faq',
