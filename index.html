@@ -4425,11 +4425,22 @@ function setHelpSection(section) {
     el.hidden = !isMatch;
   });
 
-  // Reset scroll AFTER layout update
-  if (body) body.scrollTop = 0;
+  // Reset scroll — use requestAnimationFrame to fire AFTER browser paint,
+  // which beats Chrome's scroll position restoration. Triple-layer for safety.
+  if (body) {
+    body.style.scrollBehavior = 'auto';   // disable smooth so reset is instant
+    body.scrollTop = 0;                    // immediate attempt
+    requestAnimationFrame(function() {
+      body.scrollTop = 0;                  // post-paint attempt
+      requestAnimationFrame(function() {
+        body.scrollTop = 0;               // second frame — covers Chrome restoration
+        body.style.scrollBehavior = '';   // restore smooth scrolling
+      });
+    });
+  }
 
   // Update tab active states — inline styles override all CSS specificity issues
-  var tabKeys = ['welcome','getting-started','how-to-use','pinned-events','sentinel','ask','morning-checkin','heat-advisory','faq',
+  var tabKeys = ['welcome','getting-started','how-to-use','pinned-events','sentinel','ask','morning-checkin','breathing-logger','heat-advisory','faq',
                  'privacy','data-management','known-issues','planned-features','support','glossary'];
   tabKeys.forEach(function(key) {
     var btn = document.getElementById('htab-'+key);
@@ -4542,7 +4553,7 @@ function helpGoToResult(section) {
   // Show sticky nav bar
   _helpShowNavBar(count, section);
   // Update tab button styles
-  var tabKeys = ['welcome','getting-started','how-to-use','pinned-events','sentinel','ask','morning-checkin','heat-advisory','faq',
+  var tabKeys = ['welcome','getting-started','how-to-use','pinned-events','sentinel','ask','morning-checkin','breathing-logger','heat-advisory','faq',
                  'privacy','data-management','known-issues','planned-features','support','glossary'];
   tabKeys.forEach(function(key) {
     var btn = document.getElementById('htab-'+key);
@@ -29848,6 +29859,7 @@ function checkForUpdates(showFeedback) {
           statusEl.textContent = '🆕 ' + data.version + ' is available — tap "See What\'s New" to update';
           statusEl.style.color = '#1d4ed8';
           statusEl.style.fontWeight = '600';
+          setTimeout(function(){ statusEl.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
         }
         if (btn) {
           btn.textContent = '🆕 See What\'s New';
@@ -29875,6 +29887,7 @@ function checkForUpdates(showFeedback) {
           statusEl.textContent = '✅ You\'re on the latest version (' + CURRENT_VERSION + ')';
           statusEl.style.color = '#059669';
           statusEl.style.fontWeight = '600';
+          setTimeout(function(){ statusEl.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
         }
         if (showFeedback) {
           alert('✅ You\'re up to date!\n\nClinBridge ' + CURRENT_VERSION + ' is the latest version.');
@@ -35312,7 +35325,19 @@ function _addAskBubble(role, text) {
     div.textContent = text;
   }
   thread.appendChild(div);
-  setTimeout(function(){ thread.scrollTop = thread.scrollHeight; }, 50);
+  setTimeout(function(){
+    var modalBody = document.getElementById('helpModalBody');
+    if (!modalBody) return;
+    if (role === 'user') {
+      // User message: scroll to bottom so it sits just above the input
+      modalBody.scrollTop = modalBody.scrollHeight;
+    } else {
+      // Assistant response: scroll so the TOP of the response is visible
+      var divTop = div.getBoundingClientRect().top;
+      var bodyTop = modalBody.getBoundingClientRect().top;
+      modalBody.scrollTop = modalBody.scrollTop + (divTop - bodyTop) - 16;
+    }
+  }, 80);
 }
 
 function _addAskLoadingBubble(id) {
