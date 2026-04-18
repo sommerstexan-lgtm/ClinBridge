@@ -1,10 +1,11 @@
 {
-  "version": "v9.10.84",
+  "version": "v9.10.85",
   "releaseDate": "April 18, 2026",
   "whatsNew": [
     "Lightweight init gate \u2014 branded splash screen on cold open while detectors and pattern analysis complete. Fades away automatically. Not shown on tab resume."
   ],
   "fixes": [
+    "PPH Pin \u2014 _pinPPHPattern was writing to wrong localStorage key CB_PINNED_EVENTS instead of clinbridge_pinned_events. Pin appeared to save but never showed in Pinned Events. Fixed: now calls pinEvent() with correct schema; falls back to direct write with correct key.",
     "PPH population-average guard removed from Sentinel section and nudge rule \u2014 with 89 meal pairs the 6 qualifying PPH events (avg 22.8 mmHg drop) were diluted to 2.7 mmHg avg, failing the guard. Three confirmed qualifying events is the only threshold needed.",
     "PPH Sentinel section re-implemented as standalone function _buildSentinelPPHSection() \u2014 eliminates IIFE nesting risk. Section appears at bottom of Sentinel when 3+ PPH events confirmed in last 30 days with avg drop guard met.",
     "PPH Sentinel section re-added as standalone function _buildSentinelPPHSection() \u2014 eliminates IIFE bracket nesting that caused the v9.10.81 syntax error and broke all buttons",
