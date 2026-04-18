@@ -1,8 +1,10 @@
 {
-  "version": "v9.10.77",
+  "version": "v9.10.78",
   "releaseDate": "April 18, 2026",
   "whatsNew": [],
   "fixes": [
+    "Appointments card not showing on main page — four root causes fixed: refreshAllDisplays() now calls updateRecentAppointmentWidget(), iOS tab-resume path now calls loadAppointments(), deleteAppointment() now refreshes the main-page card, and empty-state shows an Add Appointment prompt instead of hiding the card entirely",
+    "Advanced Analytics collapsible panels — all 11 detail panels now start collapsed after Generate Analysis; new Panel Index card lists every panel with Expand buttons; Expand All / Collapse All controls; expanding auto-scrolls panel into view",
     "getAllHistoricalData date-range filter restored — was bypassed with a testing flag that was never reverted, loading all data regardless of the 90-day window",
     "37 DEBUG console.log statements removed from getAllHistoricalData",
     "Breathing sessions now included in getAllHistoricalData (breathing key) and Ask ClinBridge context",

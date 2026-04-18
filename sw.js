@@ -1,7 +1,7 @@
 // ClinBridge Service Worker
 // CACHE_NAME must be updated every release — it forces all clients to re-fetch
 // the new HTML on activate, so users never run a stale version silently.
-const CACHE_NAME = 'clinbridge-v9.10.77';
+const CACHE_NAME = 'clinbridge-v9.10.78';
 
 const ASSETS = [
   './',
