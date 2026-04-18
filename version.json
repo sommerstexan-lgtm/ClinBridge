@@ -1,1 +1,11 @@
-{"version":"9.10.69"}
+{
+  "version": "v9.10.77",
+  "releaseDate": "April 18, 2026",
+  "whatsNew": [],
+  "fixes": [
+    "getAllHistoricalData date-range filter restored — was bypassed with a testing flag that was never reverted, loading all data regardless of the 90-day window",
+    "37 DEBUG console.log statements removed from getAllHistoricalData",
+    "Breathing sessions now included in getAllHistoricalData (breathing key) and Ask ClinBridge context",
+    "Two Sentinel nudge rules added: breathing_try_it (first session encouragement) and breathing_declining_response (declining HR response alert)"
+  ]
+}

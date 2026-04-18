@@ -1,11 +1,11 @@
 {
-  "name": "ClinBridge Medical Grade - Free",
+  "name": "ClinBridge",
   "short_name": "ClinBridge",
-  "description": "Advanced cardiac health tracking for patients, by a patient.",
-  "start_url": "/",
+  "description": "Cardiac health monitoring for cardiac patients — free & open source",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "theme_color": "#1e3a5f",
   "icons": [
     {
       "src": "icon-192.png",
