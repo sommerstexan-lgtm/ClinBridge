@@ -1,23 +1,11 @@
 {
-  "version": "v9.10.85",
-  "releaseDate": "April 18, 2026",
-  "whatsNew": [
-    "Lightweight init gate \u2014 branded splash screen on cold open while detectors and pattern analysis complete. Fades away automatically. Not shown on tab resume."
-  ],
+  "version": "v9.10.86",
+  "releaseDate": "April 20, 2026",
+  "whatsNew": [],
   "fixes": [
-    "PPH Pin \u2014 _pinPPHPattern was writing to wrong localStorage key CB_PINNED_EVENTS instead of clinbridge_pinned_events. Pin appeared to save but never showed in Pinned Events. Fixed: now calls pinEvent() with correct schema; falls back to direct write with correct key.",
-    "PPH population-average guard removed from Sentinel section and nudge rule \u2014 with 89 meal pairs the 6 qualifying PPH events (avg 22.8 mmHg drop) were diluted to 2.7 mmHg avg, failing the guard. Three confirmed qualifying events is the only threshold needed.",
-    "PPH Sentinel section re-implemented as standalone function _buildSentinelPPHSection() \u2014 eliminates IIFE nesting risk. Section appears at bottom of Sentinel when 3+ PPH events confirmed in last 30 days with avg drop guard met.",
-    "PPH Sentinel section re-added as standalone function _buildSentinelPPHSection() \u2014 eliminates IIFE bracket nesting that caused the v9.10.81 syntax error and broke all buttons",
-    "PPH guard fix \u2014 settings.features.meals is only set by wizard; never true for users who track meals by default. Both the Sentinel PPH section and nudge rule now gate on actual meal log count instead of the feature flag.",
-    "PPH Pattern \u2014 dedicated Sentinel section always shown when 3+ events confirmed: event count, avg drop, recent events list, doctor language, Pin button closes Sentinel into Pinned Events. Duplicate-pin guard included.",
-    "pph_pattern_detected nudge moved from position 21 to position 2 in NUDGE_RULES so it is no longer blocked by behavioral nudges firing first. btnFn corrected from broken openAdvancedAnalytics to openAnalyticsDashboard.",
-    "pph_pattern_detected Sentinel nudge never fired for any user \u2014 snapshotSetup() stored activeFeatures (array) but not features (object); nudge guard checked d.setup.features.meals which was always undefined. Fixed: snapshotSetup() now writes d.setup.features = features; guard updated with activeFeatures fallback for existing installs",
-    "Appointments card not showing on main page \u2014 four root causes fixed: refreshAllDisplays() now calls updateRecentAppointmentWidget(), iOS tab-resume path now calls loadAppointments(), deleteAppointment() now refreshes the main-page card, and empty-state shows an Add Appointment prompt instead of hiding the card entirely",
-    "Advanced Analytics collapsible panels \u2014 all 11 detail panels now start collapsed after Generate Analysis; new Panel Index card lists every panel with Expand buttons; Expand All / Collapse All controls; expanding auto-scrolls panel into view",
-    "getAllHistoricalData date-range filter restored \u2014 was bypassed with a testing flag that was never reverted, loading all data regardless of the 90-day window",
-    "37 DEBUG console.log statements removed from getAllHistoricalData",
-    "Breathing sessions now included in getAllHistoricalData (breathing key) and Ask ClinBridge context",
-    "Two Sentinel nudge rules added: breathing_try_it (first session encouragement) and breathing_declining_response (declining HR response alert)"
+    "Appointment card blank after backup restore — _confirmImport() wrote all keys to localStorage then called refreshAllDisplays() but never called loadAppointments(). The appointments[] in-memory array stayed at its pre-restore state (empty on a fresh session), so updateRecentAppointmentWidget() always saw an empty array and showed 'No appointments saved yet' even when cardiacAppointments was fully populated in storage. Fix: loadAppointments() added to the post-import refresh block, before refreshAllDisplays().",
+    "Appointment card blank after overnight iOS resume (date rollover) — the visibilitychange handler has two branches: same-day resume (correctly called loadAppointments()) and date-rollover (did not). On iOS, the PWA JS context is killed overnight — appointments[] resets to [] at declaration. On morning resume, the date has changed so the rollover branch runs, skipping loadAppointments(), and the card renders empty despite cardiacAppointments being present in localStorage. Fix: loadAppointments() added to the date-rollover branch.",
+    "Appointment card blank after midnight in a live session — the setInterval midnight auto-refresh cleared daily arrays and called refreshAllDisplays() but never called loadAppointments(). Fix: loadAppointments() added before refreshAllDisplays() in the midnight handler.",
+    "Appointment card shows stale data after full data wipe — the delete-all path cleared appointments = [] but never called updateRecentAppointmentWidget(). The card continued to display the deleted appointment until page reload. Fix: updateRecentAppointmentWidget() called immediately after appointments = [] in the delete-all block."
   ]
 }
