@@ -1,9 +1,8 @@
 {
-  "version": "v9.10.87",
-  "releaseDate": "April 21, 2026",
+  "version": "v9.10.88",
+  "releaseDate": "April 25, 2026",
   "whatsNew": [],
   "fixes": [
-    "Anchor Date Investigation — HR stat pill showed misleading daily average when intraday swing >= 20 bpm. Root cause: bpSeries('h') computes the daily mean of all readings; a day with 68→91→68 BPM averaged to ~76 bpm, completely hiding the spike in the 'On target date' pill. Fix: after computing hrAnchor (daily avg), the raw HR readings for the anchor date are also scanned for min/max. When max−min >= 20 bpm (matching the Rapid HR Change detector threshold exactly), the 'On target date' pill shows 'low→high bpm' labeled 'On target date (range)' instead of the average. Threshold of 20 bpm is clinically grounded — it is the same gate the rapid change detector uses, so the two systems are always in agreement.",
-    "Anchor Date Investigation — summary text showed the same misleading daily-average HR when intraday swing >= 20 bpm. generateAnchorSummaryText() now re-derives min/max from raw readings for the anchor date and, when swing >= 20 bpm, emits 'Heart rate on anchor date ranged from X to Y bpm (intraday swing of Z bpm). Prior 14-day average was N bpm.' instead of the averaged value."
+    "Medications section missing from Settings accordion. The Settings accordion had no entry point for adding, editing, or removing medications. manageMedicines() was fully functional but only accessible via the Wizard and a hidden main-page button. Fix: a dedicated Medications accordion section added to Settings between Baseline Conditions Registry and Heat & Humidity Advisory, with a button that opens manageMedicines() directly."
   ]
 }

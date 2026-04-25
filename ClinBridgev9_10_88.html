@@ -871,7 +871,7 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
              but does NOT touch items 1 or 8 — update those manually every release.
              Missing any one of these causes visible version drift to users.
              ═══════════════════════════════════════════════════════════════════ -->
-        <span style="font-size:12px;color:#94a3b8;font-weight:400">Updated Apr 18, 2026</span>
+        <span style="font-size:12px;color:#94a3b8;font-weight:400">Updated Apr 25, 2026</span>
       </div>
       <div id="t" style="font-size:14px;color:#94a3b8;text-align:right;font-weight:600"></div>
     </div>
@@ -2009,7 +2009,13 @@ Custom Range
         <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
         <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
         <div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F41B; Fixed in v9.10.88 &mdash; April 21, 2026</strong>
+          <strong style="font-size:16px">&#x1F41B; Fixed in v9.10.88 &mdash; April 25, 2026</strong>
+          <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#7f1d1d;line-height:1.8">
+            <li><strong>Medications section missing from Settings accordion.</strong> The Settings accordion had no entry point for adding, editing, or removing medications. The <code>manageMedicines()</code> modal was fully functional and accessible via the Wizard and a hidden button on the main page, but there was no direct path in Settings. Fix: a dedicated <strong>&#x1F48A; Medications</strong> accordion section added to Settings between Baseline Conditions Registry and Heat &amp; Humidity Advisory, with a single button that opens <code>manageMedicines()</code> directly.</li>
+          </ul>
+        </div>
+        <div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">&#x1F41B; Fixed in v9.10.87 &mdash; April 21, 2026</strong>
           <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#7f1d1d;line-height:1.8">
             <li><strong>Appointment card blank after backup restore.</strong> <code>_confirmImport()</code> wrote all keys to localStorage then called <code>refreshAllDisplays()</code> &mdash; but never called <code>loadAppointments()</code>. The <code>appointments[]</code> in-memory array stayed at its pre-restore state, so <code>updateRecentAppointmentWidget()</code> always saw an empty array and showed &ldquo;No appointments saved yet&rdquo; even when <code>cardiacAppointments</code> was fully populated in storage. Fix: <code>loadAppointments()</code> added to the post-import refresh block, before <code>refreshAllDisplays()</code>.</li>
             <li><strong>Appointment card blank after overnight iOS resume (date rollover).</strong> The <code>visibilitychange</code> handler has two branches: same-day resume (correctly called <code>loadAppointments()</code>) and date-rollover (did not). On iOS, the PWA JS context is killed overnight &mdash; <code>appointments[]</code> resets to <code>[]</code> at declaration. On morning resume, the date has changed so the rollover branch runs, skipping <code>loadAppointments()</code>, and the card renders empty. Fix: <code>loadAppointments()</code> added to the date-rollover branch.</li>
@@ -15694,6 +15700,15 @@ html+='</div>';
 }
 html+='<button onclick="openAddBaselineCondition()" class="modal-btn" style="background:#f59e0b;color:white;font-size:16px">+ Add Baseline Condition</button>';
 html+='</div>';// close sset-baseline body
+html+='</div>';// close settings-section
+
+// Medications Section
+html+='<div class="settings-section" style="border-left-color:#10b981">';
+html+='<div class="settings-section-title" onclick="toggleSettingsSection(\'sset-meds\')"><span class="sset-left"><span>💊</span><span>Medications</span></span><span class="settings-section-chevron" id="sset-meds-chev" style="transform:rotate(-90deg)">▼</span></div>';
+html+='<div class="settings-section-body" id="sset-meds" style="display:none">';
+html+='<p style="font-size:15px;color:#374151;margin-bottom:16px;line-height:1.6">Add, edit, or remove medications from your list. ClinBridge uses your medication list for adherence tracking, Medication Effectiveness analysis, and Doctor\'s Report generation.</p>';
+html+='<button onclick="manageMedicines()" style="width:100%;background:#10b981;color:#fff;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:600;cursor:pointer">💊 Add / Edit Medications</button>';
+html+='</div>';// close sset-meds body
 html+='</div>';// close settings-section
 
 // Heat & Humidity Advisory Section
