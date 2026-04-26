@@ -1,8 +1,8 @@
 {
-  "version": "v9.10.88",
+  "version": "v9.10.89",
   "releaseDate": "April 25, 2026",
   "whatsNew": [],
   "fixes": [
-    "Medications section missing from Settings accordion. The Settings accordion had no entry point for adding, editing, or removing medications. manageMedicines() was fully functional but only accessible via the Wizard and a hidden main-page button. Fix: a dedicated Medications accordion section added to Settings between Baseline Conditions Registry and Heat & Humidity Advisory, with a button that opens manageMedicines() directly."
+    "Medications accordion fix not delivered to index.html (deployment error). v9.10.88 added the Medications Settings accordion to the versioned HTML file but the fix was never copied into index.html — the file GitHub Pages actually serves. The service worker cached the broken index.html under clinbridge-v9.10.88, so replacing index.html on GitHub had no effect. Fix: index.html rebuilt from corrected source. Version bump forces service worker to delete stale cache and re-fetch clean."
   ]
 }
