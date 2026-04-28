@@ -1,8 +1,21 @@
 {
-  "version": "v9.10.89",
-  "releaseDate": "April 25, 2026",
-  "whatsNew": [],
+  "version": "v9.10.90",
+  "releaseDate": "April 28, 2026",
+  "whatsNew": [
+    "Tap reliability fix — eliminated iOS 300ms touch delay app-wide",
+    "Symptom History sort toggle (Oldest / Newest)",
+    "Notes + HR Rate Detector cards now collapsible via tiles",
+    "Medication Effectiveness tile with contextual setup nudge",
+    "Optional Notes field on BP, Fluid, Meal, and Medicine log modals",
+    "Breathing Logger Technique Comparison view",
+    "All Notes date range filter",
+    "Contextual Help ? buttons on 6 key features"
+  ],
   "fixes": [
-    "Medications accordion fix not delivered to index.html (deployment error). v9.10.88 added the Medications Settings accordion to the versioned HTML file but the fix was never copied into index.html — the file GitHub Pages actually serves. The service worker cached the broken index.html under clinbridge-v9.10.88, so replacing index.html on GitHub had no effect. Fix: index.html rebuilt from corrected source. Version bump forces service worker to delete stale cache and re-fetch clean."
+    "B6: Advanced Analytics now collapses panels on close",
+    "B7: Pinned Events sort reversed to oldest-first for appointment reading",
+    "B8: Check for Updates scroll hardened for iOS modal containers",
+    "B9: Dismiss buttons standardized to Close; floating Close FAB added",
+    "B10: Today's Status FAB removed; Ask FAB relocated to bottom-right"
   ]
 }
