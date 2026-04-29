@@ -1,1 +1,1 @@
-{"version":"v9.10.97","releaseDate":"April 29, 2026","whatsNew":[],"fixes":["TypeError: Cannot read properties of undefined (reading 'fluid') fixed — all 8 show functions now guard against _todayVisible being undefined in restricted execution environments"]}
+{"version":"v9.10.98","releaseDate":"April 29, 2026","whatsNew":[],"fixes":["Cards fully collapsed on first load","Medical Procedures panel no longer auto-expands","Log Procedure sticky Cancel/Save bar","From/To labels on date filters in Search Meals and View All Procedures"]}

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clinbridge-v9.10.97';
+const CACHE_NAME = 'clinbridge-v9.10.98';
 const ASSETS = ['./', './index.html', './manifest.json'];
 self.addEventListener('install', function(e) {
   e.waitUntil(caches.open(CACHE_NAME).then(function(c) { return c.addAll(ASSETS); }));
