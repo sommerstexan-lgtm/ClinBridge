@@ -24,7 +24,7 @@
   window.cbTrack = function(eventName, params) {
     try {
       if (typeof gtag === 'function') {
-        gtag('event', eventName, Object.assign({ app_version: 'v9.10.98' }, params || {}));
+        gtag('event', eventName, Object.assign({ app_version: 'v9.10.90' }, params || {}));
       }
     } catch(e) {}
   };
@@ -45,7 +45,7 @@
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
-<title>ClinBridge v9.10.98</title>
+<title>ClinBridge v9.10.90</title>
 <link rel="apple-touch-icon" href="ClinBridge-App-logo.JPG">
 <link rel="icon" type="image/jpeg" href="ClinBridge-App-logo.JPG">
 <style>
@@ -795,8 +795,8 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
 
 <!-- Activity Background Pill — shown when a timed activity is minimized to background -->
 <!-- ── FLOATING CLOSE BUTTON (B9) — bottom-left, shown when #modal is open ── -->
-<button id="closeFab" onclick="closeAnyOpenModal()" aria-label="Close"
-  style="display:none;position:fixed;bottom:24px;left:18px;z-index:100000;
+<button id="closeFab" onclick="hideModal()" aria-label="Close"
+  style="display:none;position:fixed;bottom:24px;left:18px;z-index:99998;
          background:#6b7280;color:#fff;border:none;border-radius:50px;
          padding:12px 20px;font-size:15px;font-weight:700;
          box-shadow:0 4px 18px rgba(107,114,128,0.5);cursor:pointer;
@@ -847,7 +847,7 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
     <!-- Version + clock row -->
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid rgba(255,255,255,0.15);padding-top:12px">
       <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
-        <span style="font-size:13px;font-weight:700;color:#7dd3fc">v9.10.98 · Medical Grade - Free</span>
+        <span style="font-size:13px;font-weight:700;color:#7dd3fc">v9.10.90 · Medical Grade - Free</span>
         <!-- ═══════════════════════════════════════════════════════════════════
              VERSION UPDATE CHECKLIST — update ALL 8 locations every release:
              1.  This date span below                    (format: Apr DD, YYYY)
@@ -981,35 +981,17 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
 </div>
 
 <!-- === PHASE 2: MEDICATION EFFECTIVENESS SUMMARY === -->
-<div id="panel-medeff" class="card-panel-hidden">
-<div class="card" id="medEffectivenessCard" style="background:linear-gradient(135deg,#dcfce7,#d1fae5);border:3px solid #10b981">
-<div class="hdr" style="color:#166534;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+<div class="card" id="medEffectivenessCard" style="display:none;background:linear-gradient(135deg,#dcfce7,#d1fae5);border:3px solid #10b981">
+<div class="hdr" style="color:#166534;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
 <span>💊 Medication Effectiveness</span>
-<div style="display:flex;gap:8px;align-items:center">
-<button onclick="openContextualHelp('how-to-use','Medication Effectiveness',function(){document.getElementById('panel-medeff').classList.remove('card-panel-hidden');})" style="background:#f0fdf4;color:#166534;border:2px solid #10b981;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: Medication Effectiveness">?</button>
-<button onclick="openMedicationEffectiveness()" style="background:#10b981;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;touch-action:manipulation;min-height:44px">Full Analysis →</button>
+<button onclick="openMedicationEffectiveness()" style="background:#10b981;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer">View Full Analysis</button>
 </div>
-</div>
-<div id="medEffNudge" style="display:none;padding:16px;background:#f0fdf4;border-radius:8px;margin-top:8px;font-size:15px;color:#374151;line-height:1.6"></div>
 <div id="medEffectivenessQuickView"></div>
 </div>
-</div><!-- /panel-medeff -->
-
-<div id="panel-procedures" class="card-panel-hidden">
-<!-- injected by showProcedures() -->
-</div><!-- /panel-procedures -->
 
 <div id="panel-bp" class="card-panel-hidden">
 <div class="card" id="bpCard">
-<div class="hdr" id="bpHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-  <span>📊 Today's Blood Pressure</span>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <button onclick="openContextualHelp('how-to-use','Blood Pressure',null)" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: Blood Pressure">?</button>
-    <button id="today-toggle-bp" onclick="toggleTodayEntries('bp')" style="background:#fff;color:#0369a1;border:2px solid #0369a1;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">👁 Show Today</button>
-    <button onclick="showBPHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button>
-    <button onclick="toggleCardSection('bp')" style="background:#f3f4f6;color:#374151;border:2px solid #d1d5db;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">▲ Collapse</button>
-  </div>
-</div>
+<div class="hdr" id="bpHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span>📊 Today's Blood Pressure</span><button onclick="showBPHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button></div>
 <div id="bp"></div>
 </div>
 
@@ -1022,15 +1004,10 @@ Need at least 2 BP readings to show chart
 </div>
 </div><!-- /panel-bp -->
 
-<div id="panel-weight" class="card-panel-hidden"><div class="card" id="weightCard">
+<div id="panel-weight" class="card-panel-hidden"><div class="card" id="weightCard" style="display:none">
 <div class="hdr" id="weightHeader" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
   <span>⚖️ Weight Tracking</span>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <button onclick="openContextualHelp('how-to-use','Weight',null)" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: Weight">?</button>
-    <button id="today-toggle-weight" onclick="toggleTodayEntries('weight')" style="background:#fff;color:#0369a1;border:2px solid #0369a1;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">👁 Show Today</button>
-    <button id="weightHistoryBtn" onclick="showWeightHistory()" style="background:#f97316;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;min-height:44px">📋 View History</button>
-    <button onclick="toggleCardSection('weight')" style="background:#f3f4f6;color:#374151;border:2px solid #d1d5db;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">▲ Collapse</button>
-  </div>
+  <button id="weightHistoryBtn" onclick="showWeightHistory()" style="background:#f97316;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">✏️ Edit Past Entries</button>
 </div>
 <div id="weightAlert"></div>
 <div id="weight"></div>
@@ -1041,17 +1018,8 @@ Need at least 2 weight entries to show chart
 <canvas id="weightChart" style="max-height:400px;display:none"></canvas>
 </div></div><!-- /panel-weight -->
 
-<div id="panel-symptoms" class="card-panel-hidden"><div class="card" id="symptomCard">
-  <div class="hdr" id="symptomHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-    <span>💊 Symptom Tracking</span>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <button onclick="openContextualHelp('how-to-use','Symptoms',null)" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: Symptoms">?</button>
-      <button id="today-toggle-symptoms" onclick="toggleTodayEntries('symptoms')" style="background:#fff;color:#0369a1;border:2px solid #0369a1;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">👁 Show Today</button>
-      <button onclick="openSymptomReview()" style="padding:6px 12px;font-size:14px;border:none;border-radius:999px;background:#3b82f6;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px">Review for Doctor</button>
-      <button onclick="showSymptomsHistory()" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button>
-      <button onclick="toggleCardSection('symptoms')" style="background:#f3f4f6;color:#374151;border:2px solid #d1d5db;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">▲ Collapse</button>
-    </div>
-  </div>
+<div id="panel-symptoms" class="card-panel-hidden"><div class="card" id="symptomCard" style="display:none">
+  <div class="hdr" id="symptomHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span>💊 Symptom Tracking</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button onclick="openSymptomReview()" style="padding:6px 12px;font-size:14px;border:none;border-radius:999px;background:#3b82f6;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px">Review for Doctor</button><button onclick="showSymptomsHistory()" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button></div></div>
 
   <!-- Daily symptom list -->
   <div id="symptom"></div>
@@ -1066,16 +1034,8 @@ Need at least 2 weight entries to show chart
   </div>
 </div></div><!-- /panel-symptoms -->
 
-<div id="panel-activities" class="card-panel-hidden"><div class="card" id="activityCard">
-<div class="hdr" id="activityHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-  <span>🏃 Activity/Exercise Tracking</span>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <button onclick="openContextualHelp('how-to-use','Activity',null)" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: Activity">?</button>
-    <button id="today-toggle-activities" onclick="toggleTodayEntries('activities')" style="background:#fff;color:#0369a1;border:2px solid #0369a1;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">👁 Show Today</button>
-    <button onclick="showActivitiesHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button>
-    <button onclick="toggleCardSection('activities')" style="background:#f3f4f6;color:#374151;border:2px solid #d1d5db;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">▲ Collapse</button>
-  </div>
-</div>
+<div id="panel-activities" class="card-panel-hidden"><div class="card" id="activityCard" style="display:none">
+<div class="hdr" id="activityHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span>🏃 Activity/Exercise Tracking</span><button onclick="showActivitiesHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button></div>
 <div id="activity"></div>
 <div class="hdr" style="margin-top:24px">📊 Activity Duration Trends</div>
 <div id="noChartDataActivity" style="padding:24px;text-align:center;color:#6b7280;background:#f3f4f6;border-radius:8px;margin-bottom:16px">
@@ -1086,42 +1046,21 @@ Need at least 2 weight entries to show chart
 <canvas id="activityChart" style="max-height:400px;display:none"></canvas>
 </div></div><!-- /panel-activities -->
 
-<div id="panel-meals" class="card-panel-hidden"><div class="card" id="mealsCard">
-<div class="hdr" id="mealsHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-  <span>🍽️ Meals</span>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-    <button onclick="openContextualHelp('how-to-use','Meals',null)" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: Meals">?</button>
-    <button id="today-toggle-meals" onclick="toggleTodayEntries('meals')" style="background:#fff;color:#0369a1;border:2px solid #0369a1;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">👁 Show Today</button>
-    <button class="btn" style="background:#f59e0b;padding:6px 14px;font-size:14px;min-height:44px;margin-bottom:0" onclick="viewAllMeals()">🔍 Search Meals</button>
-    <button onclick="showMealsHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button>
-    <button onclick="toggleCardSection('meals')" style="background:#f3f4f6;color:#374151;border:2px solid #d1d5db;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">▲ Collapse</button>
-  </div>
-</div>
+<div id="panel-meals" class="card-panel-hidden"><div class="card" id="mealsCard" style="display:none">
+<div class="hdr" id="mealsHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span>🍽️ Meals</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" style="background:#f59e0b;padding:8px 16px;font-size:14px;min-height:44px" onclick="viewAllMeals()">View All</button><button onclick="showMealsHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button></div></div>
 <div id="meals"></div>
 </div></div><!-- /panel-meals -->
 
-<div id="panel-meds" class="card-panel-hidden"><div class="card" id="medicinesCard">
-<div class="hdr" id="medicinesHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-  <span>💊 Medicines Taken</span>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <button onclick="openContextualHelp('how-to-use','Medicines',null)" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: Medicines">?</button>
-    <button id="today-toggle-meds" onclick="toggleTodayEntries('meds')" style="background:#fff;color:#0369a1;border:2px solid #0369a1;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">👁 Show Today</button>
-    <button onclick="showMedHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button>
-    <button onclick="toggleCardSection('meds')" style="background:#f3f4f6;color:#374151;border:2px solid #d1d5db;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">▲ Collapse</button>
-  </div>
-</div>
+<div id="panel-meds" class="card-panel-hidden"><div class="card" id="medicinesCard" style="display:none">
+<div class="hdr" id="medicinesHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><span>💊 Medicines Taken</span><button onclick="showMedHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button></div>
 <div id="medicines"></div>
 </div></div><!-- /panel-meds -->
 
 <div id="panel-notes" class="card-panel-hidden">
 <div class="card" id="notesCard">
-<div class="hdr" id="notesHeader" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+<div class="hdr" id="notesHeader" style="display:flex;justify-content:space-between;align-items:center">
   <span>📝 Notes</span>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <button onclick="openContextualHelp('how-to-use','Notes',null)" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: Notes">?</button>
-    <button id="today-toggle-notes" onclick="toggleTodayEntries('notes')" style="background:#fff;color:#0369a1;border:2px solid #0369a1;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">👁 Show Today</button>
-    <button type="button" onclick="openAllNotesView()" style="background:#8b5cf6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;min-height:44px">📋 View All</button>
-  </div>
+  <button type="button" onclick="openAllNotesView()" style="background:#8b5cf6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer">📋 View All</button>
 </div>
 <div id="notes"></div>
 </div>
@@ -1131,10 +1070,7 @@ Need at least 2 weight entries to show chart
 <div class="card" id="rateDetectorCard">
 <div class="hdr" style="display:flex;justify-content:space-between;align-items:center">
   <span>⚡ HR Rate Detector</span>
-  <div style="display:flex;gap:8px;align-items:center">
-  <button onclick="openContextualHelp('how-to-use','HR Rate Detector',null)" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: HR Rate Detector">?</button>
-  <button onclick="toggleCardSection('rate')" style="background:#f3f4f6;color:#374151;border:2px solid #d1d5db;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">▲ Collapse</button>
-  </div>
+  <button onclick="openContextualHelp('how-to-use','HR Rate Detector',null)" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:30px;height:30px;font-size:14px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: HR Rate Detector">?</button>
 </div>
 <div id="rateDetectorInfo" style="padding:16px;background:#f3f4f6;border-radius:8px;margin-bottom:16px;font-size:16px;color:#374151">
 <b>What is this?</b> Tracks your heart rate changes and patterns. Identifies spikes, zones, and trends that may need attention.
@@ -1185,15 +1121,7 @@ Need at least 2 BP readings to show rate detector
 
 <div id="panel-fluid" class="card-panel-hidden">
 <div class="card">
-  <div class="hdr" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-    <span>💧 Fluid Intake</span>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <button onclick="openContextualHelp('how-to-use','Fluid',null)" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: Fluid">?</button>
-      <button id="today-toggle-fluid" onclick="toggleTodayEntries('fluid')" style="background:#fff;color:#0369a1;border:2px solid #0369a1;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">👁 Show Today</button>
-      <button onclick="showFluidHistory()" style="background:#3b82f6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px;white-space:nowrap">📋 View History</button>
-      <button onclick="toggleCardSection('fluid')" style="background:#f3f4f6;color:#374151;border:2px solid #d1d5db;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;min-height:44px;white-space:nowrap">▲ Collapse</button>
-    </div>
-  </div>
+  <div class="hdr">💧 Fluid Intake</div>
 
   <div id="fluidProgressCard" style="display:none;margin-bottom:16px">
     <div id="fluidSourceSummary" style="font-size:14px;color:#0369a1;margin-bottom:8px"></div>
@@ -1269,7 +1197,7 @@ Custom Range
 </div>
 
 <!-- Help / About & Privacy Modal -->
-<div id="aboutModal" class="modal" style="display:none;z-index:100001">
+<div id="aboutModal" class="modal" style="display:none">
   <div class="help-modal-content">
     <!-- Fixed header: never scrolls -->
     <div style="flex-shrink:0;padding:16px 20px 0 20px;border-bottom:2px solid #e5e7eb;background:#fff;border-radius:16px 16px 0 0">
@@ -1992,7 +1920,7 @@ Custom Range
         </div>
 
         <div style="background:#f3f4f6;border-radius:10px;padding:14px;font-size:13px;color:#6b7280;line-height:1.7">
-          ClinBridge v9.10.98 · Free &amp; Open Source · Built by a cardiac patient, for cardiac patients · clinbridge.clinic<br>
+          ClinBridge v9.10.90 · Free &amp; Open Source · Built by a cardiac patient, for cardiac patients · clinbridge.clinic<br>
           No ads · No account · No subscription · Your data stays on your device · Always free
         </div>
       </section>
@@ -2081,84 +2009,8 @@ Custom Range
         <p style="font-size:15px;color:#4b5563;margin-bottom:4px">This tab tracks <strong>bugs that were reported and fixed</strong> — things that were broken and are now resolved. Each entry describes the defective behavior, the root cause, and the fix applied.</p>
         <p style="font-size:14px;color:#6b7280;margin-bottom:16px">For new features and capabilities, see the <strong>Planned Features</strong> tab.</p>
 
-        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F41B; Fixed in v9.10.98 &mdash; April 29, 2026</strong>
-          <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
-            <li><strong>Cards fully collapsed on first load.</strong> <code>collapseAllCardPanels()</code> added to the startup sequence. Previously only <code>refreshAllDisplays()</code> called it; the regular startup did not, causing BP Trends and HR Rate Detector to appear open on load.</li>
-            <li><strong>Medical Procedures panel no longer auto-expands on load.</strong> <code>showProcedures()</code> still opens the panel after logging or deleting a procedure, but the startup collapse overrides it so the page opens clean.</li>
-            <li><strong>Log Medical Procedure — sticky Cancel/Save bar.</strong> Buttons now always visible without scrolling.</li>
-            <li><strong>Search Meals and View All Procedures — From/To date labels added.</strong></li>
-          </ul>
-        </div>
-        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F41B; Fixed in v9.10.96 &mdash; April 29, 2026</strong>
-          <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
-            <li><strong>Log Weight, Log Symptoms, Log Activity buttons now visible by default.</strong> These three buttons were hidden on any fresh install because <code>weight</code> and <code>symptoms</code> defaulted to <code>false</code> in the initial settings object. For a cardiac monitoring app these are core features, not optional ones. All three now default to <code>true</code>. Existing users with saved settings are unaffected &mdash; the deep-merge in <code>loadSettings()</code> preserves whatever they previously chose.</li>
-          </ul>
-        </div>
-                  <strong style="font-size:16px">&#x1F41B; Fixed in v9.10.95 &mdash; April 29, 2026</strong>
-          <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
-            <li><strong>Settings no longer wiped after Import &amp; Replace + refresh.</strong> The import was writing <code>CLINBRIDGE_APP_VERSION</code> from the backup to localStorage. On the next page refresh, the version-check IIFE detected a mismatch between the backup&rsquo;s version and the running app, triggered <code>location.reload(true)</code>, and on some configurations (particularly Chromebook <code>file://</code> testing) this caused in-memory state to reset before settings were re-read from localStorage. Fix: <code>CLINBRIDGE_APP_VERSION</code> and <code>CLINBRIDGE_LAST_BACKUP</code> are now excluded from all imports — the running app always owns these keys.</li>
-            <li><strong>Floating ✕ Close button now works on all screens.</strong> Previously <code>closeFab</code> called <code>hideModal()</code> which only closes the generic <code>#modal</code> container. Dedicated modals (Sentinel, Pinned Events, Pulse Pressure, Symptom Convergence, Decompensation Warning, HR Detector, Breathing Logger, Advanced Analytics, Med Effectiveness, and 9 others) were unaffected. <code>closeFab</code> now calls <code>closeAnyOpenModal()</code> which checks each dedicated modal by ID and dispatches to the correct close function.</li>
-            <li><strong>HR Rate Detector: clearer error when no HR data, silent errors now surfaced.</strong> Added try-catch around the entire function. If an internal error occurs it now shows a descriptive message instead of silently failing. The &ldquo;no data&rdquo; message now explicitly tells the user to include a Heart Rate (Pulse) value when logging BP.</li>
-          </ul>
-        </div>
-        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F41B; Fixed in v9.10.94 &mdash; April 29, 2026</strong>
-          <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
-            <li><strong>Stray ▲ Collapse button removed from Planning section.</strong> The button was injected into the Planning button grid (between Add Note and All Notes) by a mismatched str_replace in v9.10.93. Removed.</li>
-            <li><strong>BP Show Today blank after Med Effectiveness analysis fixed.</strong> Closing the Med Effectiveness modal now resets <code>bpViewMode</code> to <code>'today'</code> and re-renders the BP card. Previously the analysis left <code>bpViewMode='all'</code>, causing Show Today to display the full 90-day history instead of today&rsquo;s data.</li>
-            <li><strong>HR Rate Detector and Med Effectiveness panels always expand.</strong> <code>toggleCardSection</code> was treating these view-only panels as empty-data cards and attempting to open a log form (which is null for Rate). They now always expand when tapped, regardless of data count.</li>
-            <li><strong>HR Rate Detector card header standardized.</strong> The ? and ▲ Collapse buttons are now wrapped in a flex container matching all other card headers.</li>
-          </ul>
-        </div>
-        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F527; Updated in v9.10.93 &mdash; April 29, 2026</strong>
-          <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
-            <li><strong>▲ Collapse button moved to card header.</strong> Was buried at the bottom of each card requiring a full scroll to reach. Now sits in the header row alongside ?, Show Today, and View History — always reachable without scrolling.</li>
-            <li><strong>Sort toggle on every history view.</strong> All 7 history views (BP, Weight, Symptoms, Activities, Meals, Medicines, Fluid) now have a ↓ Newest / ↑ Oldest toggle. Sort resets to Newest when cards collapse.</li>
-            <li><strong>Jump to date on all history views.</strong> Every history view now has a date picker to jump directly to any date in the 90-day window, with a highlight pulse on arrival. Previously only Weight had this.</li>
-            <li><strong>Weight Show Today fixed.</strong> The card header was hidden because <code>weightCard</code> had <code>display:none</code> in the static HTML. Panel now controls visibility — card is always shown when panel is open.</li>
-            <li><strong>All inner card display:none removed.</strong> Symptoms, Activities, Meals, and Medicines had the same structural bug as Weight. All now rely on the panel for collapse — card is always visible when panel is expanded.</li>
-            <li><strong>Fluid Intake no longer shows entries by default.</strong> <code>fluidLogEntries</code> is now hidden before content is rendered, preventing a flash of visible entries on load.</li>
-            <li><strong>Cards collapse when leaving the app.</strong> The <code>visibilitychange</code> listener now fires on <code>hidden</code> (leaving) instead of every change. Cards collapse silently when you switch apps or tabs, so returning always shows a clean collapsed state.</li>
-            <li><strong>&ldquo;No entries logged today&rdquo; message.</strong> Tapping Show Today when there are no entries now shows a clear message with a prompt to log, instead of revealing an empty div.</li>
-          </ul>
-        </div>
-        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F527; Updated in v9.10.92 &mdash; April 29, 2026</strong>
-          <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
-            <li><strong>All main-page cards now collapse by default.</strong> Every card below Upcoming Appointment starts collapsed. Charts and trend sections are visible when you open a card; today&rsquo;s entry list is hidden until you tap <strong>👁 Show Today</strong>.</li>
-            <li><strong>? help buttons on every card.</strong> All 11 cards now have a consistent 34&times;34 ? button in the header linking to Help &amp; About. HR Rate Detector&rsquo;s ? button resized from 30&times;30 to match.</li>
-            <li><strong>Show Today toggle on every card.</strong> Each card header has a <strong>👁 Show Today (N)</strong> button. Greyed and disabled when there are no entries. Changes to <strong>▲ Hide Today</strong> when expanded. Count updates on every render.</li>
-            <li><strong>Medication Effectiveness tile now expands a panel.</strong> Tapping the tile expands/collapses the inline med effectiveness card instead of opening a modal. Full Analysis button inside the panel still opens the modal.</li>
-            <li><strong>Medical Procedures is its own panel.</strong> Procedures no longer live inside the BP panel — collapsing BP no longer hides them. The panel appears automatically when procedures exist.</li>
-            <li><strong>BP history edit &amp; delete.</strong> Each reading in 90-day BP history now has ✏️ Edit and ✕ Delete buttons. Previously history was read-only.</li>
-            <li><strong>Fluid Intake history view.</strong> The fluid card header now has a 📋 View History button showing 90 days of fluid entries with date grouping.</li>
-            <li><strong>Fluid entries edit &amp; delete.</strong> Edit and delete buttons now appear on each fluid entry in the today view.</li>
-            <li><strong>Weight card: renamed button.</strong> &ldquo;✏️ Edit Past Entries&rdquo; renamed to &ldquo;📋 View History&rdquo; for consistency with all other cards.</li>
-            <li><strong>Meals: Search Meals renamed.</strong> &ldquo;View All&rdquo; button renamed to &ldquo;🔍 Search Meals&rdquo; to distinguish it from View History (in-card) vs full searchable modal.</li>
-          </ul>
-        </div>
-        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F527; Updated in v9.10.91 &mdash; April 28, 2026</strong>
-          <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
-            <li><strong>? button z-index fix.</strong> Help &amp; About now opens above all dedicated modals (Sentinel, Pinned Events, Decompensation, Pulse Pressure, Symptom Convergence, Breathing Logger). Root cause: <code>aboutModal</code> shared z-index with later DOM elements. Fix: raised to 100001.</li>
-            <li><strong>Close FAB now visible over modals.</strong> Was z-index 99998 &mdash; behind the modal overlay at 99999. Raised to 100000.</li>
-            <li><strong>Modal scroll always resets to top.</strong> <code>showModal()</code> now sets <code>scrollTop = 0</code>. Fixes Sync &amp; Backup and Breathing Logger setup view.</li>
-            <li><strong>All Notes &mdash; Close and Add Note always visible.</strong> Moved to sticky top bar above date range row and list.</li>
-            <li><strong>Log modal Save/Cancel always visible.</strong> All seven log modals use <code>position:sticky;bottom:0</code> on their action bar.</li>
-            <li><strong>Cards collapse on every load and background/foreground.</strong> <code>collapseAllCardPanels()</code> called from <code>refreshAllDisplays()</code>, <code>visibilitychange</code>, and <code>pageshow</code>.</li>
-            <li><strong>▲ Collapse button on every card.</strong> Sticky footer button on all 9 card panels.</li>
-            <li><strong>Activity pill timing fix.</strong> <code>_syncFab()</code> now falls back to <code>localStorage</code> check before hiding the pill.</li>
-            <li><strong>Advanced Analytics full reset on close.</strong> Range selector and output sections cleared on every close.</li>
-            <li><strong>Settings &rarr; Medications stays in Settings.</strong> Done button now returns to <code>openSettings()</code>.</li>
-            <li><strong>Pulse Pressure Detector and Symptom Convergence &mdash; ? buttons added.</strong></li>
-            <li><strong>? / X order standardized.</strong> ? always left, X/Close always right, 8px gap.</li>
-            <li><strong>Med Effectiveness tile &mdash; deleted meds surface.</strong> Scans full localStorage history for tagged readings, not just current <code>medicineList</code>.</li>
-          </ul>
-        </div>
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+        <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
           <strong style="font-size:16px">&#x1F527; Updated in v9.10.90 &mdash; April 28, 2026</strong>
           <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
@@ -3440,12 +3292,10 @@ Custom Range
 <option value="oldest">Oldest First</option>
 </select>
 </div>
-<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-<label style="font-size:14px;font-weight:600;color:#374151;white-space:nowrap">From:</label>
-<input type="date" id="procedureFilterStart" class="modal-input" style="flex:1" onchange="filterProcedures()">
-<label style="font-size:14px;font-weight:600;color:#374151;white-space:nowrap">To:</label>
-<input type="date" id="procedureFilterEnd" class="modal-input" style="flex:1" onchange="filterProcedures()">
-<button class="btn" style="background:#6b7280;padding:10px 20px;flex-shrink:0" onclick="clearProcedureFilters()">Clear Filters</button>
+<div style="display:flex;gap:12px">
+<input type="date" id="procedureFilterStart" class="modal-input" placeholder="From Date" onchange="filterProcedures()">
+<input type="date" id="procedureFilterEnd" class="modal-input" placeholder="To Date" onchange="filterProcedures()">
+<button class="btn" style="background:#6b7280;padding:10px 20px" onclick="clearProcedureFilters()">Clear Filters</button>
 </div>
 </div>
 
@@ -3470,11 +3320,9 @@ Custom Range
 <option value="oldest">Oldest First</option>
 </select>
 </div>
-<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-<label style="font-size:14px;font-weight:600;color:#374151;white-space:nowrap">From:</label>
-<input type="date" id="mealFilterStart" class="modal-input" style="flex:1" onchange="filterMeals()">
-<label style="font-size:14px;font-weight:600;color:#374151;white-space:nowrap">To:</label>
-<input type="date" id="mealFilterEnd" class="modal-input" style="flex:1" onchange="filterMeals()">
+<div style="display:flex;gap:12px">
+<input type="date" id="mealFilterStart" class="modal-input" placeholder="From Date" onchange="filterMeals()">
+<input type="date" id="mealFilterEnd" class="modal-input" placeholder="To Date" onchange="filterMeals()">
 <button class="btn" style="background:#6b7280;padding:10px 20px" onclick="clearMealFilters()">Clear Filters</button>
 </div>
 </div>
@@ -3497,10 +3345,8 @@ Custom Range
         <div style="font-size:22px;font-weight:800;color:white">Sentinel</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:2px">Personal Pattern Precursor · Powered by Footprints</div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
-      <button onclick="openContextualHelp('sentinel','Sentinel',function(){var s=document.getElementById('sentinelModal');if(s)s.style.display='block';})" style="background:rgba(255,255,255,0.15);color:white;border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;touch-action:manipulation" title="Help: Sentinel">?</button>
       <button onclick="closeSentinel()" style="background:rgba(0,0,0,0.2);color:white;border:none;border-radius:8px;padding:8px 14px;font-size:16px;font-weight:700;cursor:pointer;touch-action:manipulation">✕</button>
-      </div>
+      <button onclick="openContextualHelp('sentinel','Sentinel',function(){var s=document.getElementById('sentinelModal');if(s)s.style.display='block';})" style="background:rgba(255,255,255,0.15);color:white;border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;touch-action:manipulation" title="Help: Sentinel">?</button>
     </div>
   </div>
   <div id="sentinelContent" style="padding:20px;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
@@ -3571,10 +3417,7 @@ Custom Range
 <div class="modal-content" style="max-width:540px;margin:0 auto;padding:20px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
 <div style="font-size:22px;font-weight:800;color:#7c3aed">🔍 Symptom Convergence</div>
-<div style="display:flex;gap:8px;align-items:center">
-<button onclick="openContextualHelp('how-to-use','Symptom Convergence',function(){document.getElementById('scModal').style.display='block';})" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;touch-action:manipulation" title="Help: Symptom Convergence">?</button>
-<button onclick="closeSymptomConvergence()" style="background:#6b7280;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;touch-action:manipulation">Close</button>
-</div>
+<button onclick="closeSymptomConvergence()" style="background:#6b7280;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer">✕ Close</button>
 </div>
 <div style="font-size:14px;color:#6b7280;margin-bottom:12px;line-height:1.5">Detects when symptoms cluster together or escalate over time — patterns that matter more than any individual symptom alone.</div>
 <div style="display:flex;gap:8px;margin-bottom:16px">
@@ -3605,10 +3448,7 @@ Custom Range
 <div class="modal-content" style="max-width:520px;margin:0 auto;padding:20px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
 <div style="font-size:22px;font-weight:800;color:#0369a1">🩺 Pulse Pressure Detector</div>
-<div style="display:flex;gap:8px;align-items:center">
-<button onclick="openContextualHelp('how-to-use','Pulse Pressure Detector',function(){document.getElementById('ppModal').style.display='block';})" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;touch-action:manipulation" title="Help: Pulse Pressure">?</button>
-<button onclick="closePulsePressure()" style="background:#6b7280;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;touch-action:manipulation">Close</button>
-</div>
+<button onclick="closePulsePressure()" style="background:#6b7280;color:white;border:none;padding:8px 16px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer">✕ Close</button>
 </div>
 <div style="font-size:14px;color:#6b7280;margin-bottom:16px;line-height:1.5">Pulse pressure (systolic minus diastolic) reveals how hard your heart is working to push blood forward. Trends over time matter more than any single reading.</div>
 <div id="ppStatusBanner" style="border-radius:12px;padding:18px;margin-bottom:20px;text-align:center"></div>
@@ -4072,7 +3912,7 @@ Custom Range
 <label style="display:block;margin:12px 0 6px 0;font-weight:600;font-size:18px">Notes/Description:</label>
 <textarea id="procedureNotes" class="modal-input" rows="4" placeholder="Additional details, findings, or notes" style="font-size:20px"></textarea>
 
-<div class="modal-actions" style="position:sticky;bottom:0;background:#fff;padding:8px 0 2px 0;margin-top:16px;border-top:2px solid #e5e7eb;display:flex;gap:12px">
+<div class="modal-actions">
 <button class="modal-cancel" onclick="closeProcedureModal()">Cancel</button>
 <button class="modal-ok" onclick="saveProcedure()">Save Procedure</button>
 </div>
@@ -4186,7 +4026,7 @@ Custom Range
 // hard reload from the server so users always get the latest.
 // ============================================================
 (function(){
-  var CURRENT='v9.10.98';
+  var CURRENT='v9.10.90';
   var VKEY='CLINBRIDGE_APP_VERSION';
   try{
     var stored=localStorage.getItem(VKEY);
@@ -4661,12 +4501,6 @@ var weightViewMode='today';    // isolated — never affects other panels
 var bpViewMode='today';         // isolated — never affects other panels
 var symptomsViewMode='today';   // isolated — never affects other panels
 var symptomsHistorySort='newest'; // B1: sort order for 90-day history view
-var bpHistorySort='newest';
-var activitiesHistorySort='newest';
-var mealsHistorySort='newest';
-var medHistorySort='newest';
-var fluidHistorySort='newest';
-var weightHistorySort='newest';
 var activitiesViewMode='today'; // isolated — never affects other panels
 var mealsViewMode='today';      // isolated — never affects other panels
 var medViewMode='today';        // isolated — never affects other panels
@@ -4701,9 +4535,9 @@ customConditions:[],
 heatProtocol:{enabled:true,thresholdF:85},
 features:{
 bloodPressure:true,
-weight:true,
+weight:false,
 heartRate:true,
-symptoms:true,
+symptoms:false,
 exercise:true,
 medications:true,
 meals:true,
@@ -4712,9 +4546,9 @@ notes:true
 },
 reportPreferences:{
 bloodPressure:true,
-weight:true,
+weight:false,
 heartRate:true,
-symptoms:true,
+symptoms:false,
 exercise:true,
 medications:true,
 meals:true,
@@ -4736,9 +4570,7 @@ var reportStartDate='';
 var reportEndDate='';
 
 function showModal(html){
-var mc = document.getElementById('modalContent');
-mc.innerHTML = html;
-mc.scrollTop = 0;
+document.getElementById('modalContent').innerHTML=html;
 document.getElementById('modal').style.display='block';
 _syncFab();
 }
@@ -4764,44 +4596,7 @@ setTimeout(function(){ showEventReminder(_queued); },150);
 }
 }
 
-// Universal close — used by closeFab (bottom-left ✕ button).
-// Checks every dedicated modal by ID and calls its proper close function.
-// Falls back to hideModal() for showModal() (#modal) content.
-// This is necessary because closeFab is always on-screen but each modal
-// has its own close function; hideModal() only closes #modal.
-function closeAnyOpenModal(){
-  // Map of dedicated modal IDs → their close functions
-  var MODAL_CLOSE_MAP = [
-    ['sentinelModal',                function(){ if(typeof closeSentinel==='function') closeSentinel(); }],
-    ['pinnedEventsModal',            function(){ if(typeof closePinnedEvents==='function') closePinnedEvents(); }],
-    ['ppModal',                      function(){ if(typeof closePulsePressure==='function') closePulsePressure(); }],
-    ['scModal',                      function(){ if(typeof closeSymptomConvergence==='function') closeSymptomConvergence(); }],
-    ['decompModal',                  function(){ if(typeof closeDecompensationWarning==='function') closeDecompensationWarning(); }],
-    ['hrDetectorModal',              function(){ if(typeof closeHRDetector==='function') closeHRDetector(); }],
-    ['breathingLoggerModal',         function(){ if(typeof closeBreathingLogger==='function') closeBreathingLogger(); }],
-    ['morningCheckinModal',          function(){ if(typeof closeMorningCheckin==='function') closeMorningCheckin(); }],
-    ['analyticsDashboardModal',      function(){ if(typeof closeAnalyticsDashboard==='function') closeAnalyticsDashboard(); }],
-    ['medicationEffectivenessModal', function(){ if(typeof closeMedicationEffectiveness==='function') closeMedicationEffectiveness(); }],
-    ['procedureImpactModal',         function(){ if(typeof closeProcedureImpact==='function') closeProcedureImpact(); }],
-    ['aboutModal',                   function(){ if(typeof closeAbout==='function') closeAbout(); }],
-    ['reportModal',                  function(){ if(typeof closeReportModal==='function') closeReportModal(); }],
-    ['doctorReportModal',            function(){ if(typeof closeDoctorReportModal==='function') closeDoctorReportModal(); }],
-    ['mealsListModal',               function(){ if(typeof closeMealsList==='function') closeMealsList(); }],
-    ['proceduresListModal',          function(){ if(typeof closeProceduresList==='function') closeProceduresList(); }],
-    ['procedureModal',               function(){ if(typeof closeProcedure==='function') closeProcedure(); }],
-    ['appointmentModal',             function(){ if(typeof closeAppointment==='function') closeAppointment(); }],
-    ['appointmentsListModal',        function(){ if(typeof closeAppointmentsList==='function') closeAppointmentsList(); }],
-  ];
-  for(var _ci=0; _ci<MODAL_CLOSE_MAP.length; _ci++){
-    var el = document.getElementById(MODAL_CLOSE_MAP[_ci][0]);
-    if(el && el.style.display !== 'none' && el.style.display !== ''){
-      MODAL_CLOSE_MAP[_ci][1]();
-      return;
-    }
-  }
-  // Fallback: close the generic showModal container
-  hideModal();
-}
+// ---------- Help / Landing Modal ----------
 
 // Helper: keep floating Today's Status button hidden whenever any modal is visible.
 // Also manages activity background pill coexistence (v9.10.36).
@@ -4824,20 +4619,9 @@ function _syncFab(){
   // Close FAB (bottom-left): visible when any modal is open; shares position with activity pill
   if(closeFab) closeFab.style.display = modalOpen ? 'flex' : 'none';
 
-  // Activity pill (bottom-left): show when minimized — checked via in-memory flag first,
-  // then localStorage fallback for iOS cases where JS state was wiped during backgrounding.
-  // Pill shows even when a modal is open (closeFab sits on top at higher z-index).
-  var pillShouldShow = false;
-  if (_activityMinimized) {
-    pillShouldShow = true;
-  } else {
-    // Belt-and-suspenders: check localStorage in case iOS wiped in-memory state
-    try {
-      var _saved = localStorage.getItem('CB_ACTIVITY_MINIMIZED');
-      if (_saved) pillShouldShow = true;
-    } catch(e) {}
-  }
-  if(pill) pill.style.display = pillShouldShow ? 'flex' : 'none';
+  // Activity pill (bottom-left): visible when activity is minimized AND no modal open
+  // Hidden when modal is open to give Clear FAB its position
+  if(pill) pill.style.display = (!modalOpen && _activityMinimized) ? 'flex' : 'none';
 
   // Ask button (bottom-right): visible when no modal and ask panel closed
   if(askBtn) askBtn.style.display = (modalOpen||askPanelOpen) ? 'none' : 'flex';
@@ -6307,7 +6091,7 @@ html+=getEventDropdownHTML();
 html+=getActivityDropdownHTML();
 html+='<label style="display:block;font-size:15px;font-weight:600;color:#374151;margin:12px 0 4px 0">Notes (optional)</label>';
 html+='<textarea id="bpNotes" class="modal-input" rows="2" placeholder="e.g. after walk, felt dizzy, unusual reading..." style="font-size:16px;min-height:70px;resize:none"></textarea>';
-html+='<div class="modal-actions" style="position:sticky;bottom:0;background:#fff;padding:8px 0 2px 0;margin-top:16px;border-top:2px solid #e5e7eb;display:flex;gap:12px"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveBP()">Save</button></div>';
+html+='<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveBP()">Save</button></div>';
 showModal(html);
 setTimeout(function(){document.getElementById('sys').focus();},100);
 }
@@ -6964,23 +6748,12 @@ document.getElementById('medEffectivenessQuickView').innerHTML=html;
 function showBP(){
 var isBPHistory=(bpViewMode==='all');
 var bpData=isBPHistory?(getAllHistoricalData().bp||[]):B;
-// Apply sort for history view
-if(isBPHistory){
-  bpData=bpData.slice().sort(function(a,b){
-    var ka=(a._date||'')+(a.t||'');
-    var kb=(b._date||'')+(b.t||'');
-    return bpHistorySort==='oldest'?(ka>kb?1:ka<kb?-1:0):(ka>kb?-1:ka<kb?1:0);
-  });
-}
 var h='';
 // History header bar
 if(isBPHistory){
-  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px">';
-  h+='<div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
+  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
   h+='<button onclick="closeBPHistory()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;min-height:44px">← Back to Today</button>';
-  h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day BP history — tap ✏️ to edit, ✕ to delete</div>';
-  h+='</div>';
-  h+=_buildHistoryControls('bpHistorySort','showBP','bpentry-','bp');
+  h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day BP history — read only</div>';
   h+='</div>';
 }
 // ── Personal baseline cross-reference (v9.10.49) ──────────────────────────
@@ -7013,17 +6786,14 @@ if(_bpLoopBaseline&&r.s&&r.d&&r.h){
     }
   }
 }
-h+='<div class="reading" '+(isBPHistory&&r._date?'id="bpentry-'+r._date+'-'+i+'"':'')+' >';
-// Edit/delete buttons for today's data AND history data
-h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
+h+='<div class="reading">';
+// Only show edit/delete buttons for today's data
 if(!isBPHistory){
+h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
 h+='<button onclick="editBP('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✏️</button>';
 h+='<button onclick="deleteBP('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✕</button>';
-}else if(r._date&&typeof r._dayIndex!=='undefined'){
-h+='<button onclick="editBPHistorical(\''+r._date+'\','+r._dayIndex+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✏️</button>';
-h+='<button onclick="deleteBPHistorical(\''+r._date+'\','+r._dayIndex+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✕</button>';
-}
 h+='</div>';
+}
 if(isBPHistory&&r._date){
 h+='<div style="font-size:14px;color:#3b82f6;font-weight:600;margin-bottom:4px">📅 '+r._date+'</div>';
 }else if(!isBPHistory){
@@ -7079,20 +6849,8 @@ document.getElementById('bpCard').style.display='block';
 }else{
 document.getElementById('bpCard').style.display='none';
 }
-// === PHASE 2: HIDE TODAY ENTRIES + UPDATE TOGGLE BUTTON ===
-// Option B: chart remains visible; today's entry list starts hidden.
-// In history mode the show-today concept doesn't apply — hide the toggle button.
-if(!isBPHistory){
-  var _bpDiv = document.getElementById('bp');
-  if(_bpDiv && _todayVisible && !_todayVisible.bp) _bpDiv.style.display = 'none';
-  _updateTodayBtn('bp', B.length);
-  var _bpToggleBtn = document.getElementById('today-toggle-bp');
-  if(_bpToggleBtn) _bpToggleBtn.style.display = '';
-} else {
-  // In history mode: hide the today-toggle button
-  var _bpToggleBtn2 = document.getElementById('today-toggle-bp');
-  if(_bpToggleBtn2) _bpToggleBtn2.style.display = 'none';
-}
+// === PHASE 2: UPDATE MEDICATION EFFECTIVENESS QUICK VIEW ===
+updateMedEffectivenessQuickView();
 }
 
 function deleteBP(i){
@@ -7188,72 +6946,6 @@ editSelectedMedTiming=hasMed?(entry.medicationTiming||''):'';
 }
 
 var editSelectedMedTiming='';
-
-// Edit a BP reading from 90-day history (not today's session)
-function editBPHistorical(dateKey, dayIndex){
-  var stored = localStorage.getItem('BP_TRACKER_' + dateKey);
-  if(!stored) return;
-  try { var dayData = JSON.parse(stored); } catch(e) { return; }
-  var arr = dayData.B || dayData.bp;
-  if(!arr || dayIndex >= arr.length) return;
-  var entry = arr[dayIndex];
-  // Reuse the logBP edit form pattern — same fields as editBP()
-  var html='<div class="modal-title">Edit BP Reading — '+dateKey+'</div>';
-  html+='<div style="margin-bottom:16px"><label style="display:block;font-size:16px;font-weight:600;margin-bottom:8px">Systolic:</label>';
-  html+='<input type="number" id="hEditSys" class="modal-input" value="'+(entry.s||'')+'" step="1" min="50" max="250" /></div>';
-  html+='<div style="margin-bottom:16px"><label style="display:block;font-size:16px;font-weight:600;margin-bottom:8px">Diastolic:</label>';
-  html+='<input type="number" id="hEditDia" class="modal-input" value="'+(entry.d||'')+'" step="1" min="30" max="180" /></div>';
-  html+='<div style="margin-bottom:16px"><label style="display:block;font-size:16px;font-weight:600;margin-bottom:8px">Heart Rate:</label>';
-  html+='<input type="number" id="hEditHR" class="modal-input" value="'+(entry.h||'')+'" step="1" min="20" max="250" /></div>';
-  html+='<div style="margin-bottom:16px"><label style="display:block;font-size:16px;font-weight:600;margin-bottom:8px">Notes (optional):</label>';
-  html+='<textarea id="hEditNotes" class="modal-input" rows="2" style="font-size:16px;min-height:60px;resize:none">'+(entry.notes||entry.n||'')+'</textarea></div>';
-  html+='<div class="modal-actions" style="position:sticky;bottom:0;background:#fff;padding:8px 0 2px 0;border-top:2px solid #e5e7eb;display:flex;gap:12px">';
-  html+='<button class="modal-cancel" onclick="hideModal()">Cancel</button>';
-  html+='<button class="modal-ok" onclick="saveEditedBPHistorical(\''+dateKey+'\','+dayIndex+')">Save Changes</button>';
-  html+='</div>';
-  showModal(html);
-}
-
-function saveEditedBPHistorical(dateKey, dayIndex){
-  var sys=parseInt(document.getElementById('hEditSys').value);
-  var dia=parseInt(document.getElementById('hEditDia').value);
-  var hr=parseInt(document.getElementById('hEditHR').value);
-  var notesEl=document.getElementById('hEditNotes');
-  var notesTxt=notesEl?notesEl.value.trim():'';
-  if(isNaN(sys)||isNaN(dia)||sys<50||sys>250||dia<30||dia>180){
-    alert('Please enter valid systolic (50-250) and diastolic (30-180) values.');
-    return;
-  }
-  var stored=localStorage.getItem('BP_TRACKER_'+dateKey);
-  if(!stored)return;
-  try{var dayData=JSON.parse(stored);}catch(e){return;}
-  var arr=dayData.B||dayData.bp;
-  if(!arr||dayIndex>=arr.length)return;
-  arr[dayIndex].s=sys;
-  arr[dayIndex].d=dia;
-  if(!isNaN(hr)&&hr>=20&&hr<=250) arr[dayIndex].h=hr;
-  if(notesTxt) arr[dayIndex].notes=notesTxt; else delete arr[dayIndex].notes;
-  // Write back to correct key
-  if(dayData.B) dayData.B=arr; else dayData.bp=arr;
-  localStorage.setItem('BP_TRACKER_'+dateKey, JSON.stringify(dayData));
-  hideModal();
-  showBP();
-  alert('✓ Reading updated');
-}
-
-function deleteBPHistorical(dateKey, dayIndex){
-  if(!confirm('Delete this reading from '+dateKey+'?'))return;
-  var stored=localStorage.getItem('BP_TRACKER_'+dateKey);
-  if(!stored)return;
-  try{var dayData=JSON.parse(stored);}catch(e){return;}
-  var arr=dayData.B||dayData.bp;
-  if(!arr||dayIndex>=arr.length)return;
-  arr.splice(dayIndex,1);
-  if(dayData.B) dayData.B=arr; else dayData.bp=arr;
-  localStorage.setItem('BP_TRACKER_'+dateKey, JSON.stringify(dayData));
-  showBP();
-  alert('✓ Reading deleted');
-}
 
 function toggleEditMedTracking(){
 var checked=document.getElementById('editMedRelated').checked;
@@ -7379,7 +7071,7 @@ function logMeal(){
   html+=getEventDropdownHTML();
   html+='<label style="display:block;font-size:15px;font-weight:600;color:#374151;margin:12px 0 4px 0">Notes (optional)</label>';
   html+='<textarea id="mealNotes" class="modal-input" rows="2" placeholder="e.g. high sodium, ate late, felt full after..." style="font-size:16px;min-height:70px;resize:none"></textarea>';
-  html+='<div class="modal-actions" style="position:sticky;bottom:0;background:#fff;padding:8px 0 2px 0;margin-top:16px;border-top:2px solid #e5e7eb;display:flex;gap:12px"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveMeal()">Save</button></div>';
+  html+='<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveMeal()">Save</button></div>';
   showModal(html);
   setTimeout(function(){document.getElementById('meal').focus();},100);
 }
@@ -7440,7 +7132,7 @@ if(settings.fluidMode&&settings.fluidMode!=='none'&&_remaining>0&&_remaining<_in
 html+='</div>';
 html+='<label style="display:block;font-size:15px;font-weight:600;color:#374151;margin:12px 0 4px 0">Notes (optional)</label>';
 html+='<textarea id="fluidNotes" class="modal-input" rows="2" placeholder="e.g. with medication, morning water, after exercise..." style="font-size:16px;min-height:70px;resize:none"></textarea>';
-html+='<div class="modal-actions" style="position:sticky;bottom:0;background:#fff;padding:8px 0 2px 0;margin-top:16px;border-top:2px solid #e5e7eb;display:flex;gap:12px"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveFluid()">Save</button></div>';
+html+='<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveFluid()">Save</button></div>';
 showModal(html);
 setTimeout(function(){document.getElementById('fluidAmount').focus();},100);
 }
@@ -7629,11 +7321,6 @@ document.getElementById('recent-fluid').innerHTML=html;
 }
 
 function showFluidLog(){
-  // Hide entry div immediately before render — prevents flash of visible content
-  // on browsers that render innerHTML before the hide call at the end fires
-  var _fDivEarly = document.getElementById('fluidLogEntries');
-  if (_fDivEarly) _fDivEarly.style.display = 'none';
-
   // Collect all fluid entries from BP readings, standalone fluid logs, and meals
   var allFluidEntries = [];
 
@@ -7756,10 +7443,6 @@ function showFluidLog(){
   }
 
   document.getElementById('fluidLogEntries').innerHTML = html;
-  // Hide today entries by default
-  var _fDiv = document.getElementById('fluidLogEntries');
-  if(_fDiv && _todayVisible && !_todayVisible.fluid) _fDiv.style.display = 'none';
-  _updateTodayBtn('fluid', allFluidEntries.length);
 }
 
 
@@ -7859,7 +7542,7 @@ html+='<button id="unitLbs" onclick="selectWeightUnit(\'lbs\')" class="modal-btn
 html+='<button id="unitKg" onclick="selectWeightUnit(\'kg\')" class="modal-btn" style="flex:1">kg</button>';
 html+='</div>';
 html+='<input type="text" id="weightNotes" class="modal-input" placeholder="Notes (optional)" />';
-html+='<div class="modal-actions" style="position:sticky;bottom:0;background:#fff;padding:8px 0 2px 0;margin-top:16px;border-top:2px solid #e5e7eb;display:flex;gap:12px"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveWeight()">Save</button></div>';
+html+='<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveWeight()">Save</button></div>';
 showModal(html);
 // Set default unit from settings
 if(settings.weightUnit){
@@ -7958,8 +7641,6 @@ if(isHistory&&weightData.length>0){
     }
   }
 
-  // ── Apply display sort (independent of rolling-avg which always uses ascending) ──
-  var displaySorted = weightHistorySort === 'oldest' ? sorted.slice() : sorted.slice().reverse();
   // ── Header bar: Back button + jump-to-date ───────────────────────────────
   var outlierCount=Object.keys(outlierMap).length;
   h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:16px">';
@@ -7968,7 +7649,6 @@ if(isHistory&&weightData.length>0){
   h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day weight history</div>';
   h+='</div>';
   h+='<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px">';
-  h+='<button onclick="weightHistorySort=(weightHistorySort===\'newest\'?\'oldest\':\'newest\');showWeight();" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer;min-height:44px;touch-action:manipulation">'+(weightHistorySort==='newest'?'↓ Newest':'↑ Oldest')+'</button>';
   h+='<div style="font-size:15px;font-weight:700;color:#374151">🗓️ Jump to date:</div>';
   h+='<input type="date" id="weightJumpDate" style="border:2px solid #d1d5db;border-radius:8px;padding:8px 12px;font-size:15px;color:#374151;background:#fff;cursor:pointer" onchange="jumpToWeightDate(this.value)" />';
   h+='<button onclick="document.getElementById(\'weightJumpDate\').value=\'\'" style="background:#6b7280;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>';
@@ -7981,8 +7661,8 @@ if(isHistory&&weightData.length>0){
   h+='</div>';
 
   // ── Render entries newest-first ──────────────────────────────────────────
-  for(var i=0;i<displaySorted.length;i++){
-    var r=displaySorted[i];
+  for(var i=sorted.length-1;i>=0;i--){
+    var r=sorted[i];
     var displayWeight=r.display||r.w;
     var displayUnit=r.unit||'lbs';
     var entryKey=(r._date||getTodayKey())+'|'+(r.t||'');
@@ -8060,57 +7740,9 @@ if(isHistory&&weightData.length>0){
 }
 
 document.getElementById('weight').innerHTML=h||'<p style="color:#6b7280;text-align:center;font-size:18px">No weight entries yet</p>';
-// Hide today entries by default; chart remains visible (Option B)
-var _wDiv=document.getElementById('weight');
-if(_wDiv && _todayVisible && !_todayVisible.weight) _wDiv.style.display='none';
-_updateTodayBtn('weight', W.length);
 }
 
 // Jump-to-date: scrolls the weight history list to the first entry on the chosen date.
-// ── Shared history toolbar: sort toggle + jump-to-date ───────────────────────
-// Returns an HTML string with sort button + date input for any history view.
-// sortVar: JS variable name (string) holding 'newest'|'oldest'
-// sortFn:  JS function name (string) to re-render on sort change
-// entryPrefix: id prefix used to tag each entry div (e.g. 'bpentry-')
-// containerId: id of the scrollable container (e.g. 'bp')
-function _buildHistoryControls(sortVar, sortFn, entryPrefix, containerId) {
-  var isNewest = (window[sortVar] === 'newest' || typeof window[sortVar] === 'undefined' || window[sortVar] !== 'oldest');
-  return '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:10px">'
-    + '<button onclick="window[\''+sortVar+'\']=window[\''+sortVar+'\']==='+"'newest'?'oldest':'newest'"
-    + ';'+sortFn+'();" style="background:#6366f1;color:#fff;border:none;border-radius:8px;'
-    + 'padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer;min-height:44px;touch-action:manipulation">'
-    + (isNewest ? '↓ Newest' : '↑ Oldest') + '</button>'
-    + '<input type="date" id="jump-'+containerId+'" style="border:2px solid #d1d5db;border-radius:8px;'
-    + 'padding:8px 12px;font-size:15px;color:#374151;background:#fff;cursor:pointer;min-height:44px" '
-    + 'onchange="_jumpToHistoryDate(\''+entryPrefix+'\',\''+containerId+'\',this.value)" '
-    + 'title="Jump to date" />'
-    + '<button onclick="document.getElementById(\'jump-'+containerId+'\').value=\'\'" '
-    + 'style="background:#6b7280;color:#fff;border:none;border-radius:8px;padding:8px 14px;'
-    + 'font-size:14px;font-weight:600;cursor:pointer;min-height:44px;touch-action:manipulation">Clear</button>'
-    + '</div>';
-}
-
-// Scrolls history list to the first entry whose id starts with prefix+dateStr
-function _jumpToHistoryDate(prefix, containerId, dateStr) {
-  if (!dateStr) return;
-  var container = document.getElementById(containerId);
-  if (!container) return;
-  var allEntries = container.querySelectorAll('[id^="'+prefix+'"]');
-  var target = null;
-  for (var i = 0; i < allEntries.length; i++) {
-    if (allEntries[i].id.indexOf(prefix + dateStr) === 0) { target = allEntries[i]; break; }
-  }
-  if (target) {
-    target.scrollIntoView({behavior:'smooth', block:'center'});
-    target.style.transition = 'box-shadow 0.2s';
-    target.style.boxShadow = '0 0 0 4px #6366f1';
-    setTimeout(function(){ target.style.boxShadow = ''; }, 1800);
-  } else {
-    var panel = document.getElementById('panel-' + containerId);
-    alert('No entries found for ' + dateStr + '.');
-  }
-}
-
 function jumpToWeightDate(dateStr){
   if(!dateStr)return;
   var prefix='wentry-'+dateStr+'-';
@@ -8747,7 +8379,7 @@ if(settings.features&&settings.features.exercise&&A.length>0){
 
 // Event dropdown
 html+=getEventDropdownHTML();
-html+='<div class="modal-actions" style="position:sticky;bottom:0;background:#fff;padding:8px 0 2px 0;margin-top:16px;border-top:2px solid #e5e7eb;display:flex;gap:12px"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveSymptom()">Save</button></div>';
+html+='<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveSymptom()">Save</button></div>';
 showModal(html);
 setTimeout(function(){document.getElementById('symptomSelect').focus();},100);
 }
@@ -9285,19 +8917,18 @@ if(isSympHistory){
     var kb=(b._date||'')+(b.t||'');
     return symptomsHistorySort==='oldest'?(ka>kb?1:ka<kb?-1:0):(ka>kb?-1:ka<kb?1:0);
   });
-  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px">';
-  h+='<div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
+  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
   h+='<button onclick="closeSymptomsHistory()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;min-height:44px;touch-action:manipulation">← Back to Today</button>';
-  h+='<div style="font-size:14px;color:#6b7280;font-weight:600;flex:1">Viewing 90-day symptom history</div>';
-  h+='</div>';
-  h+=_buildHistoryControls('symptomsHistorySort','showSymptoms','sympentry-','symptom');
+  h+='<div style="font-size:14px;color:#6b7280;font-weight:600;flex:1">Viewing 90-day symptom history — read only</div>';
+  h+='<button onclick="symptomsHistorySort=(symptomsHistorySort===\'newest\'?\'oldest\':\'newest\');showSymptoms();" style="background:#fff;color:#6366f1;border:2px solid #6366f1;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;touch-action:manipulation">'
+    +(symptomsHistorySort==='newest'?'↓ Newest':'↑ Oldest')+'</button>';
   h+='</div>';
 }
 for(var i=0;i<symptomData.length;i++){
 var r=symptomData[i];
 var severityColor=r.severity<=3?'#10b981':r.severity<=6?'#f59e0b':'#ef4444';
 var severityLabel=r.severity<=3?'Mild':r.severity<=6?'Moderate':'Severe';
-h+='<div class="reading" '+(isSympHistory&&r._date?'id="sympentry-'+r._date+'-'+i+'"':'')+' >';
+h+='<div class="reading">';
 if(!isSympHistory){
 h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
 h+='<button onclick="editSymptom('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✏️</button>';
@@ -9366,10 +8997,14 @@ h+='</div>';
 document.getElementById('symptom').innerHTML =
   h || '<p style="color:#6b7280;text-align:center;font-size:18px">No symptoms logged today</p>';
 
-// Hide today entries by default; symptom severity chart remains visible (Option B)
-var _sDiv=document.getElementById('symptom');
-if(_sDiv && _todayVisible && !_todayVisible.symptoms) _sDiv.style.display='none';
-_updateTodayBtn('symptoms', S.length);
+// Card visibility: always show if feature is enabled (let user see "none logged" state)
+// Hide only if feature is explicitly off
+var featureOn = settings.features && settings.features.symptoms;
+if(featureOn||symptomsViewMode==='all'){
+  document.getElementById('symptomCard').style.display = 'block';
+} else {
+  document.getElementById('symptomCard').style.display = 'none';
+}
 }
 
 
@@ -9980,7 +9615,7 @@ html+='<input type="text" id="activityNotes" class="modal-input" placeholder="Ad
 html+=buildTempBandHTML();
 html+='</div>';
 html+='<button type="button" onclick="minimizeActivityLog()" style="width:100%;margin-bottom:10px;background:none;border:2px solid #0369a1;color:#0369a1;border-radius:10px;padding:12px;font-size:16px;font-weight:600;cursor:pointer">↙ Minimize — do something else and come back</button>';
-html+='<div class="modal-actions" style="position:sticky;bottom:0;background:#fff;padding:8px 0 2px 0;margin-top:16px;border-top:2px solid #e5e7eb;display:flex;gap:12px"><button class="modal-cancel" onclick="cancelActivityLog()">Cancel</button><button class="modal-ok" onclick="saveActivity()">Save</button></div>';
+html+='<div class="modal-actions"><button class="modal-cancel" onclick="cancelActivityLog()">Cancel</button><button class="modal-ok" onclick="saveActivity()">Save</button></div>';
 showModal(html);
 setTimeout(function(){
 document.getElementById('activitySelect').focus();
@@ -10806,27 +10441,15 @@ var isActHistory=(activitiesViewMode==='all');
 var activityData=isActHistory?(getAllHistoricalData().activities||[]):A;
 var h='';
 if(isActHistory){
-  activityData=activityData.slice().sort(function(a,b){var ka=(a._date||'')
-    +(a.start||a.t||'')||'';
-    var kb=(b._date||'')
-    +(b.start||b.t||'')||'';
-    return activitiesHistorySort==='oldest'?(ka>kb?1:ka<kb?-1:0):(ka>kb?-1:ka<kb?1:0);});
-  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px">';
-  h+='<div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
+  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
   h+='<button onclick="closeActivitiesHistory()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;min-height:44px">← Back to Today</button>';
-  h+='<div style="font-size:14px;color:#6b7280;font-weight:600;flex:1">Viewing 90-day activity history</div>';
-  h+='</div>';
-  h+=_buildHistoryControls('activitiesHistorySort','showActivities','actentry-','activity');
+  h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day activity history — read only</div>';
   h+='</div>';
 }
-// Apply display sort for history
-if(isActHistory){
-  activityData=activityData.slice().sort(function(a,b){var ka=(a._date||'')+(a.start||a.t||'');var kb=(b._date||'')+(b.start||b.t||'');return activitiesHistorySort==='oldest'?(ka>kb?1:ka<kb?-1:0):(ka>kb?-1:ka<kb?1:0);});
-}
-for(var i=0;i<activityData.length;i++){
+for(var i=activityData.length-1;i>=0;i--){
 var r=activityData[i];
 var exertionColor=r.exertion==='Light'?'#10b981':r.exertion==='Moderate'?'#f59e0b':'#ef4444';
-h+='<div class="reading" '+(isActHistory&&r._date?'id="actentry-'+r._date+'-'+i+'"':'')+' >';
+h+='<div class="reading">';
 if(!isActHistory){
 h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
 h+='<button onclick="editActivity('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✏️</button>';
@@ -10856,10 +10479,12 @@ h+='<div style="margin-top:12px;padding:12px;background:#f3f4f6;border-radius:6p
 h+='</div>';
 }
 document.getElementById('activity').innerHTML=h||'<div style="padding:24px;text-align:center;color:#6b7280;background:#f3f4f6;border-radius:8px">No activities logged yet</div>';
-// Hide today entries by default; activity chart remains visible (Option B)
-var _aDiv=document.getElementById('activity');
-if(_aDiv && _todayVisible && !_todayVisible.activities) _aDiv.style.display='none';
-_updateTodayBtn('activities', A.length);
+// Show/hide the card based on data
+if(A.length>0||activitiesViewMode==='all'){
+document.getElementById('activityCard').style.display='block';
+}else{
+document.getElementById('activityCard').style.display='none';
+}
 }
 
 function deleteActivity(i){
@@ -11432,9 +11057,6 @@ var _wEvtMap={};
 function runEventNow(mapKey){
   var evt=_wEvtMap[mapKey];
   if(!evt)return;
-  // Dismiss immediately so the scheduled alert doesn't fire again at event time
-  // (user already ran it early — no need for a second reminder)
-  if(evt.time && evt.name) dismissEvent(evt.time, evt.name);
   showEventReminder(evt);
 }
 
@@ -11963,25 +11585,13 @@ var isMealsHistory=(mealsViewMode==='all');
 var mealsData=isMealsHistory?(getAllHistoricalData().meals||[]):M;
 var h='';
 if(isMealsHistory){
-  mealsData=mealsData.slice().sort(function(a,b){var ka=(a._date||'')
-    +(a.t||'')||'';
-    var kb=(b._date||'')
-    +(b.t||'')||'';
-    return mealsHistorySort==='oldest'?(ka>kb?1:ka<kb?-1:0):(ka>kb?-1:ka<kb?1:0);});
-  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px">';
-  h+='<div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
+  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
   h+='<button onclick="closeMealsHistory()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;min-height:44px">← Back to Today</button>';
-  h+='<div style="font-size:14px;color:#6b7280;font-weight:600;flex:1">Viewing 90-day meal history</div>';
+  h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day meal history — read only</div>';
   h+='</div>';
-  h+=_buildHistoryControls('mealsHistorySort','showMeals','mealentry-','meals');
-  h+='</div>';
-}
-// Apply display sort for history
-if(isMealsHistory){
-  mealsData=mealsData.slice().sort(function(a,b){var ka=(a._date||'')+(a.t||'');var kb=(b._date||'')+(b.t||'');return mealsHistorySort==='oldest'?(ka>kb?1:ka<kb?-1:0):(ka>kb?-1:ka<kb?1:0);});
 }
 for(var i=0;i<mealsData.length;i++){
-h+='<div style="padding:16px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:12px;position:relative;font-size:18px" '+(isMealsHistory&&mealsData[i]._date?'id="mealentry-'+mealsData[i]._date+'-'+i+'"':'')+' >';
+h+='<div style="padding:16px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:12px;position:relative;font-size:18px">';
 if(!isMealsHistory){
 h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
 h+='<button onclick="editMeal('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✏️</button>';
@@ -12006,10 +11616,12 @@ h+='<div style="font-weight:bold;font-size:20px">'+mealsData[i].m+'</div>';
 h+='</div>';
 }
 document.getElementById('meals').innerHTML=h||'<p style="color:#6b7280;text-align:center;font-size:18px">None</p>';
-// Hide today entries by default
-var _mDiv=document.getElementById('meals');
-if(_mDiv && _todayVisible && !_todayVisible.meals) _mDiv.style.display='none';
-_updateTodayBtn('meals', M.length);
+// Show/hide the card based on data
+if(M.length>0||mealsViewMode==='all'){
+document.getElementById('mealsCard').style.display='block';
+}else{
+document.getElementById('mealsCard').style.display='none';
+}
 }
 
 function deleteMeal(i){
@@ -12061,29 +11673,17 @@ var isMedHistory=(medViewMode==='all');
 var medicinesData=isMedHistory?(getAllHistoricalData().medicines||[]):medLog;
 var h='';
 if(isMedHistory){
-  var _medHist=getAllHistoricalData().meds||[];_medHist=_medHist.slice().sort(function(a,b){var ka=(a._date||'')
-    +(a.t||'')||'';
-    var kb=(b._date||'')
-    +(b.t||'')||'';
-    return medHistorySort==='oldest'?(ka>kb?1:ka<kb?-1:0):(ka>kb?-1:ka<kb?1:0);});
-  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px">';
-  h+='<div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
+  h+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">';
   h+='<button onclick="closeMedHistory()" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;min-height:44px">← Back to Today</button>';
-  h+='<div style="font-size:14px;color:#6b7280;font-weight:600;flex:1">Viewing 90-day medicines history</div>';
-  h+='</div>';
-  h+=_buildHistoryControls('medHistorySort','showMedicines','medentry-','medicines');
+  h+='<div style="font-size:14px;color:#6b7280;font-weight:600">Viewing 90-day medicines history — read only</div>';
   h+='</div>';
 }
 if(medicinesData.length===0){
 h+='<p style="color:#6b7280;text-align:center;font-size:18px">'+(isMedHistory?'No medicines in history':'None logged today')+'</p>';
 }else{
-// Apply display sort for history
-if(isMedHistory){
-  medicinesData=medicinesData.slice().sort(function(a,b){var ka=(a._date||'')+(a.t||'');var kb=(b._date||'')+(b.t||'');return medHistorySort==='oldest'?(ka>kb?1:ka<kb?-1:0):(ka>kb?-1:ka<kb?1:0);});
-}
-for(var i=0;i<medicinesData.length;i++){
+for(var i=medicinesData.length-1;i>=0;i--){
 var entry=medicinesData[i];
-h+='<div style="padding:16px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:12px;position:relative;font-size:18px" '+(isMedHistory&&entry._date?'id="medentry-'+entry._date+'-'+i+'"':'')+' >';
+h+='<div style="padding:16px;border:2px solid #e5e7eb;border-radius:8px;margin-bottom:12px;position:relative;font-size:18px">';
 if(!isMedHistory){
 h+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
 h+='<button onclick="editMedLog('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✏️</button>';
@@ -12116,10 +11716,12 @@ h+='</div>';
 }
 }
 document.getElementById('medicines').innerHTML=h;
-// Hide today entries by default
-var _mdDiv=document.getElementById('medicines');
-if(_mdDiv && _todayVisible && !_todayVisible.meds) _mdDiv.style.display='none';
-_updateTodayBtn('meds', medLog.length);
+// Show/hide the card based on data
+if(medLog.length>0||medViewMode==='all'){
+document.getElementById('medicinesCard').style.display='block';
+}else{
+document.getElementById('medicinesCard').style.display='none';
+}
 }
 
 function showNotes(){
@@ -12174,10 +11776,6 @@ if(notes.length>0){
   if(notesPanel) notesPanel.classList.add('card-panel-hidden');
   if(notesTileChev) notesTileChev.textContent='tap to log';
 }
-// Hide today entries by default
-var _nDiv=document.getElementById('notes');
-if(_nDiv && _todayVisible && !_todayVisible.notes) _nDiv.style.display='none';
-_updateTodayBtn('notes', notes.length);
 }
 
 function addNote(){
@@ -12401,12 +11999,6 @@ window._notesViewState = {catFiltered:catFiltered, allNotes:allNotes, filterCate
 // ── 8. Render ─────────────────────────────────────────────────────────────
 var html = '<div class="modal-title">📋 All Notes</div>';
 
-// Sticky top action bar — always reachable regardless of scroll or date row
-html += '<div style="position:sticky;top:0;z-index:10;background:#fff;padding:0 0 8px 0;display:flex;gap:8px;margin-bottom:4px">';
-html += '<button class="modal-cancel" onclick="hideModal()" style="flex:1;min-height:44px;touch-action:manipulation">Close</button>';
-html += '<button class="modal-ok" onclick="addNote()" style="flex:1;min-height:44px;touch-action:manipulation">+ Add Note</button>';
-html += '</div>';
-
 // Search + sort bar
 html += '<div style="display:flex;gap:8px;margin-bottom:8px">';
 html += '<input id="notesSearchBox" type="text" placeholder="🔍 Search notes..." value="'+keyword.replace(/"/g,'&quot;')+'" '
@@ -12510,6 +12102,7 @@ if(filtered.length === 0){
 }
 
 html += '</div>'; // end notesListContainer
+html += '<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Close</button><button class="modal-ok" onclick="addNote()">+ Add Note</button></div>';
 showModal(html);
 // Re-focus search box after render
 if(keyword) setTimeout(function(){
@@ -12828,7 +12421,7 @@ html+='<div style="font-size:13px;color:#6b7280;margin:16px 0 8px 4px">💧 Flui
 html+=getEventDropdownHTML();
 html+='<label style="display:block;font-size:15px;font-weight:600;color:#374151;margin:12px 0 4px 0">Notes (optional)</label>';
 html+='<textarea id="medNotes" class="modal-input" rows="2" placeholder="e.g. took half dose, felt nauseous after, skipped yesterday..." style="font-size:16px;min-height:70px;resize:none"></textarea>';
-html+='<div class="modal-actions" style="position:sticky;bottom:0;background:#fff;padding:8px 0 2px 0;margin-top:16px;border-top:2px solid #e5e7eb;display:flex;gap:12px"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveMedicine()">Save</button></div>';
+html+='<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Cancel</button><button class="modal-ok" onclick="saveMedicine()">Save</button></div>';
 showModal(html);
 }
 
@@ -13032,7 +12625,7 @@ html+='</div>';
 }else{
 html+='<div style="padding:20px;text-align:center;color:#6b7280;background:#f3f4f6;border-radius:8px;margin-bottom:16px">No medicines added yet</div>';
 }
-html+='<div class="modal-actions"><button class="modal-cancel" onclick="var wp=localStorage.getItem(\'wizardActivePath\');if(wp){hideModal();openHelpModal(\'getting-started\');}else{openSettings();}">← Back to Settings</button></div>';
+html+='<div class="modal-actions"><button class="modal-cancel" onclick="var wp=localStorage.getItem(\'wizardActivePath\');if(wp){hideModal();openHelpModal(\'getting-started\');}else{hideModal();}">Done</button></div>';
 showModal(html);
 }
 
@@ -14254,28 +13847,30 @@ console.error('Failed to save procedures:',e);
 }
 
 function showProcedures(){
-// Display procedures in their own panel (panel-procedures), independent of panel-bp
-var container = document.getElementById('panel-procedures');
-if(!container) return;
+// Display procedures in the readings section
+var container=document.getElementById('proceduresDisplay');
+if(!container){
+// Create container if it doesn't exist
+var cardSection=document.getElementById('bpCard');
+if(cardSection){
+container=document.createElement('div');
+container.id='proceduresDisplay';
+container.style.marginTop='16px';
+cardSection.parentNode.insertBefore(container,cardSection);
+}
+}
+if(!container)return;
 
 if(procedures.length===0){
-container.innerHTML='<!-- injected by showProcedures() -->';
-container.classList.add('card-panel-hidden');
-// Reset tile chevron
-var chev = document.getElementById('tile-chev-procedures');
-if(chev) chev.textContent = 'tap to view ▼';
+container.innerHTML='';
+container.style.display='none';
 return;
 }
 
 // Sort procedures by date/time (most recent first)
 var sorted=[...procedures].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
 
-var html='<div class="card"><div class="hdr" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">'
-  +'<span>🏥 Medical Procedures</span>'
-  +'<div style="display:flex;gap:8px;align-items:center">'
-  +'<button onclick="openContextualHelp(\'how-to-use\',\'Medical Procedures\',null)" style="background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb;border-radius:50%;width:34px;height:34px;font-size:16px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0;touch-action:manipulation" title="Help: Medical Procedures">?</button>'
-  +'<button class="btn" style="background:#dc2626;padding:8px 16px;font-size:14px;min-height:44px" onclick="viewAllProcedures()">View All</button>'
-  +'</div></div>';
+var html='<div class="card"><div class="hdr" style="display:flex;justify-content:space-between;align-items:center"><span>🏥 Medical Procedures</span><button class="btn" style="background:#dc2626;padding:8px 16px;font-size:14px" onclick="viewAllProcedures()">View All</button></div>';
 for(var i=0;i<sorted.length;i++){
 var proc=sorted[i];
 var procDate=new Date(proc.timestamp);
@@ -14284,8 +13879,8 @@ var timeStr=procDate.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 
 html+='<div class="reading" style="border-left:4px solid #dc2626">';
 html+='<div style="position:absolute;top:8px;right:8px;display:flex;gap:8px">';
-html+='<button onclick="editProcedure('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;touch-action:manipulation;min-height:44px">✏️</button>';
-html+='<button onclick="deleteProcedure('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer;touch-action:manipulation;min-height:44px">✕</button>';
+html+='<button onclick="editProcedure('+i+')" style="background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✏️</button>';
+html+='<button onclick="deleteProcedure('+i+')" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:16px;font-weight:600;cursor:pointer">✕</button>';
 html+='</div>';
 html+='<div style="font-size:20px;font-weight:700;color:#dc2626;margin-bottom:8px">'+proc.name+'</div>';
 html+='<div><span class="b">Date:</span> '+dateStr+' at '+timeStr+'</div>';
@@ -14307,9 +13902,7 @@ html+='</div>';
 }
 html+='</div>';
 container.innerHTML=html;
-// Show panel — collapseAllCardPanels() at startup will override this if called after.
-// When called from user actions (save/delete), the panel stays open correctly.
-container.classList.remove('card-panel-hidden');
+container.style.display='block';
 }
 
 function deleteProcedure(index){
@@ -14748,144 +14341,8 @@ var CARD_PANEL_MAP = {
   'symptoms':   ['panel-symptoms'],
   'activities': ['panel-activities'],
   'notes':      ['panel-notes'],   // B2
-  'rate':       ['panel-rate'],    // B2
-  'medeff':     ['panel-medeff'],  // v9.10.92: Med Effectiveness panel
-  'procedures': ['panel-procedures'] // v9.10.92: Medical Procedures panel
+  'rate':       ['panel-rate']     // B2
 };
-
-// Per-card today-entries visibility state.
-// Default false = entries hidden when panel first expands (Option B: chart visible, list hidden).
-var _todayVisible = {bp:false,weight:false,symptoms:false,activities:false,
-                     meals:false,meds:false,notes:false,fluid:false};
-
-// Entry div IDs for each card key
-var _ENTRY_DIV = {
-  bp:'bp', weight:'weight', symptoms:'symptom', activities:'activity',
-  meals:'meals', meds:'medicines', notes:'notes', fluid:'fluidLogEntries'
-};
-
-// Show or hide today's entry list for a given card key.
-function toggleTodayEntries(key) {
-  _todayVisible[key] = !_todayVisible[key];
-  var divId = _ENTRY_DIV[key];
-  var el = divId ? document.getElementById(divId) : null;
-  var btn = document.getElementById('today-toggle-' + key);
-  var count = btn ? parseInt(btn.getAttribute('data-count') || '0', 10) : 0;
-
-  if (_todayVisible[key]) {
-    if (el) {
-      // Show "no entries" message if count is 0
-      if (count === 0) {
-        el.innerHTML = '<div style="padding:20px 16px;text-align:center;background:#f9fafb;border-radius:8px;border:2px dashed #d1d5db">'
-          + '<div style="font-size:28px;margin-bottom:8px">📋</div>'
-          + '<div style="font-size:16px;font-weight:600;color:#6b7280;margin-bottom:4px">No entries logged today</div>'
-          + '<div style="font-size:14px;color:#9ca3af">Use the log button above to add one.</div>'
-          + '</div>';
-      }
-      el.style.display = '';
-    }
-    if (btn) {
-      btn.textContent = '▲ Hide Today';
-      btn.style.background = '#0369a1';
-      btn.style.color = '#fff';
-    }
-  } else {
-    if (el) el.style.display = 'none';
-    if (btn) {
-      var label = count > 0 ? '👁 Show Today (' + count + ')' : '👁 Show Today';
-      btn.textContent = label;
-      btn.style.background = '#fff';
-      btn.style.color = '#0369a1';
-    }
-  }
-}
-
-// Update the Show Today button with entry count and disabled state.
-// Called by each show* function after rendering content.
-function _updateTodayBtn(key, count) {
-  var btn = document.getElementById('today-toggle-' + key);
-  if (!btn) return;
-  btn.setAttribute('data-count', count);
-  if (count === 0) {
-    btn.textContent = 'No entries today';
-    btn.disabled = true;
-    btn.style.opacity = '0.45';
-    btn.style.cursor = 'default';
-  } else {
-    btn.disabled = false;
-    btn.style.opacity = '1';
-    btn.style.cursor = 'pointer';
-    if (_todayVisible[key]) {
-      btn.textContent = '▲ Hide Today';
-      btn.style.background = '#0369a1';
-      btn.style.color = '#fff';
-    } else {
-      btn.textContent = '👁 Show Today (' + count + ')';
-      btn.style.background = '#fff';
-      btn.style.color = '#0369a1';
-    }
-  }
-}
-
-// Collapse every card panel — called on load, visibilitychange, and pageshow
-// so the main page always starts clean and never shows a long scroll.
-function collapseAllCardPanels() {
-  if (!CARD_PANEL_MAP || typeof CARD_PANEL_MAP !== 'object') return;
-  Object.keys(CARD_PANEL_MAP).forEach(function(key) {
-    var panelId = CARD_PANEL_MAP[key][0];
-    var el = document.getElementById(panelId);
-    if (el) el.classList.add('card-panel-hidden');
-    // Reset view modes so next open shows today's data
-    if(key==='bp')         bpViewMode='today';
-    if(key==='symptoms')   symptomsViewMode='today';
-    if(key==='activities') activitiesViewMode='today';
-    if(key==='meals')      mealsViewMode='today';
-    if(key==='meds')       medViewMode='today';
-    if(key==='weight')     weightViewMode='today';
-    // Reset tile chevron labels
-    var chev = document.getElementById('tile-chev-' + key);
-    if (chev) chev.textContent = 'tap to view ▼';
-    // Reset today-entries visibility
-    if (_todayVisible && key in _todayVisible) {
-      _todayVisible[key] = false;
-      var divId = _ENTRY_DIV ? _ENTRY_DIV[key] : null;
-      if (divId) { var entEl = document.getElementById(divId); if (entEl) entEl.style.display = 'none'; }
-      var btn = document.getElementById('today-toggle-' + key);
-      if (btn && !btn.disabled) {
-        var cnt = btn.getAttribute('data-count') || '';
-        btn.textContent = cnt ? '👁 Show Today (' + cnt + ')' : '👁 Show Today';
-        btn.style.background = '#fff';
-        btn.style.color = '#0369a1';
-      }
-    }
-  });
-  // Reset all history sort vars to newest on collapse
-  bpHistorySort='newest'; symptomsHistorySort='newest';
-  activitiesHistorySort='newest'; mealsHistorySort='newest';
-  medHistorySort='newest'; fluidHistorySort='newest'; weightHistorySort='newest';
-}
-
-// Append (or refresh) a sticky ▲ Collapse button at the bottom of a card panel.
-// Called by each show/render function after content is written.
-function _appendCollapseBar(key) {
-  if (!CARD_PANEL_MAP) return; // guard: called before CARD_PANEL_MAP assigned (hoisting race)
-  var panelId = CARD_PANEL_MAP[key] ? CARD_PANEL_MAP[key][0] : null;
-  if (!panelId) return;
-  var panel = document.getElementById(panelId);
-  if (!panel || typeof panel.querySelector !== 'function') return; // guard: mock DOM in tests
-  // Remove existing bar if present (re-render safe)
-  var existing = panel.querySelector('.card-collapse-bar');
-  if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
-  if (typeof panel.appendChild !== 'function') return;
-  var bar = document.createElement('div');
-  bar.className = 'card-collapse-bar';
-  bar.style.cssText = 'position:sticky;bottom:0;z-index:5;background:#f9fafb;border-top:2px solid #e5e7eb;padding:8px 0;text-align:center;margin-top:8px';
-  bar.innerHTML = '<button onclick="toggleCardSection(\''+key+'\')" '
-    + 'style="background:none;border:2px solid #d1d5db;border-radius:8px;padding:8px 24px;'
-    + 'font-size:14px;font-weight:700;color:#6b7280;cursor:pointer;touch-action:manipulation;'
-    + '-webkit-tap-highlight-color:transparent">▲ Collapse</button>';
-  panel.appendChild(bar);
-}
 var CARD_LOG_FN = {
   'bp':         function(){ logBP(); },
   'fluid':      function(){ logFluid(); },
@@ -14900,34 +14357,12 @@ var CARD_LOG_FN = {
 
 // B2: Med Effectiveness tile tap handler — adapts to user's setup state
 function _openMedEffTile(){
-  // Check for tagged readings — scan BOTH today AND historical data so deleted meds
-  // (like Simvastatin) still surface in the analysis after being removed from medicineList.
-  var hasMedReadings = B && B.some(function(r){
-    return r.medicationRelated && r.medicationTiming && r.medicationTiming !== 'none';
-  });
-  if (!hasMedReadings) {
-    // Scan historical data — iterate localStorage directly (same pattern as getMedicationReadings)
-    var todayKey = getTodayKey();
-    for (var _ki = 0; _ki < localStorage.length && !hasMedReadings; _ki++) {
-      var _k = localStorage.key(_ki);
-      if (!_k || !_k.startsWith('BP_TRACKER_')) continue;
-      var _dk = _k.replace('BP_TRACKER_', '');
-      if (_dk === todayKey || !/^\d{4}-\d{2}-\d{2}$/.test(_dk)) continue;
-      try {
-        var _hd = JSON.parse(localStorage.getItem(_k));
-        if (_hd && _hd.B) {
-          hasMedReadings = _hd.B.some(function(r){
-            return r.medicationRelated && r.medicationTiming && r.medicationTiming !== 'none';
-          });
-        }
-      } catch(e) {}
-    }
-  }
-  if (hasMedReadings) {
+  var hasMedData=medicineList&&medicineList.length>0;
+  var hasMedReadings=B&&B.some(function(r){return r.medicationRelated&&r.medicationTiming!=='none';});
+  if(hasMedReadings){
     openMedicationEffectiveness();
     return;
   }
-  var hasMedData = medicineList && medicineList.length > 0;
   var html='<div class="modal-title">💊 Medication Effectiveness</div>';
   if(!hasMedData){
     html+='<div style="background:#f0fdf4;border:2px solid #10b981;border-radius:12px;padding:20px;margin-bottom:16px;text-align:center">';
@@ -14981,8 +14416,7 @@ function toggleCardSection(key) {
   if (!panelEl) return;
   var isHidden = panelEl.classList.contains('card-panel-hidden');
   // If count is 0 — open the log form directly instead of expanding empty card
-  // Exception: 'rate' and 'medeff' are view-only panels, always expand them
-  if (isHidden && tileIsEmpty(key) && key !== 'rate' && key !== 'medeff' && key !== 'procedures') {
+  if (isHidden && tileIsEmpty(key)) {
     var fn = CARD_LOG_FN[key];
     if (fn) fn();
     return;
@@ -15001,19 +14435,6 @@ function toggleCardSection(key) {
     if(key==='meals')      mealsViewMode='today';
     if(key==='meds')       medViewMode='today';
     if(key==='weight')     weightViewMode='today';
-    // Reset today-entries visibility for this card
-    if (_todayVisible && key in _todayVisible) {
-      _todayVisible[key] = false;
-      var divId = _ENTRY_DIV ? _ENTRY_DIV[key] : null;
-      if (divId) { var _eEl = document.getElementById(divId); if (_eEl) _eEl.style.display = 'none'; }
-      var _tBtn = document.getElementById('today-toggle-' + key);
-      if (_tBtn && !_tBtn.disabled) {
-        var _cnt = _tBtn.getAttribute('data-count') || '';
-        _tBtn.textContent = _cnt ? '👁 Show Today (' + _cnt + ')' : '👁 Show Today';
-        _tBtn.style.background = '#fff';
-        _tBtn.style.color = '#0369a1';
-      }
-    }
   }
   // Update the action label on the tile
   var chev = document.getElementById('tile-chev-' + key);
@@ -15155,17 +14576,14 @@ if(settings.enableActivity !== false) html+=tile('🏃', activityCount, 'Activit
 html+=tile('📝', notesCount, 'Notes', '#8b5cf6', 'notes');
 // B2: HR Rate Detector tile — shown when BP data exists
 if(bpCount>0) html+=tile('⚡', bpCount, 'HR Rate', '#f59e0b', 'rate');
-// B2: Med Effectiveness tile — always shown; toggles panel-medeff
+// B2: Med Effectiveness tile — always shown; behavior adapts to setup state
 (function(){
   var hasMedData=medicineList&&medicineList.length>0;
   var hasMedReadings=B&&B.some(function(r){return r.medicationRelated&&r.medicationTiming!=='none';});
-  var panelEl=document.getElementById('panel-medeff');
-  var panelOpen=panelEl&&!panelEl.classList.contains('card-panel-hidden');
-  var actionLabel=panelOpen?'tap to hide ▲':(hasMedReadings?'tap to view ▼':'tap to set up');
-  html+='<div class="stat-tile" style="background:#10b98118;border:2.5px solid #10b981;box-shadow:0 4px 14px #10b98144;text-align:center;cursor:pointer;" onclick="toggleCardSection(\'medeff\')">'
+  html+='<div class="stat-tile" style="background:#10b98118;border:2.5px solid #10b981;box-shadow:0 4px 14px #10b98144;text-align:center;cursor:pointer;" onclick="_openMedEffTile()">'
        +'<div style="font-size:22px;font-weight:800;color:#10b981">'+(hasMedReadings?'📈':'💊')+'</div>'
        +'<div style="font-size:11px;color:#4b5563;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Med Effectiveness</div>'
-       +'<div class="stat-tile-action" id="tile-chev-medeff" style="color:#10b981">'+actionLabel+'</div>'
+       +'<div class="stat-tile-action" style="color:#10b981">'+(hasMedReadings?'tap to view ▼':hasMedData?'tap for tips':'tap to set up')+'</div>'
        +'</div>';
 })();
 if(eventsTotal>0){
@@ -15419,78 +14837,7 @@ function closeWeightHistory(){
   },60);
 }
 
-// ── Fluid history view — 90 days ─────────────────────────────────────────────
-function _getFluidHistory(){
-  var hist = [];
-  var todayKey = getTodayKey();
-  var today = new Date();
-  today.setHours(23,59,59,999);
-  var cutoff = new Date(today.getTime() - (DATA_RETENTION_DAYS * 24*60*60*1000));
-  try {
-    for(var i = 0; i < localStorage.length; i++){
-      var k = localStorage.key(i);
-      if(!k || !k.startsWith('BP_TRACKER_')) continue;
-      var dateStr = k.replace('BP_TRACKER_','');
-      if(dateStr === todayKey || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) continue;
-      var parts = dateStr.split('-');
-      var kDate = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-      kDate.setHours(0,0,0,0);
-      if(kDate < cutoff || kDate > today) continue;
-      var raw = localStorage.getItem(k);
-      if(!raw) continue;
-      try {
-        var day = JSON.parse(raw);
-        // standalone fluid entries
-        if(day.fluidLog && day.fluidLog.length){
-          day.fluidLog.forEach(function(e){ hist.push({date:dateStr, amount:e.amount, label:e.label||'', time:e.time||'', source:'fluid'}); });
-        }
-        // fluid in BP readings
-        if(day.B && day.B.length){
-          day.B.forEach(function(r){ if(r.f&&r.f>0) hist.push({date:dateStr, amount:r.f, label:'With BP reading', time:r.t||'', source:'bp'}); });
-        }
-        // fluid in meals
-        if(day.M && day.M.length){
-          day.M.forEach(function(m){ if(m.mealFluidOz&&m.mealFluidOz>0) hist.push({date:dateStr, amount:m.mealFluidOz, label:'With meal: '+(m.m||''), time:m.time||m.t||'', source:'meal'}); });
-        }
-      } catch(e){}
-    }
-  } catch(e){}
-  hist.sort(function(a,b){ return (b.date+b.time).localeCompare(a.date+a.time); });
-  return hist;
-}
-
-function showFluidHistory(){
-  var hist = _getFluidHistory();
-  var html = '<div class="modal-title">💧 Fluid History (90 Days)</div>';
-  html += '<button onclick="hideModal()" style="display:block;background:#6b7280;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:16px;width:100%;touch-action:manipulation">← Back</button>';
-  if(hist.length === 0){
-    html += '<div style="padding:24px;text-align:center;color:#6b7280;background:#f3f4f6;border-radius:8px">No historical fluid entries found in the past 90 days.</div>';
-  } else {
-    var lastDate = '';
-    html += '<div>';
-    hist.forEach(function(e){
-      if(e.date !== lastDate){
-        if(lastDate) html += '</div>';
-        html += '<div style="font-size:13px;font-weight:700;color:#3b82f6;padding:8px 0 4px 0;border-bottom:1px solid #e5e7eb;margin-top:8px">'+e.date+'</div>';
-        html += '<div>';
-        lastDate = e.date;
-      }
-      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6">';
-      html += '<div><span style="font-size:17px;font-weight:700;color:#0369a1">'+e.amount+' oz</span>';
-      if(e.label) html += ' <span style="font-size:13px;color:#6b7280">— '+e.label+'</span>';
-      if(e.time) html += ' <span style="font-size:12px;color:#9ca3af">@ '+e.time+'</span>';
-      html += '</div>';
-      html += '<span style="font-size:11px;color:#d1d5db;font-weight:600">'+e.source.toUpperCase()+'</span>';
-      html += '</div>';
-    });
-    html += '</div></div>';
-    html += '<div style="font-size:13px;color:#6b7280;padding:12px 0;text-align:center">'+hist.length+' entries • historical entries are read-only</div>';
-  }
-  html += '<div class="modal-actions" style="position:sticky;bottom:0;background:#fff;padding:8px 0 2px 0;border-top:2px solid #e5e7eb">';
-  html += '<button class="modal-ok" onclick="hideModal()">Close</button>';
-  html += '</div>';
-  showModal(html);
-}
+// ── Per-card history helpers ─────────────────────────────────────────────────
 // Maps card key → human label used in the one-at-a-time enforcement toast.
 var CARD_HISTORY_LABEL={
   'bp':'Blood Pressure',
@@ -15757,9 +15104,8 @@ if(saved){
 var data=JSON.parse(saved);
 // Add date info to each item - handle both property name formats
 if(data.bp){
-data.bp.forEach(function(item,bpIdx){
+data.bp.forEach(function(item){
 item._date=dateStr;
-item._dayIndex=bpIdx;
 allBP.push(item);
 });
 }else{
@@ -15911,7 +15257,6 @@ return getAllHistoricalData();
 }
 
 function refreshAllDisplays(){
-collapseAllCardPanels(); // always reset to collapsed on every refresh — user expands what they need
 showBP();
 showWeight();
 showSymptoms();
@@ -16672,7 +16017,7 @@ html+=lbBadge;
 html+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px">';
 html+='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">';
 html+='<div>';
-html+='<div style="font-size:16px;font-weight:700;color:#1e293b">ClinBridge <span id="settingsVersionCurrent">v9.10.98</span></div>';
+html+='<div style="font-size:16px;font-weight:700;color:#1e293b">ClinBridge <span id="settingsVersionCurrent">v9.10.90</span></div>';
 html+='<div id="settingsVersionStatus" style="font-size:13px;color:#6b7280;margin-top:3px">Tap "Check for Updates" to see if a newer version is available</div>';
 html+='</div>';
 html+='<button onclick="checkForUpdates(true)" id="checkUpdateBtn" style="background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap">🔍 Check for Updates</button>';
@@ -18139,19 +17484,8 @@ try{
   var allData=window._pendingImportData;
   if(!allData){alert('❌ Import data lost — please try again.');return;}
   window._pendingImportData=null;
-
-  // Keys that belong to the RUNNING APP, not the backup.
-  // Never overwrite these from a backup — doing so triggers the version-check
-  // IIFE to detect a mismatch and fire location.reload(true) on the next refresh,
-  // which can wipe in-memory state on file:// origins.
-  var PROTECTED_KEYS = {
-    'CLINBRIDGE_APP_VERSION': true,
-    'CLINBRIDGE_LAST_BACKUP': true
-  };
-
   var count=0;
   Object.keys(allData).forEach(function(k){
-    if(PROTECTED_KEYS[k]) return; // skip — keep running app's own values
     localStorage.setItem(k,allData[k]);
     count++;
   });
@@ -21820,7 +21154,6 @@ function analyzeDecompensation(){
 // ── END DECOMPENSATION WARNING SYSTEM ─────────────────────────────────────
 
 function openHRDetector(){
-try{
 cbBehavior.track('screens','hr_detector');
 hrQuickStatsPeriod='today';
 // Use today's session data first, fall back to historical if empty
@@ -21832,7 +21165,7 @@ if(hrReadings.length===0){
   hrReadings=histBP.filter(function(r){return r.h&&r.h>0;}).map(function(r){return Object.assign({},r,{hr:r.h});});
 }
 if(hrReadings.length===0){
-alert('No heart rate data available.\n\nLog a BP reading and include a Heart Rate (Pulse) value to use this feature.');
+alert('No heart rate data available. Please add blood pressure readings with heart rate measurements.');
 return;
 }
 document.getElementById('hrDetectorModal').style.display='block';
@@ -21849,10 +21182,6 @@ else{btn.style.background='#e5e7eb';btn.style.color='#374151';}
 });
 analyzeHeartRate(hrReadings);
 },50);
-}catch(e){
-  alert('HR Rate Detector error: '+e.message+'\n\nPlease try again. If this persists, check that your BP readings include heart rate values.');
-  console.error('openHRDetector error:',e);
-}
 }
 
 function closeHRDetector(){
@@ -23203,9 +22532,6 @@ setMedAnalysisPeriod('today');
 function closeMedicationEffectiveness(){
 document.getElementById('medicationEffectivenessModal').style.display='none';
 _syncFab();
-// Reset BP view mode in case analysis switched it to 'all'
-bpViewMode='today';
-showBP();
 // Note: Targets are always calculated from Settings, no need to save custom values
 }
 
@@ -24324,23 +23650,6 @@ closeAnalyticsChart(); // Close any open charts
 // Hide panel index until next generate run
 var idx=document.getElementById('analyticsPanelIndex');
 if(idx) idx.style.display='none';
-// Full reset: clear range selector highlight, hide results so next open starts fresh
-var rangeBtns = document.querySelectorAll('.date-range-btn');
-rangeBtns.forEach(function(btn){
-  btn.style.background='';
-  btn.style.color='';
-  btn.style.borderColor='';
-});
-// Reset to default 7-day selection
-var def7 = document.getElementById('analyticsRange7');
-if(def7){ def7.style.background='#8b5cf6'; def7.style.color='#fff'; def7.style.borderColor='#8b5cf6'; }
-// Hide generated content areas
-var summary = document.getElementById('analyticsSummary');
-if(summary) summary.style.display='none';
-var drSection = document.getElementById('doctorReportSection');
-if(drSection) drSection.style.display='none';
-var customDates = document.getElementById('analyticsCustomDateInputs');
-if(customDates) customDates.style.display='none';
 }
 
 // ── COLLAPSIBLE ANALYTICS PANELS (v9.10.85) ──────────────────────────────────
@@ -24896,9 +24205,6 @@ function openBreathingSetup() {
   var compV = document.getElementById('breathingComparisonView');
   if (compV) compV.style.display = 'none';
   document.getElementById('breathingModalTitle').textContent = 'Breathing Logger';
-  // Scroll modal back to top so setup view always starts at the beginning
-  var scrollEl = document.querySelector('#breathingLoggerModal .modal-content');
-  if (scrollEl) scrollEl.scrollTop = 0;
   // Reset fields
   var hrEl = document.getElementById('breathHRBefore');
   if (hrEl) hrEl.value = '';
@@ -26555,7 +25861,7 @@ Note: This report is based on patient self-tracked data. Clinical correlation
 and examination are essential for diagnosis and treatment decisions.
 
 ---
-ClinBridge v9.10.98 Medical Grade - Free
+ClinBridge v9.10.90 Medical Grade - Free
 Report Generated: ${reportDate}`;
 
 return text;
@@ -30460,7 +29766,7 @@ report.push(notes);
 report.push('');
 }
 report.push('═══════════════════════════════════════════════════════════');
-report.push('This report was generated by ClinBridge v9.10.98 Medical Grade - Free');
+report.push('This report was generated by ClinBridge v9.10.90 Medical Grade - Free');
 report.push('Advanced Analytics Dashboard - Phase 3 Implementation');
 report.push('═══════════════════════════════════════════════════════════');
 const blob=new Blob([report.join('\n')],{type:'text/plain'});
@@ -30550,7 +29856,7 @@ ${periodHTML}
 <h2>Key Insights</h2>
 ${insightsHTML}
 <div style="margin-top:40px;padding:20px;background:#f0f9ff;border-left:4px solid #3b82f6;border-radius:8px">
-<strong>ClinBridge v9.10.98 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
+<strong>ClinBridge v9.10.90 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
 This report is not a substitute for professional medical advice.
 </div>
 </body>
@@ -31523,7 +30829,7 @@ alert(`🏃 Activity Summary\n\n` +
 var VERSION_JSON_URL = 'https://clinbridge.clinic/version.json';
 var VERSION_CHECK_KEY = 'CLINBRIDGE_LAST_VERSION_CHECK';
 var VERSION_DISMISSED_KEY = 'CLINBRIDGE_UPDATE_DISMISSED';
-var CURRENT_VERSION = 'v9.10.98';
+var CURRENT_VERSION = 'v9.10.90';
 var _latestVersionData = null; // cached from last fetch
 
 // Detect whether running as an installed Home Screen PWA on iOS
@@ -31783,7 +31089,6 @@ loadDailyData();
 loadProcedures();
 loadPlan();
 applyFeatureVisibility();
-collapseAllCardPanels(); // always start fully collapsed — user opens what they need
 showMeals();showBP();showWeight();showSymptoms();showActivities();updateFluid();showMedicines();showNotes();showProcedures();renderWeightChart();renderSymptomChart();renderActivityChart();renderBPChart();renderRateDetector();showTodayZone();
 setTimeout(updateAnalyticsBadges,1200);
 
@@ -35458,22 +34763,6 @@ if(document.readyState !== 'loading') {
     _dismissInitGate(); // all detectors done — release the gate
   }, 1200);
 }
-
-// Collapse all cards when user leaves the app (switches tabs, locks screen, background).
-// When they return, the page is already clean — no action needed on 'visible'.
-document.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'hidden') {
-    if (typeof collapseAllCardPanels === 'function') {
-      collapseAllCardPanels();
-    }
-  }
-});
-// Belt-and-suspenders for iOS PWA: pageshow fires on back-navigation and bfcache restore.
-window.addEventListener('pageshow', function() {
-  if (typeof collapseAllCardPanels === 'function') {
-    collapseAllCardPanels();
-  }
-});
 </script>
 <!-- ── END PIN EVENTS SYSTEM ──────────────────────────────────────────────── -->
 

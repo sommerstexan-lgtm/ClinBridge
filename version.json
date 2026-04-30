@@ -1,1 +1,7 @@
-{"version":"v9.10.98","releaseDate":"April 29, 2026","whatsNew":[],"fixes":["Cards fully collapsed on first load","Medical Procedures panel no longer auto-expands","Log Procedure sticky Cancel/Save bar","From/To labels on date filters in Search Meals and View All Procedures"]}
+{
+  "version": "v9.10.90",
+  "releaseDate": "April 28, 2026",
+  "whatsNew": [
+    "Stable release"
+  ]
+}
