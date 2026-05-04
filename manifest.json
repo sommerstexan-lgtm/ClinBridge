@@ -1,21 +1,24 @@
 {
-  "name": "ClinBridge",
+  "name": "ClinBridge Medical Grade - Free",
   "short_name": "ClinBridge",
-  "description": "Medical Grade Cardiac Health Monitor",
+  "description": "Advanced cardiac health tracking for patients",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0f172a",
+  "theme_color": "#1d4ed8",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "https://clinbridge.clinic/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "https://clinbridge.clinic/icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
