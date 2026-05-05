@@ -1,5 +1,5 @@
-// ClinBridge Service Worker — v9.10.93
-const CACHE_NAME = 'clinbridge-v9.10.93';
+// ClinBridge Service Worker — v9.10.101
+const CACHE_NAME = 'clinbridge-v9.10.101';
 const FILES_TO_CACHE = [
   './',
   './index.html',
