@@ -2,7 +2,7 @@
   "name": "ClinBridge",
   "short_name": "ClinBridge",
   "description": "Cardiac health tracking and monitoring — free, private, no account required",
-  "start_url": "./ClinBridgev9_10_117.html",
+  "start_url": "./ClinBridgev9_10_118.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1a56db",
