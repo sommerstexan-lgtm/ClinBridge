@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.118",
-  "filename": "ClinBridgev9_10_118.html",
-  "updated": "2026-05-13",
-  "summary": "Wizard Save My Checklist button fixed (all paths), audio alert CSS animation fixed"
+  "version": "v9.10.125",
+  "filename": "ClinBridgev9_10_125.html",
+  "updated": "2026-05-14",
+  "summary": "Next Event card Run Now button added, double-fire prevention on early execution"
 }
