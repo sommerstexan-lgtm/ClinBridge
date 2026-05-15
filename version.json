@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.125",
-  "filename": "ClinBridgev9_10_125.html",
-  "updated": "2026-05-14",
-  "summary": "Next Event card Run Now button added, double-fire prevention on early execution"
+  "version": "v9.10.126",
+  "filename": "ClinBridgev9_10_126.html",
+  "updated": "2026-05-15",
+  "summary": "Lighthouse score improvements: meta description, viewport, ARIA labels, contrast and performance hardening"
 }
