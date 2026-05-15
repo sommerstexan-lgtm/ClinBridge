@@ -1,6 +1,5 @@
 {
-  "version": "v9.10.136",
-  "filename": "ClinBridgev9_10_136.html",
-  "updated": "2026-05-15",
-  "summary": "Appointment card removed from main page; My Appointments button added to Planning section"
+  "version": "v9.10.137",
+  "date": "2026-05-15",
+  "notes": "Removed duplicate Help button from Sentinel header"
 }
