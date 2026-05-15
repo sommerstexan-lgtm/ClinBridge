@@ -1,9 +1,9 @@
-// ClinBridge Service Worker — v9.10.129
-const CACHE_NAME = 'clinbridge-v9.10.129';
+// ClinBridge Service Worker — v9.10.130
+const CACHE_NAME = 'clinbridge-v9.10.130';
 const urlsToCache = [
   './',
   './index.html',
-  './ClinBridgev9_10_129.html',
+  './ClinBridgev9_10_130.html',
   './manifest.json',
   './ClinBridge-App-logo.JPG'
 ];

@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.129",
-  "filename": "ClinBridgev9_10_129.html",
+  "version": "v9.10.130",
+  "filename": "ClinBridgev9_10_130.html",
   "updated": "2026-05-15",
-  "summary": "Today's Status zone shows brief verified-data card on load; 35s banner replaced with 1.5s handoff"
+  "summary": "Version bump for install — no code changes from v9.10.129"
 }
