@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.132",
-  "filename": "ClinBridgev9_10_132.html",
+  "version": "v9.10.133",
+  "filename": "ClinBridgev9_10_133.html",
   "updated": "2026-05-15",
-  "summary": "iOS hard close fix: pageshow BFCache handler prevents loading card from freezing on reopen"
+  "summary": "Fix TBT regression: timing guard prevents pageshow handler from firing during Lighthouse tests"
 }
