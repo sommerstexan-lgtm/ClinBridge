@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.133",
-  "filename": "ClinBridgev9_10_133.html",
+  "version": "v9.10.135",
+  "filename": "ClinBridgev9_10_135.html",
   "updated": "2026-05-15",
-  "summary": "Fix TBT regression: timing guard prevents pageshow handler from firing during Lighthouse tests"
+  "summary": "showTodayZone moved to immediately after loadDailyData — fires before heavy chart rendering"
 }
