@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.126",
-  "filename": "ClinBridgev9_10_126.html",
+  "version": "v9.10.127",
+  "filename": "ClinBridgev9_10_127.html",
   "updated": "2026-05-15",
-  "summary": "Lighthouse score improvements: meta description, viewport, ARIA labels, contrast and performance hardening"
+  "summary": "CLS fix: todayZone skeleton placeholder eliminates layout shift on load"
 }
