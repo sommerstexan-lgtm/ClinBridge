@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.130",
-  "filename": "ClinBridgev9_10_130.html",
+  "version": "v9.10.131",
+  "filename": "ClinBridgev9_10_131.html",
   "updated": "2026-05-15",
-  "summary": "Version bump for install — no code changes from v9.10.129"
+  "summary": "Accessibility: button contrast fixes across all main grid buttons + heading hierarchy fix"
 }
