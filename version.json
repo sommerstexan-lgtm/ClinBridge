@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.135",
-  "filename": "ClinBridgev9_10_135.html",
+  "version": "v9.10.136",
+  "filename": "ClinBridgev9_10_136.html",
   "updated": "2026-05-15",
-  "summary": "showTodayZone moved to immediately after loadDailyData — fires before heavy chart rendering"
+  "summary": "Appointment card removed from main page; My Appointments button added to Planning section"
 }
