@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.131",
-  "filename": "ClinBridgev9_10_131.html",
+  "version": "v9.10.132",
+  "filename": "ClinBridgev9_10_132.html",
   "updated": "2026-05-15",
-  "summary": "Accessibility: button contrast fixes across all main grid buttons + heading hierarchy fix"
+  "summary": "iOS hard close fix: pageshow BFCache handler prevents loading card from freezing on reopen"
 }
