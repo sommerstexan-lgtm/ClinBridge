@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.144",
+  "version": "v9.10.145",
   "date": "2026-05-18",
-  "notes": "Critical fix: JavaScript syntax error in _mdToHtml regex caused loading screen to freeze and Pinned Events to stop working. Fixed regex escape sequences. Init gate now wrapped in try-catch so any future individual error cannot block app from loading."
+  "notes": "Loading screen hard fallback: gate cannot stay visible beyond 5 seconds regardless of init chain outcome. Eliminates stuck loading screen on first cold open after update."
 }
