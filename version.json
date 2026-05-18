@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.143",
+  "version": "v9.10.144",
   "date": "2026-05-18",
-  "notes": "Ask AI pinned findings now render markdown (bold, headings, bullets, dividers). PPH analysis header shows exact analysis period so user always knows what date window is being analyzed."
+  "notes": "Critical fix: JavaScript syntax error in _mdToHtml regex caused loading screen to freeze and Pinned Events to stop working. Fixed regex escape sequences. Init gate now wrapped in try-catch so any future individual error cannot block app from loading."
 }
