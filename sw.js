@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clinbridge-v9.10.138';
+const CACHE_NAME = 'clinbridge-v9.10.142';
 const urlsToCache = [
   './',
   './index.html',

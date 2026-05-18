@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.138",
-  "date": "2026-05-16",
-  "notes": "Delete All Data now clears every ClinBridge localStorage key and reloads to factory state"
+  "version": "v9.10.142",
+  "date": "2026-05-18",
+  "notes": "Event re-fire fix: Run Now early execution no longer re-fires at scheduled time. My Appointments tile added to Today's Status. Deep Dive: icon consistency, patient-friendly labels, AI summary now condition-aware and specific with 150-word limit. Three convergence precision fixes: low diastolic now flagged, HR threshold uses settings.hrMax, weight spike threshold uses settings.weightAlertThreshold."
 }
