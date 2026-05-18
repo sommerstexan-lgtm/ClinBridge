@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.142",
+  "version": "v9.10.143",
   "date": "2026-05-18",
-  "notes": "Event re-fire fix: Run Now early execution no longer re-fires at scheduled time. My Appointments tile added to Today's Status. Deep Dive: icon consistency, patient-friendly labels, AI summary now condition-aware and specific with 150-word limit. Three convergence precision fixes: low diastolic now flagged, HR threshold uses settings.hrMax, weight spike threshold uses settings.weightAlertThreshold."
+  "notes": "Ask AI pinned findings now render markdown (bold, headings, bullets, dividers). PPH analysis header shows exact analysis period so user always knows what date window is being analyzed."
 }
