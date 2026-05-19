@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.147",
+  "version": "v9.10.148",
   "date": "2026-05-19",
-  "notes": "Three notification bug fixes: showEventReminder now respects per-event sound=false; navigator.vibrate comment corrected; AudioContext closed-state guard added. Version skips v9.10.146 — that release was invalidated by a Service Worker cache poisoning issue where an early broken build was cached and never evicted."
+  "notes": "Ask ClinBridge panel: textarea font-size increased from 15px to 16px. iOS auto-zooms the viewport on focus for any input below 16px, which shifted the layout horizontally and partially obscured the send button. One-character fix eliminates the zoom trigger."
 }
