@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.145",
-  "date": "2026-05-18",
-  "notes": "Loading screen hard fallback: gate cannot stay visible beyond 5 seconds regardless of init chain outcome. Eliminates stuck loading screen on first cold open after update."
+  "version": "v9.10.146",
+  "date": "2026-05-19",
+  "notes": "Three notification bug fixes: (1) showEventReminder now respects per-event sound=false setting — events with sound disabled no longer chime at at-time delivery; (2) navigator.vibrate comment corrected — was incorrectly labeled iOS Taptic Engine, clarified as Android/desktop only, no-op on iPhone; (3) playMedicalAlertChime now guards against closed AudioContext state — reinitializes before scheduling tones to prevent silent throw."
 }
