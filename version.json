@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.149",
+  "version": "v9.10.150",
   "date": "2026-05-19",
-  "notes": "Appointments blank fix (structural). viewAllAppointments() now calls loadAppointments() before opening the modal — modal never trusts in-memory state. loadAppointments() also moved before showTodayZone() in coldstart so the tile count is correct on first paint. Breaks the repeated pattern of blank appointments after version-gated reloads or any code path that reaches the modal without a prior loadAppointments() call."
+  "notes": "Appointments blank fix (structural) + PWA icon fix. viewAllAppointments() now calls loadAppointments() before opening — modal never trusts in-memory state. loadAppointments() moved before showTodayZone() in coldstart. manifest.json corrected to reference ClinBridge-App-logo.JPG (was referencing icon-192.png/icon-512.png which do not exist). Icon added to SW cache."
 }
