@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.148",
+  "version": "v9.10.149",
   "date": "2026-05-19",
-  "notes": "Ask ClinBridge panel: textarea font-size increased from 15px to 16px. iOS auto-zooms the viewport on focus for any input below 16px, which shifted the layout horizontally and partially obscured the send button. One-character fix eliminates the zoom trigger."
+  "notes": "Appointments blank fix (structural). viewAllAppointments() now calls loadAppointments() before opening the modal — modal never trusts in-memory state. loadAppointments() also moved before showTodayZone() in coldstart so the tile count is correct on first paint. Breaks the repeated pattern of blank appointments after version-gated reloads or any code path that reaches the modal without a prior loadAppointments() call."
 }
