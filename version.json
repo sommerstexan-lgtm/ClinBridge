@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.150",
-  "date": "2026-05-19",
-  "notes": "Appointments blank fix (structural) + PWA icon fix. viewAllAppointments() now calls loadAppointments() before opening — modal never trusts in-memory state. loadAppointments() moved before showTodayZone() in coldstart. manifest.json corrected to reference ClinBridge-App-logo.JPG (was referencing icon-192.png/icon-512.png which do not exist). Icon added to SW cache."
+  "version": "v9.10.151",
+  "date": "2026-05-21",
+  "notes": "Add New Appointment button to All Doctor Appointments modal. Button placed in sticky header row alongside Close, calls openAppointmentModal() which already handles closing the list modal before opening the form."
 }
