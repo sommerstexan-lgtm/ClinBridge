@@ -26,7 +26,7 @@
   window.cbTrack = function(eventName, params) {
     try {
       if (typeof gtag === 'function') {
-        gtag('event', eventName, Object.assign({ app_version: 'v9.10.152' }, params || {}));
+        gtag('event', eventName, Object.assign({ app_version: 'v9.10.153' }, params || {}));
       }
     } catch(e) {}
   };
@@ -47,7 +47,7 @@
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
-<title>ClinBridge v9.10.152</title>
+<title>ClinBridge v9.10.153</title>
 <link rel="apple-touch-icon" href="ClinBridge-App-logo.JPG">
 <link rel="icon" type="image/jpeg" href="ClinBridge-App-logo.JPG">
 <style>
@@ -858,7 +858,7 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
     <!-- Version + clock row -->
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid rgba(255,255,255,0.15);padding-top:12px">
       <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
-        <span style="font-size:13px;font-weight:700;color:#7dd3fc">v9.10.152 · Medical Grade - Free</span>
+        <span style="font-size:13px;font-weight:700;color:#7dd3fc">v9.10.153 · Medical Grade - Free</span>
         <!-- ═══════════════════════════════════════════════════════════════════
              VERSION UPDATE CHECKLIST — update ALL 8 locations every release:
              1.  This date span below                    (format: Apr DD, YYYY)
@@ -873,7 +873,7 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
              but does NOT touch items 1 or 8 — update those manually every release.
              Missing any one of these causes visible version drift to users.
              ═══════════════════════════════════════════════════════════════════ -->
-        <span style="font-size:12px;color:#94a3b8;font-weight:400">Updated May 21, 2026</span>
+        <span style="font-size:12px;color:#94a3b8;font-weight:400">Updated May 28, 2026</span>
       </div>
       <div id="t" style="font-size:14px;color:#94a3b8;text-align:right;font-weight:600"></div>
     </div>
@@ -2171,7 +2171,7 @@ Custom Range
         </div>
 
         <div style="background:#f3f4f6;border-radius:10px;padding:14px;font-size:13px;color:#6b7280;line-height:1.7">
-          ClinBridge v9.10.152 · Free &amp; Open Source · Built by a cardiac patient, for cardiac patients · clinbridge.clinic<br>
+          ClinBridge v9.10.153 · Free &amp; Open Source · Built by a cardiac patient, for cardiac patients · clinbridge.clinic<br>
           No ads · No account · No subscription · Your data stays on your device · Always free
         </div>
       </section>
@@ -2259,6 +2259,13 @@ Custom Range
         <h3>Known Issues</h3>
         <p style="font-size:15px;color:#4b5563;margin-bottom:4px">This tab tracks <strong>bugs that were reported and fixed</strong> — things that were broken and are now resolved. Each entry describes the defective behavior, the root cause, and the fix applied.</p>
         <p style="font-size:14px;color:#6b7280;margin-bottom:16px">For new features and capabilities, see the <strong>Planned Features</strong> tab.</p>
+
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">&#x1F527; Fixed in v9.10.153 &mdash; May 28, 2026</strong>
+          <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
+            <li><strong>Log Medicine &mdash; conditional note now visible at the moment of logging.</strong> Medicines with a <code>conditionNote</code> (e.g. &ldquo;Only when diastolic &gt;70&rdquo; or &ldquo;Only when systolic &gt;100&rdquo;) now display an amber warning banner directly under the schedule note in the Log Medicine modal. Previously the condition note only appeared in Manage Medicines, meaning it was invisible at the critical moment of deciding whether to take the medication. Affects Metoprolol, Losartan, and any medicine with a clinical condition attached. Medicines whose conditionNote is simply &ldquo;As needed&rdquo; are unaffected since the schedule line already conveys this.</li>
+          </ul>
+        </div>
 
         <div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:14px 16px;border-radius:8px;margin-bottom:12px">
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
@@ -2875,6 +2882,11 @@ Custom Range
         <div style="background:#374151;color:white;padding:12px 16px;border-radius:10px;margin-bottom:10px">
           <div style="font-size:15px;font-weight:800">📋 Release History</div>
           <div style="font-size:13px;opacity:0.8;margin-top:2px">Features shipped in previous versions</div>
+        </div>
+
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">&#x2705; Fixed in v9.10.153 &#x2014; May 28, 2026</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Log Medicine &mdash; conditional note shown at logging time.</strong> Medicines with a clinical condition (e.g. Metoprolol &ldquo;Only when diastolic &gt;70&rdquo;, Losartan &ldquo;Only when systolic &gt;100&rdquo;) now show an amber warning banner in the Log Medicine modal. Previously the note was only visible in Manage Medicines.</p>
         </div>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
@@ -4457,7 +4469,7 @@ Custom Range
 // hard reload from the server so users always get the latest.
 // ============================================================
 (function(){
-  var CURRENT='v9.10.152';
+  var CURRENT='v9.10.153';
   var VKEY='CLINBRIDGE_APP_VERSION';
   try{
     var stored=localStorage.getItem(VKEY);
@@ -14238,6 +14250,8 @@ html+='<input type="checkbox" class="medCheckbox" value="'+medName+'" onchange="
 html+='<div style="flex:1">';
 html+='<div style="font-size:17px;font-weight:600;color:#111827">'+medName+statusBadge+'</div>';
 html+='<div style="font-size:13px;color:#6b7280;margin-top:2px">'+scheduleNote+'</div>';
+var medCondNote=typeof med==='object'&&med.conditionNote?med.conditionNote:'';
+if(medCondNote&&medCondNote!=='As needed'){html+='<div style="font-size:13px;color:#92400e;background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:4px 8px;margin-top:4px;font-weight:600">⚠️ '+medCondNote+'</div>';}
 html+='</div>';
 html+='</label>';
 }
@@ -18386,7 +18400,7 @@ html+=lbBadge;
 html+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px">';
 html+='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">';
 html+='<div>';
-html+='<div style="font-size:16px;font-weight:700;color:#1e293b">ClinBridge <span id="settingsVersionCurrent">v9.10.152</span></div>';
+html+='<div style="font-size:16px;font-weight:700;color:#1e293b">ClinBridge <span id="settingsVersionCurrent">v9.10.153</span></div>';
 html+='<div id="settingsVersionStatus" style="font-size:13px;color:#6b7280;margin-top:3px">Tap "Check for Updates" to see if a newer version is available</div>';
 html+='</div>';
 html+='<button onclick="checkForUpdates(true)" id="checkUpdateBtn" style="background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap">🔍 Check for Updates</button>';
@@ -29641,7 +29655,7 @@ Note: This report is based on patient self-tracked data. Clinical correlation
 and examination are essential for diagnosis and treatment decisions.
 
 ---
-ClinBridge v9.10.152 Medical Grade - Free
+ClinBridge v9.10.153 Medical Grade - Free
 Report Generated: ${reportDate}`;
 
 return text;
@@ -33560,7 +33574,7 @@ report.push(notes);
 report.push('');
 }
 report.push('═══════════════════════════════════════════════════════════');
-report.push('This report was generated by ClinBridge v9.10.152 Medical Grade - Free');
+report.push('This report was generated by ClinBridge v9.10.153 Medical Grade - Free');
 report.push('Advanced Analytics Dashboard - Phase 3 Implementation');
 report.push('═══════════════════════════════════════════════════════════');
 const blob=new Blob([report.join('\n')],{type:'text/plain'});
@@ -33650,7 +33664,7 @@ ${periodHTML}
 <h2>Key Insights</h2>
 ${insightsHTML}
 <div style="margin-top:40px;padding:20px;background:#f0f9ff;border-left:4px solid #3b82f6;border-radius:8px">
-<strong>ClinBridge v9.10.152 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
+<strong>ClinBridge v9.10.153 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
 This report is not a substitute for professional medical advice.
 </div>
 </body>
@@ -34623,7 +34637,7 @@ alert(`🏃 Activity Summary\n\n` +
 var VERSION_JSON_URL = 'https://clinbridge.clinic/version.json';
 var VERSION_CHECK_KEY = 'CLINBRIDGE_LAST_VERSION_CHECK';
 var VERSION_DISMISSED_KEY = 'CLINBRIDGE_UPDATE_DISMISSED';
-var CURRENT_VERSION = 'v9.10.152';
+var CURRENT_VERSION = 'v9.10.153';
 var _latestVersionData = null; // cached from last fetch
 
 // Detect whether running as an installed Home Screen PWA on iOS
