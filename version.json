@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.152",
-  "date": "2026-05-21",
-  "notes": "All Doctor Appointments modal header restructured for mobile. Title on its own full-width row; New Appointment and Close buttons on equal-width row below — both fully visible on all screen sizes."
+  "version": "v9.10.153",
+  "date": "2026-05-28",
+  "notes": "Medicine logging now displays conditionNote warning for any medication that has a clinical condition attached. Conditional notes (e.g. 'Only when diastolic >70') appear as an amber warning banner directly under the schedule note in the Log Medicine modal — visible at the moment of logging, not just in Manage Medicines."
 }
