@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.153",
+  "version": "v9.10.154",
   "date": "2026-05-28",
-  "notes": "Medicine logging now displays conditionNote warning for any medication that has a clinical condition attached. Conditional notes (e.g. 'Only when diastolic >70') appear as an amber warning banner directly under the schedule note in the Log Medicine modal — visible at the moment of logging, not just in Manage Medicines."
+  "notes": "Medicine logging now displays conditionNote warning for any medication that has a clinical condition attached. Conditional notes (e.g. 'Only when diastolic >70') appear as an amber warning banner directly under the schedule note in the Log Medicine modal \u2014 visible at the moment of logging, not just in Manage Medicines."
 }
