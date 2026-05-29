@@ -42204,8 +42204,8 @@ function _parseAskComparison(q) {
   }
 
   // Pattern 1: "this month vs last month" / "last month vs this month"
-  if (/(this month|last month).*(vs|versus|compared to|against).*(this month|last month)/.test(text) ||
-      /(this month|last month).*vs/.test(text)) {
+  if (/\b(this month|last month)\b.*\b(vs|versus|compared to|against)\b.*\b(this month|last month)\b/.test(text) ||
+      /\b(this month|last month)\b.*\bvs\b/.test(text)) {
     var tmY=today.getFullYear(), tmM=today.getMonth()+1;
     var lmD=new Date(tmY,tmM-2,1), lmY=lmD.getFullYear(), lmM=lmD.getMonth()+1;
     var periodA = { from: toISO(lmY,lmM,1), to: toISO(lmY,lmM,lastDay(lmY,lmM)), label: monthLabel(toISO(lmY,lmM,1)) };
@@ -42255,9 +42255,9 @@ function _parseAskComparison(q) {
   // Pattern 4: Before/after a specific date — "before and after March 5", "week before and after March 5"
   // Also handles "after my pacemaker adjustment on March 5"
   var windowDays = 14; // default
-  if (/week/.test(text)) windowDays = 7;
-  if (/30\s*days?/.test(text)) windowDays = 30;
-  if (/2\s*weeks?/.test(text)) windowDays = 14;
+  if (/\bweek\b/.test(text)) windowDays = 7;
+  if (/\b30\s*days?\b/.test(text)) windowDays = 30;
+  if (/\b2\s*weeks?\b/.test(text)) windowDays = 14;
 
   var beforeAfterRe = new RegExp(
     '(?:before\\s+and\\s+after|after\\s+and\\s+before|around)\\s+(?:my\\s+\\w+\\s+(?:on|adjustment|change|start)\\s+)?' +
