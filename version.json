@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.154",
-  "date": "2026-05-28",
-  "notes": "Medicine logging now displays conditionNote warning for any medication that has a clinical condition attached. Conditional notes (e.g. 'Only when diastolic >70') appear as an amber warning banner directly under the schedule note in the Log Medicine modal \u2014 visible at the moment of logging, not just in Manage Medicines."
+  "version": "v9.10.155",
+  "date": "2026-05-29",
+  "notes": "Medication Safety System complete: data model (conditionMetric/Threshold/Direction), Condition Check UI with auto-generated conditionNote, BP condition block with vitals status display, minimum interval block, Every X days frequency, name-change workflow (correction vs new dose), tamper detection with actionable banner, disclaimer screen on first launch. Inline timing validation replaces alert. Morning Check-In Save button sticky. Page bottom padding fix. Medication Safety section added to Help."
 }
