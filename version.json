@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.157",
+  "version": "v9.10.158",
   "date": "2026-05-31",
-  "notes": "Version bump to force service worker cache eviction. All v9.10.156 features: Food Check, Meal Builder, Saved Meals Library, Manage Meals, Ask panel UI restructure."
+  "notes": "Service worker rewritten to network-first fetch strategy. Forces fresh content on every load. Resolves persistent cache eviction failure on iOS Safari PWA."
 }
