@@ -7924,6 +7924,9 @@ function applySavedMeal(id) {
 }
 
 function logFluid(){
+var presetFluid=pendingEventFluid; pendingEventFluid=0;
+var hasFluidAction=activeReminderEvt&&activeReminderEvt.actions&&activeReminderEvt.actions.indexOf('logFluid')!==-1;
+var html='<div class="modal-title">Log Fluid Intake</div>';
 html+='<input type="number" id="fluidAmount" class="modal-input" placeholder="Amount (oz)"'+(presetFluid>0?' value="'+presetFluid+'"':'')+' />';
 if(presetFluid>0){
 html+='<div style="font-size:14px;color:#2563eb;margin:-4px 0 8px 4px;font-weight:600">📋 Pre-filled from event goal ('+presetFluid+' oz) — adjust if needed</div>';
