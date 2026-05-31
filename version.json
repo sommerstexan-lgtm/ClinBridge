@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.156",
+  "version": "v9.10.157",
   "date": "2026-05-31",
-  "notes": "Food Check: structured food evaluation form in Ask. Enter product name, serving size, sodium, potassium, phosphorus (optional). Ask evaluates against patient conditions and medications and returns Safe/Caution/Avoid verdict with brief explanation."
+  "notes": "Version bump to force service worker cache eviction. All v9.10.156 features: Food Check, Meal Builder, Saved Meals Library, Manage Meals, Ask panel UI restructure."
 }
