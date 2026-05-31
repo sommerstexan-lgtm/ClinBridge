@@ -26,7 +26,7 @@
   window.cbTrack = function(eventName, params) {
     try {
       if (typeof gtag === 'function') {
-        gtag('event', eventName, Object.assign({ app_version: 'v9.10.155' }, params || {}));
+        gtag('event', eventName, Object.assign({ app_version: 'v9.10.158' }, params || {}));
       }
     } catch(e) {}
   };
@@ -47,7 +47,7 @@
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
-<title>ClinBridge v9.10.155</title>
+<title>ClinBridge v9.10.158</title>
 <link rel="apple-touch-icon" href="ClinBridge-App-logo.JPG">
 <link rel="icon" type="image/jpeg" href="ClinBridge-App-logo.JPG">
 <style>
@@ -858,7 +858,7 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
     <!-- Version + clock row -->
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid rgba(255,255,255,0.15);padding-top:12px">
       <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
-        <span style="font-size:13px;font-weight:700;color:#7dd3fc">v9.10.155 · Medical Grade - Free</span>
+        <span style="font-size:13px;font-weight:700;color:#7dd3fc">v9.10.158 · Medical Grade - Free</span>
         <!-- ═══════════════════════════════════════════════════════════════════
              VERSION UPDATE CHECKLIST — update ALL 8 locations every release:
              1.  This date span below                    (format: Apr DD, YYYY)
@@ -950,9 +950,12 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
 <!-- ── MANAGE & DATA ───────────────────────────────── -->
 <div class="btn-group">
   <div class="btn-group-label">🗂️ Manage & Data</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+    <button class="btn" style="background:#9d174d;margin-bottom:0;font-size:15px;padding:14px 6px" onclick="manageMedicines()">💊 Manage Medicines</button>
+    <button class="btn" style="background:#9d174d;margin-bottom:0;font-size:15px;padding:14px 6px" onclick="manageSymptoms()">🩺 Manage Symptoms</button>
+    <button class="btn" style="background:#9d174d;margin-bottom:0;font-size:15px;padding:14px 6px" onclick="manageSavedMeals()">🍽️ Manage Meals</button>
+  </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
-    <button class="btn" style="background:#9d174d;margin-bottom:0;font-size:17px;padding:16px 10px" onclick="manageMedicines()">💊 Manage Medicines</button>
-    <button class="btn" style="background:#9d174d;margin-bottom:0;font-size:17px;padding:16px 10px" onclick="manageSymptoms()">🩺 Manage Symptoms</button>
     <button class="btn" style="background:#0f766e;margin-bottom:0;font-size:17px;padding:16px 10px" onclick="openSettings()">⚙️ Settings</button>
     <button class="btn" style="background:#4338ca;margin-bottom:0;font-size:17px;padding:16px 10px" onclick="exportData()">📤 Export Data</button>
     <button class="btn" style="background:#0369a1;margin-bottom:0;font-size:17px;padding:16px 10px" onclick="openSyncBackup()">🔄 Sync & Backup</button>
@@ -1385,6 +1388,10 @@ Custom Range
             <div style="background:white;border-radius:8px;padding:10px;border:1px solid #bfdbfe"><div style="font-weight:700;font-size:13px;margin-bottom:3px">📌 Pinned Events</div><div style="font-size:12px;color:#374151">Permanently preserves significant findings for your cardiologist appointment</div></div>
             <div style="background:white;border-radius:8px;padding:10px;border:1px solid #bfdbfe"><div style="font-weight:700;font-size:13px;margin-bottom:3px">🌅 Morning Check-In</div><div style="font-size:12px;color:#374151">45-second daily pattern log — builds your fluid response profile and overnight symptom record</div></div>
             <div style="background:white;border-radius:8px;padding:10px;border:1px solid #bfdbfe"><div style="font-weight:700;font-size:13px;margin-bottom:3px">📅 60-Day Timeline</div><div style="font-size:12px;color:#374151">Color-coded calendar of cardiac events — designed for doctor appointments</div></div>
+            <div style="background:white;border-radius:8px;padding:10px;border:1px solid #bfdbfe"><div style="font-weight:700;font-size:13px;margin-bottom:3px">💬 Ask ClinBridge</div><div style="font-size:12px;color:#374151">AI-powered plain-English questions about your logged data, patterns, and what to tell your doctor</div></div>
+            <div style="background:white;border-radius:8px;padding:10px;border:1px solid #bfdbfe"><div style="font-weight:700;font-size:13px;margin-bottom:3px">🥦 Food Check</div><div style="font-size:12px;color:#374151">Nutritional awareness for cardiac and kidney patients — evaluates foods against your conditions and medications</div></div>
+            <div style="background:white;border-radius:8px;padding:10px;border:1px solid #bfdbfe"><div style="font-weight:700;font-size:13px;margin-bottom:3px">🍲 Meal Builder</div><div style="font-size:12px;color:#374151">Build complete meals item by item, see running nutritional totals, analyze the combined load, and save safe meals to your personal library</div></div>
+            <div style="background:white;border-radius:8px;padding:10px;border:1px solid #bfdbfe"><div style="font-weight:700;font-size:13px;margin-bottom:3px">🍽️ Manage Meals</div><div style="font-size:12px;color:#374151">View, edit, re-evaluate, flag, and delete your saved meals library — accessible from the main page</div></div>
           </div>
         </div>
 
@@ -1397,7 +1404,8 @@ Custom Range
             <li><strong>🌅 Morning Check-In</strong> — How fluid and lifestyle pattern tracking works</li>
             <li><strong>🌡️ Heat Advisory</strong> — What to do on hot or humid days as a cardiac patient</li>
             <li><strong>🛡️ Sentinel</strong> — Personal pattern precursor — watches for what came before your prior events</li>
-            <li><strong>💬 Ask</strong> — Ask plain-English questions about your logged data, detector findings, or any ClinBridge feature — AI-powered, privacy-preserving</li>
+            <li><strong>💬 Ask</strong> — Ask plain-English questions about your logged data, detector findings, or any ClinBridge feature — AI-powered, privacy-preserving. Includes <strong>🥦 Food Check</strong> and <strong>🍲 Meal Builder</strong> for nutritional awareness specific to your conditions and medications</li>
+            <li><strong>🍽️ Manage Meals</strong> — View, edit, re-evaluate, flag Do Not Use, and delete your saved meals library</li>
             <li><strong>FAQ</strong> — Common questions answered plainly</li>
             <li><strong>📖 Glossary</strong> — Definitions for every clinical term and app phrase used in ClinBridge</li>
             <li><strong>Data Mgmt</strong> — How to back up, export, and protect your data</li>
@@ -2213,7 +2221,7 @@ Custom Range
         </div>
 
         <div style="background:#f3f4f6;border-radius:10px;padding:14px;font-size:13px;color:#6b7280;line-height:1.7">
-          ClinBridge v9.10.155 · Free &amp; Open Source · Built by a cardiac patient, for cardiac patients · clinbridge.clinic<br>
+          ClinBridge v9.10.158 · Free &amp; Open Source · Built by a cardiac patient, for cardiac patients · clinbridge.clinic<br>
           No ads · No account · No subscription · Your data stays on your device · Always free
         </div>
       </section>
@@ -2303,14 +2311,15 @@ Custom Range
         <p style="font-size:14px;color:#6b7280;margin-bottom:16px">For new features and capabilities, see the <strong>Planned Features</strong> tab.</p>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F527; New in v9.10.155 &mdash; May 29, 2026</strong>
+          <strong style="font-size:16px">&#x1F527; New in v9.10.158 &mdash; May 31, 2026</strong>
           <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
+            <li><strong>Ask ClinBridge &mdash; Food Check.</strong> A structured food evaluation form added to the Ask welcome screen. Tap &ldquo;&#x1F966; Check a food or product label&rdquo; to open a form with fields for product name, serving size, sodium, potassium, and phosphorus (optional — Ask uses its own knowledge when not on the label). On submit, Ask evaluates the food against the patient&rsquo;s logged conditions and current medication list and returns a one-line verdict (&#x2705; Safe, &#x26A0;&#xFE0F; Caution, or &#x1F6AB; Avoid) with a brief explanation specific to the patient&rsquo;s profile. No new UI section, no new data storage — fully integrated into the existing Ask infrastructure.</li>
             <li><strong>Medication Safety System &mdash; Steps 1 &amp; 2: Data model + Condition Check UI.</strong> Three new optional fields added to the medicine object: <code>conditionMetric</code> (systolic / diastolic / hr / null), <code>conditionThreshold</code> (number or null), <code>conditionDirection</code> (above / below / null). A new &ldquo;Condition Check&rdquo; section now appears at the bottom of the Add/Edit medicine screen &mdash; select Diastolic, Systolic, or Heart Rate, enter a threshold, and choose whether to block when the reading is below or above that threshold. Selecting None clears all condition fields. Existing medicines without these fields are unaffected.</li><li><strong>Time selection &mdash; over-selection bug fixed.</strong> Selecting more checkboxes than the allowed number of daily doses (e.g. checking 2 boxes for a once-daily medicine) now automatically unchecks the earliest selection, keeping the count at the correct limit. Previously the UI allowed over-selection and only caught it on Save.</li>
           </ul>
         </div>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F527; Fixed in v9.10.155 &mdash; May 28, 2026</strong>
+          <strong style="font-size:16px">&#x1F527; Fixed in v9.10.158 &mdash; May 28, 2026</strong>
           <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
             <li><strong>Log Medicine &mdash; conditional note now visible at the moment of logging.</strong> Medicines with a <code>conditionNote</code> (e.g. &ldquo;Only when diastolic &gt;70&rdquo; or &ldquo;Only when systolic &gt;100&rdquo;) now display an amber warning banner directly under the schedule note in the Log Medicine modal. Previously the condition note only appeared in Manage Medicines, meaning it was invisible at the critical moment of deciding whether to take the medication. Affects Metoprolol, Losartan, and any medicine with a clinical condition attached. Medicines whose conditionNote is simply &ldquo;As needed&rdquo; are unaffected since the schedule line already conveys this.</li>
           </ul>
@@ -2934,26 +2943,36 @@ Custom Range
         </div>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x2705; Fixed in v9.10.155 &#x2014; May 28, 2026</strong>
+          <strong style="font-size:16px">&#x2705; Shipped in v9.10.158 &mdash; May 31, 2026</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Food Check.</strong> Single-food nutritional awareness tool inside Ask ClinBridge. Access via the &#x1F374; tools icon in the Ask input bar. Enter food name, preparation method (19 options in 4 clinical groups), portion, and optional label values for Sodium, Potassium, and Phosphorus — each with a mg / %DV toggle. Ask evaluates the food against your logged conditions and medications and returns &#x2705; Generally fine, &#x26A0;&#xFE0F; Worth watching, or &#x1F6AB; High concern with a profile-specific summary. Last-entered values are remembered for quick re-evaluation with changed variables.</p>
+          <p style="font-size:14px;margin:8px 0 0 0;color:#065f46"><strong>Meal Builder.</strong> Full-meal nutritional analysis inside Ask ClinBridge. Build complete meals item by item with the same form fields and mg/%DV toggles as Food Check. Running totals for Sodium, Potassium, and Phosphorus update live as items are added. Analyze Meal evaluates the combined load — not individual items. After analysis, a Modify &amp; Re-analyze button returns to the builder with all items intact; Save to Library saves the meal permanently. Individual item correction is done by removing and re-adding the item with corrected values.</p>
+          <p style="font-size:14px;margin:8px 0 0 0;color:#065f46"><strong>Saved Meals Library &amp; Manage Meals.</strong> Saved meals are stored in ClinBridge data and included in all backups. Each saved meal records its items, combined nutritional totals, saved date, and last evaluated date. Manage Meals button on the main page (alongside Manage Medicines and Manage Symptoms) opens the library. Each meal card has four actions: &#x270F;&#xFE0F; Edit (opens in builder pre-loaded), &#x1F504; Re-evaluate (sends to Ask against current conditions/medications), &#x1F6AB; Do Not Use (flags with optional note and hides from Log Meal picker), &#x1F5D1;&#xFE0F; Delete. Saved meals also appear as a picker at the top of the Log Meal modal, organized by type, for fast pre-fill logging.</p>
+          <p style="font-size:14px;margin:8px 0 0 0;color:#065f46"><strong>Ask panel UI restructure.</strong> The Ask input bar now has a single &#x1F374; tools icon that opens a two-option picker (Food Check or Meal Builder). Each tool takes the full panel height with a Back arrow to return to the Ask thread. Eliminates the previous multi-button row that caused scrolling and usability issues on mobile.</p>
+        </div>
+
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">&#x2705; Fixed in v9.10.158 &mdash; May 29, 2026</strong>
           <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Log Medicine &mdash; conditional note shown at logging time.</strong> Medicines with a clinical condition (e.g. Metoprolol &ldquo;Only when diastolic &gt;70&rdquo;, Losartan &ldquo;Only when systolic &gt;100&rdquo;) now show an amber warning banner in the Log Medicine modal. Previously the note was only visible in Manage Medicines.</p>
         </div>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-                  <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F527; Fixed in v9.10.32 &#x2014; April 5, 2026</strong>
-          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Pinned Events &mdash; &ldquo;What to Say&rdquo; box showing on Addressed pins</strong> &mdash; Language engine was checking <code>evt.communications</code> (an array that does not exist) instead of <code>evt.commLog</code> (the actual single-object store). Result: latestStatus always fell back to &ldquo;unresolved&rdquo; and the box appeared on every detector-backed pin regardless of Addressed status. Fixed to read <code>evt.commLog.status</code> directly. Box now correctly hidden when status is Addressed.</p>
+          <strong style="font-size:16px">&#x1F527; Fixed in v9.10.32 &mdash; April 5, 2026</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Pinned Events &mdash; &ldquo;What to Say&rdquo; box showing on Addressed pins</strong> &mdash; Language engine was checking <code>evt.communications</code> instead of <code>evt.commLog</code>. Fixed to read <code>evt.commLog.status</code> directly. Box now correctly hidden when status is Addressed.</p>
         </div>
+
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F527; Fixed in v9.10.32 &#x2014; April 5, 2026</strong>
-          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Archived events reappearing as new pin suggestions</strong> &mdash; <code>isPinnedEvent()</code> only checked the active pins list. When a pin was archived and cleared, it disappeared from active, causing detectors to re-suggest it as a new finding on every analysis run. Fixed: <code>isPinnedEvent()</code> now checks both active pins and the archive. An event that has ever been pinned and archived will never surface as a new suggestion again.</p>
+          <strong style="font-size:16px">&#x1F527; Fixed in v9.10.32 &mdash; April 5, 2026</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Archived events reappearing as new pin suggestions</strong> &mdash; <code>isPinnedEvent()</code> now checks both active pins and the archive. An event that has ever been pinned and archived will never surface as a new suggestion again.</p>
         </div>
-        <strong style="font-size:16px">&#x2705; Shipped in v9.10.32 &#x2014; April 5, 2026</strong>
-          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Sentinel &#x2014; &ldquo;What to Tell Your Doctor&rdquo; box</strong> &#x2014; When any stream is drifting or alarming, Sentinel now displays a highlighted box at the top of the modal with pre-written plain-language sentences the user can read aloud at their appointment. One sentence per flagged stream, automatically generated from live data. Box is hidden on All Clear. Orange border for drifting, red for alarming. Built for seniors and new users who need a clear, unambiguous read-aloud prompt.</p>
-        </div>
+
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-                  <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x2705; Shipped in v9.10.32 &#x2014; April 5, 2026</strong>
-          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Pinned Events &mdash; &ldquo;What to Say at Your Appointment&rdquo; language engine</strong> &mdash; Every detector-backed pin card now displays an auto-generated, read-only sentence the patient can read aloud to their cardiologist. Language is derived entirely from detector data &mdash; HR level shift direction, magnitude, and days since shift; decompensation signal list including Cardiac Output Signal special case; pulse pressure chronic vs. trending narrow; symptom convergence clusters, clinical triads, and persistent cough frequency. Box is hidden when status is Addressed, shown muted when Deferred, fully visible when Unresolved or Follow-up Ordered. Manual pins (no detector source) never get a box. Anti-wolf safeguards built in: no box for manual pins, no dramatizing language, calm factual tone throughout. Approved language matrix April 5, 2026.</p>
+          <strong style="font-size:16px">&#x2705; Shipped in v9.10.32 &mdash; April 5, 2026</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Sentinel &mdash; &ldquo;What to Tell Your Doctor&rdquo; box</strong> &mdash; When any stream is drifting or alarming, Sentinel now displays a highlighted box at the top of the modal with pre-written plain-language sentences the user can read aloud at their appointment. Box is hidden on All Clear. Orange border for drifting, red for alarming.</p>
+        </div>
+
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
+          <strong style="font-size:16px">&#x2705; Shipped in v9.10.32 &mdash; April 5, 2026</strong>
+          <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Pinned Events &mdash; &ldquo;What to Say at Your Appointment&rdquo; language engine</strong> &mdash; Every detector-backed pin card now displays an auto-generated sentence the patient can read aloud to their cardiologist. Language derived from detector data. Box hidden when Addressed, muted when Deferred, fully visible when Unresolved or Follow-up Ordered. Manual pins never get a box.</p>
         </div>
         <strong style="font-size:16px">&#x2705; Shipped in v9.10.32 &#x2014; April 4, 2026</strong>
           <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Help &amp; About tab bar &#x2014; horizontal scroll layout</strong> &#x2014; Tab bar now scrolls horizontally in a single row. Full content height is always preserved regardless of tab count. Standard mobile UX pattern &#x2014; swipe the tab bar to reach any section. Scales to any future tab additions without layout impact.</p>
@@ -3348,6 +3367,30 @@ Custom Range
           <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8">&#x2705; <strong>Follow up.</strong> After an answer, keep asking in the same window. &ldquo;Are most of those events in the morning?&rdquo; is a valid follow-up. The conversation stays connected.</p>
           <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8">&#x2705; <strong>Pin what matters.</strong> When Ask finds something worth bringing to your doctor, tap Pin This Finding. It lands in Pinned Events and your Doctor&rsquo;s Report automatically.</p>
           <p style="font-size:15px;color:#374151;margin:0;line-height:1.8">&#x2705; <strong>Start simple if new.</strong> If you are new to Ask, start with &ldquo;What should I tell my cardiologist about at my next appointment?&rdquo; to get a feel for what it can surface.</p>
+        </div>
+
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:16px;border-radius:8px;margin-bottom:16px">
+          <div style="font-size:16px;font-weight:700;color:#065f46;margin-bottom:10px">&#x1F374; Food &amp; Meal Tools — How to Access</div>
+          <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8">Tap the <strong>&#x1F374; tools icon</strong> on the left side of the Ask input bar. A picker opens with two options: <strong>&#x1F966; Food Check</strong> and <strong>&#x1F372; Meal Builder</strong>. Tap either one to open it. The tool takes over the full panel. Tap <strong>&larr; Back</strong> at any time to return to the Ask conversation thread.</p>
+        </div>
+
+        <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:16px;border-radius:8px;margin-bottom:16px">
+          <div style="font-size:16px;font-weight:700;color:#065f46;margin-bottom:10px">&#x1F966; Food Check — Single Food Nutritional Awareness</div>
+          <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8">Enter a food or product name, how it is prepared, how much you will actually eat, and any label values you have available. All label fields are optional — if you leave them blank, Ask uses its own nutritional knowledge for that food.</p>
+          <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8"><strong>Sodium, Potassium, and Phosphorus</strong> each have a <strong>mg / %DV toggle</strong> beneath the field. Some labels show milligrams; others show % Daily Value. Switch the toggle to match what your label shows — Ask converts %DV to mg automatically using FDA Daily Values (Sodium 2,300 mg · Potassium 4,700 mg · Phosphorus 1,250 mg) before evaluating.</p>
+          <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8">The <strong>preparation method</strong> matters clinically. Boiling and draining removes up to 50% of potassium from vegetables. Canning adds sodium. Drying concentrates all nutrients. The prep method dropdown is organized into four groups — Fresh/Uncooked, Wet heat, Dry heat, and Processed/Preserved — so you can quickly find the right option and Ask can account for how preparation changes the nutritional profile.</p>
+          <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8">Ask evaluates the food against your logged conditions and current medication list. The response begins with one of three indicators: <strong>&#x2705; Generally fine for occasional use</strong>, <strong>&#x26A0;&#xFE0F; Worth watching</strong>, or <strong>&#x1F6AB; High concern — discuss with your care team</strong>, followed by a brief factual summary specific to your profile.</p>
+          <p style="font-size:15px;color:#374151;margin:0;line-height:1.8">After a Food Check result, tap the <strong>&#x1F374; tools icon</strong> again and select Food Check to run another check. Your last-entered values are remembered — the form reopens pre-filled so you can change just the prep method, portion, or any value and resubmit without starting over. Food Check is a nutritional awareness tool, not a dietary prescription. Always discuss dietary restrictions with your cardiologist and renal dietitian.</p>
+        </div>
+
+        <div style="background:#fefce8;border-left:4px solid #ca8a04;padding:16px;border-radius:8px;margin-bottom:16px">
+          <div style="font-size:16px;font-weight:700;color:#854d0e;margin-bottom:10px">&#x1F372; Meal Builder — Full Meal Nutritional Analysis</div>
+          <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8">Meal Builder evaluates the combined nutritional load of an entire meal — not just one food. This matters because a single item may be fine in isolation but the combined sodium, potassium, and phosphorus of a full meal may exceed your safe threshold. Meal Builder is also the right tool for planning before grocery shopping — build the meal you intend to make and check it before you buy.</p>
+          <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8"><strong>Building a meal:</strong> Give your meal a name and select its type (Breakfast, Lunch, Dinner, Snack, or Meal). Then add items one at a time — enter the food name, prep method, portion, and any label values. Tap <strong>+ Add to Meal</strong>. Running totals for Sodium, Potassium, and Phosphorus update after each item so you can see the cumulative load building in real time.</p>
+          <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8"><strong>Analyzing a meal:</strong> When all items are added, tap <strong>&#x1F50D; Analyze Meal</strong>. Ask evaluates the combined totals against your conditions and medications and returns a single verdict for the whole meal with a 3–4 sentence summary. After the analysis, a save/modify bar appears in the conversation thread with two options.</p>
+          <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8"><strong>&#x270F;&#xFE0F; Modify &amp; Re-analyze:</strong> Reopens the builder with all items still loaded. Change a portion size, swap a prep method, remove an item, or add a new one — then tap Analyze again. This is also how you correct an individual item: remove it from the list and add it back with the corrected values.</p>
+          <p style="font-size:15px;color:#374151;margin:0 0 10px 0;line-height:1.8"><strong>&#x1F4BE; Save to Library:</strong> Saves the meal to your personal Saved Meals Library. A saved meal can be selected directly from the Log Meal screen — tap Log Meal and your saved meals appear at the top, organized by type, so you can pre-fill your log entry in two taps.</p>
+          <p style="font-size:15px;color:#374151;margin:0;line-height:1.8">You can also save a meal directly from the builder before analyzing it using the <strong>&#x1F4BE; Save</strong> button at the bottom of the form. This is useful when you want to save a meal template for future use without running an analysis every time.</p>
         </div>
 
         <div style="background:#f0fdfa;border-radius:10px;padding:14px;font-size:14px;color:#374151;line-height:1.7;text-align:center">
@@ -4520,7 +4563,7 @@ Custom Range
 // hard reload from the server so users always get the latest.
 // ============================================================
 (function(){
-  var CURRENT='v9.10.155';
+  var CURRENT='v9.10.158';
   var VKEY='CLINBRIDGE_APP_VERSION';
   try{
     var stored=localStorage.getItem(VKEY);
@@ -4536,6 +4579,7 @@ Custom Range
 
 // Global variables
 var M=[],B=[],W=[],S=[],A=[],notes=[],medLog=[],fluidLog=[],procedures=[],dailyFluid=0,dailyPlan=[],medicineList=[],exportedToday=false,dismissedEvents=[];
+var savedMeals=[];
 var _eventsWidgetCollapsed=false; // user can collapse the upcoming-events widget
 
 // Fluid goal injected from a notification — consumed (and cleared) by the FIRST
@@ -7790,6 +7834,28 @@ function logMeal(){
   var presetFluid=pendingEventFluid; pendingEventFluid=0; // consume — prevents double-log
   var hasFluidAction=activeReminderEvt&&activeReminderEvt.actions&&activeReminderEvt.actions.indexOf('logFluid')!==-1;
   var html='<div class="modal-title">Log Meal</div>';
+
+  // Saved Meals picker
+  if (savedMeals && savedMeals.length > 0) {
+    html += '<div style="background:#fefce8;border:1.5px solid #ca8a04;border-radius:8px;padding:10px 12px;margin-bottom:12px">';
+    html += '<div style="font-size:13px;font-weight:700;color:#854d0e;margin-bottom:6px">&#x1F4DA; Pick from Saved Meals</div>';
+    html += '<select id="savedMealPicker" onchange="applySavedMeal(this.value)" style="width:100%;padding:10px 12px;border:1.5px solid #ca8a04;border-radius:8px;font-size:15px;font-family:inherit;background:#fff;-webkit-appearance:none">';
+    html += '<option value="">— Select a saved meal —</option>';
+    var types = ['breakfast','lunch','dinner','snack','meal'];
+    types.forEach(function(type) {
+      var group = savedMeals.filter(function(m){ return m.type === type; });
+      if (!group.length) return;
+      var label = type.charAt(0).toUpperCase() + type.slice(1);
+      html += '<optgroup label="' + label + '">';
+      group.forEach(function(m) {
+        html += '<option value="' + m.id + '">' + m.name + ' (' + m.items.length + ' items)</option>';
+      });
+      html += '</optgroup>';
+    });
+    html += '</select>';
+    html += '</div>';
+  }
+
   html+='<textarea id="meal" class="modal-input" placeholder="What did you eat?" style="min-height:150px;font-size:22px"></textarea>';
   // Only show fluid field if no dedicated Log Fluid action in this event
   if(!hasFluidAction){
@@ -7839,9 +7905,25 @@ function saveMeal(){
   alert('✓ Meal logged');
 }
 
+function applySavedMeal(id) {
+  if (!id) return;
+  var meal = savedMeals.find(function(m){ return m.id == id; });
+  if (!meal) return;
+  var el = document.getElementById('meal');
+  if (!el) return;
+  var text = meal.name + '\n';
+  meal.items.forEach(function(item){
+    var line = '• ' + item.name;
+    if (item.prep) line += ' (' + prepLabel(item.prep) + ')';
+    if (item.portion) line += ' — ' + item.portion;
+    text += line + '\n';
+  });
+  el.value = text.trim();
+  el.style.height = '48px';
+  el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+}
+
 function logFluid(){
-var presetFluid=pendingEventFluid; pendingEventFluid=0; // consume — prevents double-log
-var html='<div class="modal-title">Log Fluid Intake</div>';
 html+='<input type="number" id="fluidAmount" class="modal-input" placeholder="Amount (oz)"'+(presetFluid>0?' value="'+presetFluid+'"':'')+' />';
 if(presetFluid>0){
 html+='<div style="font-size:14px;color:#2563eb;margin:-4px 0 8px 4px;font-weight:600">📋 Pre-filled from event goal ('+presetFluid+' oz) — adjust if needed</div>';
@@ -14816,7 +14898,7 @@ function _checkDisclaimerAccepted(){
 
 function _acceptDisclaimer(){
   try{
-    var rec = {accepted: true, ts: new Date().toISOString(), version: 'v9.10.155'};
+    var rec = {accepted: true, ts: new Date().toISOString(), version: 'v9.10.158'};
     // Checksum the acknowledgment record
     rec._cs = _cbHash(rec.ts + '|' + rec.version + '|' + CB_TAMPER_SALT);
     localStorage.setItem(CB_DISCLAIMER_KEY, JSON.stringify(rec));
@@ -15879,6 +15961,12 @@ if(_needsSave) saveMedicineList();
 console.error('Failed to load medicines:',e);
 }
 }
+
+// Load saved meals library
+try {
+  var _smRaw = localStorage.getItem('CLINBRIDGE_SAVED_MEALS');
+  if (_smRaw) savedMeals = JSON.parse(_smRaw);
+} catch(e) { savedMeals = []; }
 
 // ===== SYMPTOM MANAGEMENT FUNCTIONS =====
 
@@ -19187,7 +19275,7 @@ html+=lbBadge;
 html+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px">';
 html+='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">';
 html+='<div>';
-html+='<div style="font-size:16px;font-weight:700;color:#1e293b">ClinBridge <span id="settingsVersionCurrent">v9.10.155</span></div>';
+html+='<div style="font-size:16px;font-weight:700;color:#1e293b">ClinBridge <span id="settingsVersionCurrent">v9.10.158</span></div>';
 html+='<div id="settingsVersionStatus" style="font-size:13px;color:#6b7280;margin-top:3px">Tap "Check for Updates" to see if a newer version is available</div>';
 html+='</div>';
 html+='<button onclick="checkForUpdates(true)" id="checkUpdateBtn" style="background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap">🔍 Check for Updates</button>';
@@ -30442,7 +30530,7 @@ Note: This report is based on patient self-tracked data. Clinical correlation
 and examination are essential for diagnosis and treatment decisions.
 
 ---
-ClinBridge v9.10.155 Medical Grade - Free
+ClinBridge v9.10.158 Medical Grade - Free
 Report Generated: ${reportDate}`;
 
 return text;
@@ -34361,7 +34449,7 @@ report.push(notes);
 report.push('');
 }
 report.push('═══════════════════════════════════════════════════════════');
-report.push('This report was generated by ClinBridge v9.10.155 Medical Grade - Free');
+report.push('This report was generated by ClinBridge v9.10.158 Medical Grade - Free');
 report.push('Advanced Analytics Dashboard - Phase 3 Implementation');
 report.push('═══════════════════════════════════════════════════════════');
 const blob=new Blob([report.join('\n')],{type:'text/plain'});
@@ -34451,7 +34539,7 @@ ${periodHTML}
 <h2>Key Insights</h2>
 ${insightsHTML}
 <div style="margin-top:40px;padding:20px;background:#f0f9ff;border-left:4px solid #3b82f6;border-radius:8px">
-<strong>ClinBridge v9.10.155 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
+<strong>ClinBridge v9.10.158 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
 This report is not a substitute for professional medical advice.
 </div>
 </body>
@@ -35424,7 +35512,7 @@ alert(`🏃 Activity Summary\n\n` +
 var VERSION_JSON_URL = 'https://clinbridge.clinic/version.json';
 var VERSION_CHECK_KEY = 'CLINBRIDGE_LAST_VERSION_CHECK';
 var VERSION_DISMISSED_KEY = 'CLINBRIDGE_UPDATE_DISMISSED';
-var CURRENT_VERSION = 'v9.10.155';
+var CURRENT_VERSION = 'v9.10.158';
 var _latestVersionData = null; // cached from last fetch
 
 // Detect whether running as an installed Home Screen PWA on iOS
@@ -35438,12 +35526,7 @@ function _isNewerVer(remote,local){var r=_parseVer(remote),l=_parseVer(local);fo
 
 // Run once per day at startup — silent unless update found
 function checkForUpdatesOnStartup() {
-  try {
-    var lastCheck = localStorage.getItem(VERSION_CHECK_KEY);
-    var today = getTodayKey();
-    if (lastCheck === today) return; // already checked today
-  } catch(e) {}
-  // Small delay so UI is fully loaded first
+  // Check every startup — version.json is tiny and this ensures users always see updates promptly
   setTimeout(function() { checkForUpdates(false); }, 3000);
 }
 
@@ -39621,6 +39704,18 @@ if(document.readyState !== 'loading') {
           &#x1F4DD; What did I write in my notes this week?
         </button>
       </div>
+
+      <!-- Food Check -->
+      <div style="margin-top:14px;border-top:1.5px solid #e5e7eb;padding-top:12px">
+        <div style="font-size:12px;font-weight:700;color:#0f766e;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:7px;padding-left:2px">&#x1F966; Food Check</div>
+        <div style="font-size:13px;color:#6b7280;margin-bottom:9px;line-height:1.5">Check if a food is safe for your conditions and medications.</div>
+        <button onclick="openFoodCheck()"
+          style="width:100%;background:#f0fdf4;border:1.5px solid #10b981;border-radius:10px;padding:12px 13px;
+                 font-size:14px;font-weight:600;color:#065f46;text-align:left;cursor:pointer;
+                 -webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:8px">
+          &#x1F966; Check a food or product label
+        </button>
+      </div>
     </div>
   </div>
 
@@ -39631,25 +39726,244 @@ if(document.readyState !== 'loading') {
     <div id="askClarifyChips" style="display:flex;flex-direction:column;gap:7px"></div>
   </div>
 
+
+  <div id="foodCheckForm" style="display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f0fdf4">
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid #a7f3d0;flex-shrink:0">
+      <button onclick="closeToolPanel()" style="background:none;border:none;color:#065f46;cursor:pointer;font-size:14px;font-weight:600;padding:4px 0;-webkit-tap-highlight-color:transparent">&#8592; Back</button>
+      <span style="font-size:14px;font-weight:700;color:#065f46">&#x1F966; Food Check</span>
+    </div>
+    <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+      <input id="fcProduct" type="text" placeholder="Food or product name *"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('fcPortion').focus();}"
+        style="width:100%;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:15px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <select id="fcPrep" style="padding:10px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;font-family:inherit;background:#fff;-webkit-appearance:none;color:#374151">
+          <option value="">Prep method</option>
+          <optgroup label="Fresh / Uncooked">
+            <option value="raw">Raw / fresh</option>
+            <option value="frozen">Frozen</option>
+          </optgroup>
+          <optgroup label="Wet heat (reduces potassium)">
+            <option value="boiled">Boiled</option>
+            <option value="boiled_drained">Boiled and drained</option>
+            <option value="leached">Leached (CKD method)</option>
+            <option value="steamed">Steamed</option>
+            <option value="microwaved">Microwaved</option>
+            <option value="stewed">Stewed / braised</option>
+          </optgroup>
+          <optgroup label="Dry heat (concentrates nutrients)">
+            <option value="roasted">Roasted / baked</option>
+            <option value="toasted">Toasted</option>
+            <option value="broiled">Broiled / grilled</option>
+            <option value="fried">Fried</option>
+            <option value="sauteed">Sautéed / stir-fried</option>
+            <option value="airfried">Air fried</option>
+          </optgroup>
+          <optgroup label="Processed / preserved (high sodium risk)">
+            <option value="canned">Canned</option>
+            <option value="canned_rinsed">Canned and rinsed</option>
+            <option value="smoked">Smoked</option>
+            <option value="cured">Cured / salted</option>
+            <option value="pickled">Pickled / fermented</option>
+            <option value="dried">Dried / dehydrated</option>
+            <option value="processed">Processed / packaged</option>
+          </optgroup>
+        </select>
+        <input id="fcPortion" type="text" placeholder="Amount I'll eat"
+          style="padding:10px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff">
+      </div>
+      <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.04em;font-weight:600">Label values — leave blank if no label</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;align-items:start">
+        <input id="fcServing" type="text" placeholder="Serving size"
+          style="padding:8px 6px;border:1.5px solid #d1d5db;border-radius:8px;font-size:12px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff;text-align:center">
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:11px;color:#6b7280;text-align:center">Sodium</div>
+          <input id="fcSodium" type="number" placeholder="value"
+            style="padding:8px 4px;border:1.5px solid #d1d5db;border-radius:8px;font-size:12px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff;text-align:center">
+          <div style="display:flex;border:1.5px solid #d1d5db;border-radius:6px;overflow:hidden;font-size:11px;font-weight:700">
+            <button type="button" id="fcSodiumMg" onclick="setFcUnit('Sodium','mg')" style="flex:1;padding:3px;border:none;background:#0f766e;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent">mg</button>
+            <button type="button" id="fcSodiumPct" onclick="setFcUnit('Sodium','pct')" style="flex:1;padding:3px;border:none;background:#f3f4f6;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent">%DV</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:11px;color:#6b7280;text-align:center">Potassium</div>
+          <input id="fcPotassium" type="number" placeholder="value"
+            style="padding:8px 4px;border:1.5px solid #d1d5db;border-radius:8px;font-size:12px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff;text-align:center">
+          <div style="display:flex;border:1.5px solid #d1d5db;border-radius:6px;overflow:hidden;font-size:11px;font-weight:700">
+            <button type="button" id="fcPotassiumMg" onclick="setFcUnit('Potassium','mg')" style="flex:1;padding:3px;border:none;background:#0f766e;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent">mg</button>
+            <button type="button" id="fcPotassiumPct" onclick="setFcUnit('Potassium','pct')" style="flex:1;padding:3px;border:none;background:#f3f4f6;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent">%DV</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:11px;color:#6b7280;text-align:center">Phosphorus</div>
+          <input id="fcPhosphorus" type="number" placeholder="value"
+            style="padding:8px 4px;border:1.5px solid #d1d5db;border-radius:8px;font-size:12px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff;text-align:center">
+          <div style="display:flex;border:1.5px solid #d1d5db;border-radius:6px;overflow:hidden;font-size:11px;font-weight:700">
+            <button type="button" id="fcPhosphorusMg" onclick="setFcUnit('Phosphorus','mg')" style="flex:1;padding:3px;border:none;background:#0f766e;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent">mg</button>
+            <button type="button" id="fcPhosphorusPct" onclick="setFcUnit('Phosphorus','pct')" style="flex:1;padding:3px;border:none;background:#f3f4f6;color:#374151;cursor:pointer;-webkit-tap-highlight-color:transparent">%DV</button>
+          </div>
+        </div>
+      </div>
+      <button onclick="submitFoodCheck()"
+        style="width:100%;background:#0f766e;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;margin-top:4px">
+        &#x1F50D; Check This Food
+      </button>
+    </div>
+  </div>
+
+  <!-- Meal Builder — full panel mode -->
+  <div id="mealBuilderForm" style="display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#fefce8">
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid #fde68a;flex-shrink:0">
+      <button onclick="closeToolPanel()" style="background:none;border:none;color:#854d0e;cursor:pointer;font-size:14px;font-weight:600;padding:4px 0;-webkit-tap-highlight-color:transparent">&#8592; Back</button>
+      <span style="font-size:14px;font-weight:700;color:#854d0e">&#x1F372; Meal Builder</span>
+    </div>
+    <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px">
+        <input id="mbMealName" type="text" placeholder="Meal name *"
+          style="flex:1;padding:10px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff">
+        <select id="mbMealType" style="padding:10px 8px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:inherit;background:#fff;-webkit-appearance:none;color:#374151;width:90px">
+          <option value="meal">Meal</option>
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+          <option value="snack">Snack</option>
+        </select>
+      </div>
+      <!-- Running totals -->
+      <div id="mbTotals" style="display:none;background:#fff;border:1.5px solid #fde68a;border-radius:8px;padding:8px 12px;font-size:13px;color:#374151">
+        <div style="font-weight:700;color:#854d0e;margin-bottom:4px">Running totals:</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <span>Sodium: <strong id="mbTotalSodium">0</strong> mg</span>
+          <span>Potassium: <strong id="mbTotalPotassium">0</strong> mg</span>
+          <span>Phosphorus: <strong id="mbTotalPhosphorus">~0</strong> mg</span>
+        </div>
+      </div>
+      <!-- Items list -->
+      <div id="mbItemsList" style="display:flex;flex-direction:column;gap:6px"></div>
+      <!-- Add item section -->
+      <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:8px;padding:10px">
+        <div style="font-size:12px;font-weight:700;color:#854d0e;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em">Add Item</div>
+        <input id="mbItemName" type="text" placeholder="Food or product name *"
+          style="width:100%;padding:8px 10px;border:1.5px solid #d1d5db;border-radius:8px;font-size:14px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff;margin-bottom:6px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+          <select id="mbItemPrep" style="padding:8px 10px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:inherit;background:#fff;-webkit-appearance:none;color:#374151">
+            <option value="">Prep method</option>
+            <optgroup label="Fresh / Uncooked">
+              <option value="raw">Raw / fresh</option>
+              <option value="frozen">Frozen</option>
+            </optgroup>
+            <optgroup label="Wet heat (reduces potassium)">
+              <option value="boiled">Boiled</option>
+              <option value="boiled_drained">Boiled and drained</option>
+              <option value="leached">Leached (CKD method)</option>
+              <option value="steamed">Steamed</option>
+              <option value="microwaved">Microwaved</option>
+              <option value="stewed">Stewed / braised</option>
+            </optgroup>
+            <optgroup label="Dry heat (concentrates nutrients)">
+              <option value="roasted">Roasted / baked</option>
+              <option value="toasted">Toasted</option>
+              <option value="broiled">Broiled / grilled</option>
+              <option value="fried">Fried</option>
+              <option value="sauteed">Sautéed / stir-fried</option>
+              <option value="airfried">Air fried</option>
+            </optgroup>
+            <optgroup label="Processed / preserved (high sodium risk)">
+              <option value="canned">Canned</option>
+              <option value="canned_rinsed">Canned and rinsed</option>
+              <option value="smoked">Smoked</option>
+              <option value="cured">Cured / salted</option>
+              <option value="pickled">Pickled / fermented</option>
+              <option value="dried">Dried / dehydrated</option>
+              <option value="processed">Processed / packaged</option>
+            </optgroup>
+          </select>
+          <input id="mbItemPortion" type="text" placeholder="Amount"
+            style="padding:8px 10px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff">
+        </div>
+        <div style="font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px;font-weight:600">Label values — optional</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-bottom:6px">
+          <input id="mbItemServing" type="text" placeholder="Serving"
+            style="padding:7px 4px;border:1.5px solid #d1d5db;border-radius:8px;font-size:12px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff;text-align:center">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <input id="mbItemSodium" type="number" placeholder="Sodium"
+              style="padding:7px 4px;border:1.5px solid #d1d5db;border-radius:8px;font-size:12px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff;text-align:center">
+            <div style="display:flex;border:1px solid #d1d5db;border-radius:5px;overflow:hidden;font-size:10px;font-weight:700">
+              <button type="button" id="mbSodiumMg" onclick="setMbUnit('Sodium','mg')" style="flex:1;padding:2px;border:none;background:#0f766e;color:#fff;cursor:pointer">mg</button>
+              <button type="button" id="mbSodiumPct" onclick="setMbUnit('Sodium','pct')" style="flex:1;padding:2px;border:none;background:#f3f4f6;color:#374151;cursor:pointer">%</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <input id="mbItemPotassium" type="number" placeholder="Potassium"
+              style="padding:7px 4px;border:1.5px solid #d1d5db;border-radius:8px;font-size:12px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff;text-align:center">
+            <div style="display:flex;border:1px solid #d1d5db;border-radius:5px;overflow:hidden;font-size:10px;font-weight:700">
+              <button type="button" id="mbPotassiumMg" onclick="setMbUnit('Potassium','mg')" style="flex:1;padding:2px;border:none;background:#0f766e;color:#fff;cursor:pointer">mg</button>
+              <button type="button" id="mbPotassiumPct" onclick="setMbUnit('Potassium','pct')" style="flex:1;padding:2px;border:none;background:#f3f4f6;color:#374151;cursor:pointer">%</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <input id="mbItemPhosphorus" type="number" placeholder="Phosphorus"
+              style="padding:7px 4px;border:1.5px solid #d1d5db;border-radius:8px;font-size:12px;font-family:inherit;box-sizing:border-box;-webkit-appearance:none;background:#fff;text-align:center">
+            <div style="display:flex;border:1px solid #d1d5db;border-radius:5px;overflow:hidden;font-size:10px;font-weight:700">
+              <button type="button" id="mbPhosphorusMg" onclick="setMbUnit('Phosphorus','mg')" style="flex:1;padding:2px;border:none;background:#0f766e;color:#fff;cursor:pointer">mg</button>
+              <button type="button" id="mbPhosphorusPct" onclick="setMbUnit('Phosphorus','pct')" style="flex:1;padding:2px;border:none;background:#f3f4f6;color:#374151;cursor:pointer">%</button>
+            </div>
+          </div>
+        </div>
+        <button onclick="addMealBuilderItem()"
+          style="width:100%;background:#ca8a04;color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">
+          + Add to Meal
+        </button>
+      </div>
+      <!-- Bottom actions -->
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;padding-bottom:8px">
+        <button onclick="analyzeMeal()" id="mbAnalyzeBtn" disabled
+          style="background:#854d0e;color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;opacity:0.5">
+          &#x1F50D; Analyze Meal
+        </button>
+        <button onclick="mbSaveOrUpdate()" id="mbSaveBtn" disabled
+          style="background:#0f766e;color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;opacity:0.5">
+          &#x1F4BE; Save
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tool picker bottom sheet -->
+  <div id="toolPickerSheet" style="display:none;padding:14px 16px;border-top:2px solid #e5e7eb;flex-shrink:0;background:#fff">
+    <div style="font-size:12px;color:#6b7280;text-align:center;margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em">Choose a tool</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <button onclick="openFoodCheck(false)"
+        style="background:#f0fdf4;color:#065f46;border:2px solid #10b981;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">
+        &#x1F966; Food Check
+      </button>
+      <button onclick="openMealBuilder()"
+        style="background:#fefce8;color:#854d0e;border:2px solid #ca8a04;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">
+        &#x1F372; Meal Builder
+      </button>
+    </div>
+    <button onclick="document.getElementById('toolPickerSheet').style.display='none'"
+      style="width:100%;background:none;border:1px solid #e5e7eb;border-radius:10px;padding:10px;font-size:14px;color:#6b7280;cursor:pointer;-webkit-tap-highlight-color:transparent">
+      Cancel
+    </button>
+  </div>
+
   <!-- input area -->
-  <div style="padding:12px 16px 18px;border-top:2px solid #e5e7eb;flex-shrink:0;background:#fff">
+  <div style="padding:10px 16px 16px;border-top:1px solid #e5e7eb;flex-shrink:0;background:#fff">
     <div style="display:flex;gap:8px;align-items:flex-end">
+      <button onclick="openToolPicker()" title="Food &amp; Meal tools"
+        style="background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:12px;width:48px;height:48px;font-size:22px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent">
+        &#x1F374;
+      </button>
       <textarea id="askInput"
         placeholder="Ask about your data, features, notes, logging, and more&#8230;"
-        style="flex:1;resize:none;border:2px solid #d1d5db;border-radius:12px;
-               padding:12px 14px;font-size:16px;font-family:inherit;
-               min-height:48px;max-height:120px;overflow-y:auto;line-height:1.5;
-               color:#1f2937;outline:none;-webkit-appearance:none;box-sizing:border-box"
+        style="flex:1;resize:none;border:2px solid #d1d5db;border-radius:12px;padding:12px 14px;font-size:16px;font-family:inherit;min-height:48px;max-height:120px;overflow-y:auto;line-height:1.5;color:#1f2937;outline:none;-webkit-appearance:none;box-sizing:border-box"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitAskQuestion();}"
         oninput="this.style.height='48px';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
       <button id="askSendBtn" onclick="submitAskQuestion()"
-        style="background:#0f766e;color:#fff;border:none;border-radius:12px;
-               width:50px;height:50px;font-size:22px;cursor:pointer;flex-shrink:0;
-               display:flex;align-items:center;justify-content:center;
-               -webkit-tap-highlight-color:transparent;
-               box-shadow:0 3px 10px rgba(15,118,110,0.4)">&#10148;</button>
+        style="background:#0f766e;color:#fff;border:none;border-radius:12px;width:50px;height:50px;font-size:22px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;box-shadow:0 3px 10px rgba(15,118,110,0.4)">&#10148;</button>
     </div>
-    <div style="font-size:12px;color:#6b7280;margin-top:7px;text-align:center;line-height:1.5">
+    <div style="font-size:12px;color:#6b7280;margin-top:6px;text-align:center">
       Your data stays on your device &nbsp;&#xB7;&nbsp; Answers powered by Claude AI
     </div>
   </div>
@@ -40915,6 +41229,663 @@ function askExampleQuestion(btn) {
   var inp = document.getElementById('askInput');
   if (inp) { inp.value = q; inp.style.height = '48px'; }
   submitAskQuestion();
+}
+
+var fcLastValues = {};
+var fcUnits = { Sodium: 'mg', Potassium: 'mg', Phosphorus: 'mg' };
+
+var PREP_LABELS = {
+  'raw':'Raw / fresh', 'frozen':'Frozen',
+  'boiled':'Boiled', 'boiled_drained':'Boiled and drained (lower potassium)',
+  'leached':'Leached — CKD method (significant potassium reduction)',
+  'steamed':'Steamed', 'microwaved':'Microwaved', 'stewed':'Stewed / braised',
+  'roasted':'Roasted / baked', 'toasted':'Toasted',
+  'broiled':'Broiled / grilled', 'fried':'Fried',
+  'sauteed':'Sautéed / stir-fried', 'airfried':'Air fried',
+  'canned':'Canned (check for added sodium)',
+  'canned_rinsed':'Canned and rinsed (reduces sodium ~40%)',
+  'smoked':'Smoked (high sodium — use label values)',
+  'cured':'Cured / salted (very high sodium)',
+  'pickled':'Pickled / fermented (very high sodium)',
+  'dried':'Dried / dehydrated (concentrated nutrients — higher potassium per serving)',
+  'processed':'Processed / packaged (use label values)'
+};
+
+function prepLabel(val) {
+  return PREP_LABELS[val] || val;
+}
+
+function setFcUnit(nutrient, unit) {
+  fcUnits[nutrient] = unit;
+  var mgBtn  = document.getElementById('fc' + nutrient + 'Mg');
+  var pctBtn = document.getElementById('fc' + nutrient + 'Pct');
+  if (mgBtn)  { mgBtn.style.background  = unit === 'mg'  ? '#0f766e' : '#f3f4f6'; mgBtn.style.color  = unit === 'mg'  ? '#fff' : '#374151'; }
+  if (pctBtn) { pctBtn.style.background = unit === 'pct' ? '#0f766e' : '#f3f4f6'; pctBtn.style.color = unit === 'pct' ? '#fff' : '#374151'; }
+}
+
+function openToolPicker() {
+  var sheet = document.getElementById('toolPickerSheet');
+  if (sheet) sheet.style.display = sheet.style.display === 'none' ? 'block' : 'none';
+}
+
+function closeToolPanel() {
+  // Hide all tool panels and return to thread
+  var fc   = document.getElementById('foodCheckForm');
+  var mb   = document.getElementById('mealBuilderForm');
+  var thread = document.getElementById('askThread');
+  var clarify = document.getElementById('askClarifyArea');
+  if (fc) fc.style.display = 'none';
+  if (mb) mb.style.display = 'none';
+  if (thread) { thread.style.display = 'flex'; }
+  if (clarify) clarify.style.display = 'none';
+}
+
+function recheckLast() {
+  if (lastAskAction === 'mealbuilder') {
+    mbModifyLastMeal();
+  } else {
+    openFoodCheck(true);
+  }
+}
+
+function openFoodCheck(recheck) {
+  lastAskAction = 'foodcheck';
+  var fc = document.getElementById('foodCheckForm');
+  var mb = document.getElementById('mealBuilderForm');
+  var thread = document.getElementById('askThread');
+  var clarify = document.getElementById('askClarifyArea');
+  var picker = document.getElementById('toolPickerSheet');
+  if (picker) picker.style.display = 'none';
+  if (mb) mb.style.display = 'none';
+  if (thread) thread.style.display = 'none';
+  if (clarify) clarify.style.display = 'none';
+  if (fc) { fc.style.display = 'flex'; fc.style.flexDirection = 'column'; fc.scrollTop = 0; }
+  if (recheck && fcLastValues.product) {
+    var fields = ['fcProduct','fcPrep','fcPortion','fcServing','fcSodium','fcPotassium','fcPhosphorus'];
+    var keys   = ['product','prep','portion','serving','sodium','potassium','phosphorus'];
+    fields.forEach(function(id, i){
+      var el = document.getElementById(id);
+      if (el && fcLastValues[keys[i]] !== undefined) el.value = fcLastValues[keys[i]];
+    });
+    if (fcLastValues.units) {
+      ['Sodium','Potassium','Phosphorus'].forEach(function(n){
+        if (fcLastValues.units[n]) setFcUnit(n, fcLastValues.units[n]);
+      });
+    }
+  }
+  setTimeout(function(){ var f=document.getElementById('fcProduct'); if(f) f.focus(); }, 200);
+}
+
+function closeFoodCheck() {
+  closeToolPanel();
+  ['fcProduct','fcPrep','fcPortion','fcServing','fcSodium','fcPotassium','fcPhosphorus'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value = '';
+  });
+}
+
+function clearFoodCheck() {
+  fcLastValues = {};
+  ['fcProduct','fcPrep','fcPortion','fcServing','fcSodium','fcPotassium','fcPhosphorus'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value = '';
+  });
+  ['Sodium','Potassium','Phosphorus'].forEach(function(n){ setFcUnit(n,'mg'); });
+  openFoodCheck(false);
+}
+
+function submitFoodCheck() {
+  var product    = (document.getElementById('fcProduct')    || {}).value || '';
+  var prep       = (document.getElementById('fcPrep')       || {}).value || '';
+  var portion    = (document.getElementById('fcPortion')    || {}).value || '';
+  var serving    = (document.getElementById('fcServing')    || {}).value || '';
+  var sodiumRaw    = (document.getElementById('fcSodium')     || {}).value || '';
+  var potassiumRaw = (document.getElementById('fcPotassium')  || {}).value || '';
+  var phosphorusRaw= (document.getElementById('fcPhosphorus') || {}).value || '';
+
+  // Convert %DV to mg if needed
+  // Daily Values: Sodium 2300mg, Potassium 4700mg, Phosphorus 1250mg
+  function convertToMg(val, nutrient) {
+    if (!val) return '';
+    var dv = { Sodium: 2300, Potassium: 4700, Phosphorus: 1250 };
+    if (fcUnits[nutrient] === 'pct') return Math.round(parseFloat(val) * dv[nutrient] / 100) + ' mg (converted from ' + val + '% DV)';
+    return val + ' mg';
+  }
+
+  var sodium     = sodiumRaw     ? convertToMg(sodiumRaw,     'Sodium')     : '';
+  var potassium  = potassiumRaw  ? convertToMg(potassiumRaw,  'Potassium')  : '';
+  var phosphorus = phosphorusRaw ? convertToMg(phosphorusRaw, 'Phosphorus') : '';
+
+  if (!product.trim()) { alert('Please enter a food or product name.'); return; }
+
+  var condList = [];
+  try { condList = (settings.conditions || []).concat(settings.customConditions || []); } catch(e) {}
+
+  var medNames = [];
+  try { medNames = (medicineList || []).map(function(m){ return typeof m === 'string' ? m : (m.name || ''); }).filter(Boolean); } catch(e) {}
+
+  var lines = [];
+  lines.push('FOOD CHECK REQUEST');
+  lines.push('Food / product: ' + product.trim());
+  if (prep)            lines.push('Preparation method: ' + prepLabel(prep));
+  if (portion.trim())  lines.push('Actual portion the patient will eat: ' + portion.trim());
+  if (serving.trim())  lines.push('Label serving size: ' + serving.trim());
+  if (sodium)          lines.push('Sodium: ' + sodium + ' per label serving');
+  if (potassium)       lines.push('Potassium: ' + potassium + ' per label serving');
+  if (phosphorus)      lines.push('Phosphorus: ' + phosphorus + ' per label serving (label-reported)');
+  if (!sodium && !potassium && !phosphorus) lines.push('No label values provided — use your nutritional knowledge for this food as prepared.');
+  else if (!phosphorus) lines.push('Phosphorus: not on label — use your knowledge of this food');
+  lines.push('');
+  lines.push('Patient conditions: ' + (condList.length ? condList.join(', ') : 'not specified'));
+  lines.push('Current medications: ' + (medNames.length ? medNames.join(', ') : 'not specified'));
+  lines.push('');
+  lines.push('FOOD CHECK SUMMARY REQUEST — not a medical recommendation. Using the nutrient values provided and your nutritional knowledge of this food, give a brief factual summary of: (1) how the sodium content relates to this patient\'s hypertension and fluid management, (2) how the potassium content relates to CKD Stage 2 and potassium targets, (3) any phosphorus considerations for CKD, (4) any known food interactions with the listed medications. Account for preparation method and actual portion size when scaling. Keep to 3-4 sentences. Begin with one indicator on the first line only: ✅ Generally fine for occasional use, ⚠️ Worth watching, or 🚫 High concern. Be specific to the values and profile listed.');
+
+  // Save values for recheck
+  fcLastValues = { product: product, prep: prep, portion: portion, serving: serving, sodium: sodiumRaw, potassium: potassiumRaw, phosphorus: phosphorusRaw, units: JSON.parse(JSON.stringify(fcUnits)) };
+
+  closeToolPanel();
+
+  var inp = document.getElementById('askInput');
+  if (inp) { inp.value = lines.join('\n'); inp.style.height = '48px'; }
+  submitAskQuestion();
+}
+
+// ===== MEAL BUILDER =====
+var mbItems = [];
+var mbUnits = { Sodium: 'mg', Potassium: 'mg', Phosphorus: 'mg' };
+var mbPendingMeal = null;
+var lastAskAction = 'foodcheck';
+var mbEditingId = null; // set when editing an existing saved meal
+
+function mbSaveOrUpdate() {
+  if (mbEditingId !== null) {
+    _updateSavedMeal(mbEditingId);
+  } else {
+    mbSaveCurrent();
+  }
+}
+
+function mbModifyLastMeal() {
+  if (!mbPendingMeal) return;
+  var bubble = document.getElementById('mbSaveBubble');
+  if (bubble) bubble.remove();
+  // If Ask panel is not open, open it first
+  var panel = document.getElementById('askPanel');
+  if (!panel || panel.style.display === 'none' || panel.style.display === '') {
+    openAskPanel();
+    setTimeout(function(){
+      _loadPendingMealIntoBuilder();
+    }, 300);
+  } else {
+    _loadPendingMealIntoBuilder();
+  }
+}
+
+function _loadPendingMealIntoBuilder() {
+  if (!mbPendingMeal) return;
+  openMealBuilder();
+  mbItems = JSON.parse(JSON.stringify(mbPendingMeal.items));
+  var nameEl = document.getElementById('mbMealName');
+  var typeEl = document.getElementById('mbMealType');
+  if (nameEl) nameEl.value = mbPendingMeal.name;
+  if (typeEl) typeEl.value = mbPendingMeal.type;
+  mbRenderItems();
+  mbUpdateTotals();
+  mbUpdateButtons();
+}
+
+function mbSaveLastMeal() {
+  if (!mbPendingMeal) return;
+  var meal = {
+    id: Date.now(),
+    name: mbPendingMeal.name,
+    type: mbPendingMeal.type,
+    items: JSON.parse(JSON.stringify(mbPendingMeal.items)),
+    totalSodium: mbPendingMeal.totalSodium,
+    totalPotassium: mbPendingMeal.totalPotassium,
+    totalPhosphorus: mbPendingMeal.totalPhosphorus,
+    savedDate: new Date().toISOString().slice(0,10),
+    lastEvaluated: new Date().toISOString().slice(0,10),
+    verdict: ''
+  };
+  savedMeals.push(meal);
+  try { localStorage.setItem('CLINBRIDGE_SAVED_MEALS', JSON.stringify(savedMeals)); } catch(e) {}
+  var bubble = document.getElementById('mbSaveBubble');
+  if (bubble) bubble.remove();
+  mbPendingMeal = null;
+  mbItems = [];
+  alert('\u2705 ' + meal.name + ' saved to your Meal Library.');
+}
+
+function setMbUnit(nutrient, unit) {
+  mbUnits[nutrient] = unit;
+  var mgBtn  = document.getElementById('mb' + nutrient + 'Mg');
+  var pctBtn = document.getElementById('mb' + nutrient + 'Pct');
+  if (mgBtn)  { mgBtn.style.background  = unit === 'mg'  ? '#0f766e' : '#f3f4f6'; mgBtn.style.color  = unit === 'mg'  ? '#fff' : '#374151'; }
+  if (pctBtn) { pctBtn.style.background = unit === 'pct' ? '#0f766e' : '#f3f4f6'; pctBtn.style.color = unit === 'pct' ? '#fff' : '#374151'; }
+}
+
+function mbConvertToMg(val, nutrient) {
+  if (!val) return 0;
+  var dv = { Sodium: 2300, Potassium: 4700, Phosphorus: 1250 };
+  return mbUnits[nutrient] === 'pct' ? Math.round(parseFloat(val) * dv[nutrient] / 100) : parseFloat(val) || 0;
+}
+
+function openMealBuilder() {
+  lastAskAction = 'mealbuilder';
+  // If not coming from _editSavedMeal, clear the editing ID
+  if (arguments[0] !== 'edit') mbEditingId = null;
+  var fc = document.getElementById('foodCheckForm');
+  var mb = document.getElementById('mealBuilderForm');
+  var thread = document.getElementById('askThread');
+  var clarify = document.getElementById('askClarifyArea');
+  var picker = document.getElementById('toolPickerSheet');
+  if (picker) picker.style.display = 'none';
+  if (fc) fc.style.display = 'none';
+  if (thread) thread.style.display = 'none';
+  if (clarify) clarify.style.display = 'none';
+  if (mb) { mb.style.display = 'flex'; mb.style.flexDirection = 'column'; mb.scrollTop = 0; }
+  // Restore pending meal if one exists, otherwise start fresh
+  if (mbPendingMeal && mbPendingMeal.items && mbPendingMeal.items.length) {
+    mbItems = JSON.parse(JSON.stringify(mbPendingMeal.items));
+    var nameEl = document.getElementById('mbMealName');
+    var typeEl = document.getElementById('mbMealType');
+    if (nameEl) nameEl.value = mbPendingMeal.name;
+    if (typeEl) typeEl.value = mbPendingMeal.type;
+  } else {
+    mbItems = [];
+    mbUnits = { Sodium: 'mg', Potassium: 'mg', Phosphorus: 'mg' };
+  }
+  mbRenderItems();
+  mbUpdateTotals();
+  mbUpdateButtons();
+  setTimeout(function(){ var f=document.getElementById('mbMealName'); if(f && !f.value) f.focus(); }, 200);
+}
+
+function closeMealBuilder() {
+  closeToolPanel();
+}
+
+function mbClearItemForm() {
+  ['mbItemName','mbItemPrep','mbItemPortion','mbItemServing','mbItemSodium','mbItemPotassium','mbItemPhosphorus'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value = '';
+  });
+  mbUnits = { Sodium: 'mg', Potassium: 'mg', Phosphorus: 'mg' };
+  ['Sodium','Potassium','Phosphorus'].forEach(function(n){ setMbUnit(n,'mg'); });
+}
+
+function addMealBuilderItem() {
+  var name = (document.getElementById('mbItemName') || {}).value || '';
+  if (!name.trim()) { alert('Please enter a food name.'); return; }
+  var prep      = (document.getElementById('mbItemPrep')      || {}).value || '';
+  var portion   = (document.getElementById('mbItemPortion')   || {}).value || '';
+  var serving   = (document.getElementById('mbItemServing')   || {}).value || '';
+  var sodiumRaw = (document.getElementById('mbItemSodium')    || {}).value || '';
+  var potRaw    = (document.getElementById('mbItemPotassium') || {}).value || '';
+  var phosRaw   = (document.getElementById('mbItemPhosphorus')|| {}).value || '';
+
+  var item = {
+    name: name.trim(),
+    prep: prep,
+    portion: portion.trim(),
+    serving: serving.trim(),
+    sodiumRaw: sodiumRaw, sodiumMg: mbConvertToMg(sodiumRaw, 'Sodium'), sodiumUnit: mbUnits.Sodium,
+    potRaw: potRaw, potMg: mbConvertToMg(potRaw, 'Potassium'), potUnit: mbUnits.Potassium,
+    phosRaw: phosRaw, phosMg: mbConvertToMg(phosRaw, 'Phosphorus'), phosUnit: mbUnits.Phosphorus
+  };
+  mbItems.push(item);
+  mbRenderItems();
+  mbUpdateTotals();
+  mbUpdateButtons();
+  mbClearItemForm();
+  setTimeout(function(){ var f=document.getElementById('mbItemName'); if(f) f.focus(); }, 100);
+}
+
+function mbRemoveItem(idx) {
+  mbItems.splice(idx, 1);
+  mbRenderItems();
+  mbUpdateTotals();
+  mbUpdateButtons();
+}
+
+function mbRenderItems() {
+  var el = document.getElementById('mbItemsList');
+  if (!el) return;
+  if (mbItems.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = mbItems.map(function(item, i) {
+    var details = [];
+    if (item.prep) details.push(prepLabel(item.prep));
+    if (item.portion) details.push(item.portion);
+    if (item.sodiumMg) details.push('Na ' + item.sodiumMg + 'mg');
+    if (item.potMg) details.push('K ' + item.potMg + 'mg');
+    if (item.phosMg) details.push('P ' + item.phosMg + 'mg');
+    return '<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 10px">' +
+      '<div><div style="font-size:13px;font-weight:600;color:#374151">' + item.name + '</div>' +
+      (details.length ? '<div style="font-size:11px;color:#6b7280;margin-top:2px">' + details.join(' · ') + '</div>' : '') +
+      '</div>' +
+      '<button onclick="mbRemoveItem(' + i + ')" style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;color:#991b1b;font-size:12px;font-weight:700;padding:4px 8px;cursor:pointer;-webkit-tap-highlight-color:transparent">Remove</button>' +
+      '</div>';
+  }).join('');
+}
+
+function mbUpdateTotals() {
+  var totalNa = 0, totalK = 0, totalP = 0;
+  mbItems.forEach(function(item){
+    totalNa += item.sodiumMg || 0;
+    totalK  += item.potMg   || 0;
+    totalP  += item.phosMg  || 0;
+  });
+  var totEl = document.getElementById('mbTotals');
+  if (totEl) totEl.style.display = mbItems.length ? 'block' : 'none';
+  var elNa = document.getElementById('mbTotalSodium');
+  var elK  = document.getElementById('mbTotalPotassium');
+  var elP  = document.getElementById('mbTotalPhosphorus');
+  if (elNa) elNa.textContent = totalNa;
+  if (elK)  elK.textContent  = totalK;
+  if (elP)  elP.textContent  = (totalP > 0 ? totalP : '~0');
+}
+
+function mbUpdateButtons() {
+  var hasItems = mbItems.length > 0;
+  var analyzeBtn = document.getElementById('mbAnalyzeBtn');
+  var saveBtn    = document.getElementById('mbSaveBtn');
+  if (analyzeBtn) { analyzeBtn.disabled = !hasItems; analyzeBtn.style.opacity = hasItems ? '1' : '0.5'; analyzeBtn.style.cursor = hasItems ? 'pointer' : 'default'; }
+  if (saveBtn)    { saveBtn.disabled    = !hasItems; saveBtn.style.opacity    = hasItems ? '1' : '0.5'; saveBtn.style.cursor    = hasItems ? 'pointer' : 'default'; }
+}
+
+function analyzeMeal() {
+  if (!mbItems.length) return;
+  var mealName = (document.getElementById('mbMealName') || {}).value || 'This meal';
+  var mealType = (document.getElementById('mbMealType') || {}).value || 'meal';
+
+  var condList = [];
+  try { condList = (settings.conditions || []).concat(settings.customConditions || []); } catch(e) {}
+  var medNames = [];
+  try { medNames = (medicineList || []).map(function(m){ return typeof m === 'string' ? m : (m.name || ''); }).filter(Boolean); } catch(e) {}
+
+  var lines = [];
+  lines.push('MEAL BUILDER ANALYSIS REQUEST — not a medical recommendation.');
+  lines.push('Meal name: ' + mealName + ' (' + mealType + ')');
+  lines.push('Number of items: ' + mbItems.length);
+  lines.push('');
+  lines.push('Items:');
+  mbItems.forEach(function(item, i) {
+    var desc = (i+1) + '. ' + item.name;
+    if (item.prep) desc += ' (' + prepLabel(item.prep) + ')';
+    if (item.portion) desc += ', ' + item.portion;
+    var nutrients = [];
+    if (item.sodiumMg) nutrients.push('Sodium ' + item.sodiumMg + 'mg' + (item.sodiumUnit === 'pct' ? ' (converted from ' + item.sodiumRaw + '%DV)' : ''));
+    if (item.potMg)    nutrients.push('Potassium ' + item.potMg + 'mg' + (item.potUnit === 'pct' ? ' (converted from ' + item.potRaw + '%DV)' : ''));
+    if (item.phosMg)   nutrients.push('Phosphorus ' + item.phosMg + 'mg' + (item.phosUnit === 'pct' ? ' (converted from ' + item.phosRaw + '%DV)' : ''));
+    if (nutrients.length) desc += ' — ' + nutrients.join(', ');
+    lines.push(desc);
+  });
+
+  // Calculate totals
+  var totalNa = 0, totalK = 0, totalP = 0;
+  mbItems.forEach(function(item){ totalNa += item.sodiumMg||0; totalK += item.potMg||0; totalP += item.phosMg||0; });
+  lines.push('');
+  lines.push('Combined meal totals: Sodium ' + totalNa + 'mg, Potassium ' + totalK + 'mg, Phosphorus ' + (totalP||'unknown — use your knowledge of these foods') + (totalP ? 'mg' : ''));
+  lines.push('');
+  lines.push('Patient conditions: ' + (condList.length ? condList.join(', ') : 'not specified'));
+  lines.push('Current medications: ' + (medNames.length ? medNames.join(', ') : 'not specified'));
+  lines.push('');
+  lines.push('INSTRUCTIONS: Evaluate this complete meal as a whole — not each item individually. Use the combined totals above plus your nutritional knowledge of these foods to fill in any missing values. Summarize: (1) how the combined sodium load relates to hypertension and fluid management, (2) how the combined potassium load relates to CKD Stage 2 and potassium targets, (3) combined phosphorus considerations for CKD, (4) any food-drug interactions across all items and the listed medications. Begin with one indicator: \u2705 Generally fine for occasional use, \u26a0\ufe0f Worth watching, or \U0001F6AB High concern — discuss with care team. Follow with 3-4 sentences specific to this patient\'s conditions and medications.');
+
+  // Save meal state for post-analysis actions
+  mbPendingMeal = {
+    name: mealName,
+    type: mealType,
+    items: JSON.parse(JSON.stringify(mbItems)),
+    totalSodium: 0, totalPotassium: 0, totalPhosphorus: 0
+  };
+  mbItems.forEach(function(item){ mbPendingMeal.totalSodium += item.sodiumMg||0; mbPendingMeal.totalPotassium += item.potMg||0; mbPendingMeal.totalPhosphorus += item.phosMg||0; });
+
+  closeToolPanel();
+
+  // Inject save/modify bubble into thread after analysis returns
+  setTimeout(function(){ _mbInjectSaveBubble(); }, 100);
+
+  var inp = document.getElementById('askInput');
+  if (inp) { inp.value = lines.join('\n'); inp.style.height = '48px'; }
+  submitAskQuestion();
+}
+
+function _mbInjectSaveBubble() {
+  if (!mbPendingMeal) return;
+  var thread = document.getElementById('askThread');
+  if (!thread) return;
+  // Remove any existing save bubble
+  var existing = document.getElementById('mbSaveBubble');
+  if (existing) existing.remove();
+  var div = document.createElement('div');
+  div.id = 'mbSaveBubble';
+  div.style.cssText = 'background:#fefce8;border:1.5px solid #ca8a04;border-radius:12px;padding:12px 14px;margin-top:8px;flex-shrink:0';
+  div.innerHTML = '<div style="font-size:13px;font-weight:700;color:#854d0e;margin-bottom:8px">&#x1F372; ' + mbPendingMeal.name + '</div>' +
+    '<div style="display:flex;gap:8px">' +
+    '<button onclick="mbModifyLastMeal()" style="flex:1;background:#fffbeb;color:#92400e;border:1.5px solid #f59e0b;border-radius:8px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">&#x270F;&#xFE0F; Modify &amp; Re-analyze</button>' +
+    '<button onclick="mbSaveLastMeal()" style="flex:1;background:#f0fdf4;color:#065f46;border:1.5px solid #10b981;border-radius:8px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">&#x1F4BE; Save to Library</button>' +
+    '</div>';
+  thread.appendChild(div);
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function mbSaveCurrent() {
+  if (!mbItems.length) return;
+  var mealName = ((document.getElementById('mbMealName') || {}).value || '').trim();
+  var mealType = (document.getElementById('mbMealType') || {}).value || 'meal';
+  if (!mealName) { alert('Please enter a meal name before saving.'); document.getElementById('mbMealName').focus(); return; }
+  var totalNa = 0, totalK = 0, totalP = 0;
+  mbItems.forEach(function(item){ totalNa += item.sodiumMg||0; totalK += item.potMg||0; totalP += item.phosMg||0; });
+  var meal = {
+    id: Date.now(), name: mealName, type: mealType,
+    items: JSON.parse(JSON.stringify(mbItems)),
+    totalSodium: totalNa, totalPotassium: totalK, totalPhosphorus: totalP,
+    savedDate: new Date().toISOString().slice(0,10),
+    lastEvaluated: new Date().toISOString().slice(0,10), verdict: ''
+  };
+  savedMeals.push(meal);
+  try { localStorage.setItem('CLINBRIDGE_SAVED_MEALS', JSON.stringify(savedMeals)); } catch(e) {}
+  mbPendingMeal = null;
+  mbItems = [];
+  closeToolPanel();
+  alert('\u2705 ' + mealName + ' saved to your Meal Library.');
+}
+
+function getSavedMealsByType(type) {
+  if (!type) return savedMeals;
+  return savedMeals.filter(function(m){ return !type || m.type === type || m.type === 'meal'; });
+}
+
+function manageSavedMeals() {
+  if (!savedMeals || savedMeals.length === 0) {
+    var html = '<div class="modal-title">🍽️ Manage Meals</div>';
+    html += '<div style="text-align:center;padding:30px 20px;color:#6b7280">';
+    html += '<div style="font-size:48px;margin-bottom:12px">🍲</div>';
+    html += '<div style="font-size:16px;font-weight:600;margin-bottom:8px">No saved meals yet</div>';
+    html += '<div style="font-size:14px;margin-bottom:20px">Use the Meal Builder in Ask to build and save meals evaluated for your conditions.</div>';
+    html += '</div>';
+    html += '<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Close</button></div>';
+    showModal(html);
+    return;
+  }
+
+  _renderMealLibrary();
+}
+
+function _renderMealLibrary() {
+  var html = '<div class="modal-title">🍽️ Manage Meals</div>';
+  html += '<div style="font-size:14px;color:#6b7280;margin-bottom:16px">' + savedMeals.length + ' saved meal' + (savedMeals.length !== 1 ? 's' : '') + ' in your library</div>';
+
+  var types = ['breakfast','lunch','dinner','snack','meal'];
+  var typeLabels = { breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', snack:'Snack', meal:'Meal' };
+
+  types.forEach(function(type) {
+    var group = savedMeals.filter(function(m){ return m.type === type; });
+    if (!group.length) return;
+    html += '<div style="font-size:13px;font-weight:700;color:#9d174d;text-transform:uppercase;letter-spacing:0.05em;margin:16px 0 8px 0">' + typeLabels[type] + '</div>';
+    group.forEach(function(meal) {
+      var flagged = meal.doNotUse;
+      var borderColor = flagged ? '#ef4444' : '#e5e7eb';
+      var bg = flagged ? '#fef2f2' : '#fff';
+
+      html += '<div style="border:1.5px solid ' + borderColor + ';border-radius:12px;padding:16px;margin-bottom:12px;background:' + bg + '">';
+
+      // Meal name and flag
+      html += '<div style="font-size:17px;font-weight:700;color:#1f2937;margin-bottom:4px">' + meal.name;
+      if (flagged) html += ' <span style="background:#ef4444;color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;vertical-align:middle">DO NOT USE</span>';
+      html += '</div>';
+
+      // Meta line
+      html += '<div style="font-size:13px;color:#6b7280;margin-bottom:8px;line-height:1.6">';
+      html += meal.items.length + ' item' + (meal.items.length !== 1 ? 's' : '') + ' &nbsp;·&nbsp; Saved ' + meal.savedDate;
+      if (meal.lastEvaluated && meal.lastEvaluated !== meal.savedDate) html += ' &nbsp;·&nbsp; Evaluated ' + meal.lastEvaluated;
+      html += '</div>';
+
+      // Do not use note
+      if (meal.doNotUseNote) html += '<div style="font-size:13px;color:#991b1b;margin-bottom:8px;font-weight:600;background:#fef2f2;padding:8px 10px;border-radius:6px">⚠️ ' + meal.doNotUseNote + '</div>';
+
+      // Nutritional totals — plain English
+      if (meal.totalSodium || meal.totalPotassium || meal.totalPhosphorus) {
+        html += '<div style="display:flex;gap:16px;font-size:14px;color:#374151;margin-bottom:14px;flex-wrap:wrap;background:#f9fafb;padding:8px 12px;border-radius:8px">';
+        if (meal.totalSodium)     html += '<span>Sodium <strong>' + meal.totalSodium + '</strong> mg</span>';
+        if (meal.totalPotassium)  html += '<span>Potassium <strong>' + meal.totalPotassium + '</strong> mg</span>';
+        if (meal.totalPhosphorus) html += '<span>Phosphorus <strong>' + meal.totalPhosphorus + '</strong> mg</span>';
+        html += '</div>';
+      }
+
+      // Action buttons — 2×2 grid, 44px minimum touch target
+      html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+      html += '<button onclick="_editSavedMeal(' + meal.id + ')" style="background:#eff6ff;color:#1e40af;border:1.5px solid #bfdbfe;border-radius:9px;padding:12px 8px;font-size:14px;font-weight:700;cursor:pointer;min-height:44px;-webkit-tap-highlight-color:transparent">✏️ Edit</button>';
+      html += '<button onclick="_reevaluateMeal(' + meal.id + ')" style="background:#f0fdf4;color:#065f46;border:1.5px solid #a7f3d0;border-radius:9px;padding:12px 8px;font-size:14px;font-weight:700;cursor:pointer;min-height:44px;-webkit-tap-highlight-color:transparent">🔄 Re-evaluate</button>';
+      html += '<button onclick="_toggleDoNotUse(' + meal.id + ')" style="background:' + (flagged ? '#fef2f2' : '#fffbeb') + ';color:' + (flagged ? '#991b1b' : '#92400e') + ';border:1.5px solid ' + (flagged ? '#fca5a5' : '#fde68a') + ';border-radius:9px;padding:12px 8px;font-size:14px;font-weight:700;cursor:pointer;min-height:44px;-webkit-tap-highlight-color:transparent">' + (flagged ? '✅ Re-enable' : '🚫 Do Not Use') + '</button>';
+      html += '<button onclick="_deleteSavedMeal(' + meal.id + ')" style="background:#fef2f2;color:#991b1b;border:1.5px solid #fca5a5;border-radius:9px;padding:12px 8px;font-size:14px;font-weight:700;cursor:pointer;min-height:44px;-webkit-tap-highlight-color:transparent">🗑️ Delete</button>';
+      html += '</div>';
+
+      html += '</div>';
+    });
+  });
+
+  html += '<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Close</button></div>';
+  showModal(html);
+}
+
+function _editSavedMeal(id) {
+  var meal = savedMeals.find(function(m){ return m.id == id; });
+  if (!meal) return;
+  hideModal();
+  mbPendingMeal = null;
+  mbEditingId = id;
+  openAskPanel();
+  setTimeout(function(){
+    openMealBuilder('edit');
+    mbItems = JSON.parse(JSON.stringify(meal.items));
+    var nameEl = document.getElementById('mbMealName');
+    var typeEl = document.getElementById('mbMealType');
+    if (nameEl) nameEl.value = meal.name;
+    if (typeEl) typeEl.value = meal.type;
+    mbRenderItems();
+    mbUpdateTotals();
+    mbUpdateButtons();
+    var saveBtn = document.getElementById('mbSaveBtn');
+    if (saveBtn) saveBtn.textContent = '\uD83D\uDCBE Update';
+  }, 300);
+}
+
+function _updateSavedMeal(id) {
+  var idx = savedMeals.findIndex(function(m){ return m.id == id; });
+  if (idx === -1) { saveMealToLibrary(); return; }
+  var mealName = ((document.getElementById('mbMealName') || {}).value || '').trim();
+  var mealType = (document.getElementById('mbMealType') || {}).value || 'meal';
+  if (!mealName) { alert('Please enter a meal name.'); return; }
+  var totalNa = 0, totalK = 0, totalP = 0;
+  mbItems.forEach(function(item){ totalNa += item.sodiumMg||0; totalK += item.potMg||0; totalP += item.phosMg||0; });
+  savedMeals[idx].name = mealName;
+  savedMeals[idx].type = mealType;
+  savedMeals[idx].items = JSON.parse(JSON.stringify(mbItems));
+  savedMeals[idx].totalSodium = totalNa;
+  savedMeals[idx].totalPotassium = totalK;
+  savedMeals[idx].totalPhosphorus = totalP;
+  try { localStorage.setItem('CLINBRIDGE_SAVED_MEALS', JSON.stringify(savedMeals)); } catch(e) {}
+  mbEditingId = null;
+  closeToolPanel();
+  var typeLabel = { meal:'Meal', breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', snack:'Snack' };
+  alert('\u2705 ' + mealName + ' updated and saved as ' + (typeLabel[mealType] || mealType) + '.');
+}
+
+function _reevaluateMeal(id) {
+  var meal = savedMeals.find(function(m){ return m.id == id; });
+  if (!meal) return;
+  hideModal();
+
+  var condList = [];
+  try { condList = (settings.conditions || []).concat(settings.customConditions || []); } catch(e) {}
+  var medNames = [];
+  try { medNames = (medicineList || []).map(function(m){ return typeof m === 'string' ? m : (m.name || ''); }).filter(Boolean); } catch(e) {}
+
+  var lines = [];
+  lines.push('MEAL BUILDER ANALYSIS REQUEST — not a medical recommendation.');
+  lines.push('Meal name: ' + meal.name + ' (' + meal.type + ')');
+  lines.push('Number of items: ' + meal.items.length);
+  lines.push('');
+  lines.push('Items:');
+  meal.items.forEach(function(item, i) {
+    var desc = (i+1) + '. ' + item.name;
+    if (item.prep) desc += ' (' + prepLabel(item.prep) + ')';
+    if (item.portion) desc += ', ' + item.portion;
+    var nutrients = [];
+    if (item.sodiumMg) nutrients.push('Sodium ' + item.sodiumMg + 'mg');
+    if (item.potMg)    nutrients.push('Potassium ' + item.potMg + 'mg');
+    if (item.phosMg)   nutrients.push('Phosphorus ' + item.phosMg + 'mg');
+    if (nutrients.length) desc += ' — ' + nutrients.join(', ');
+    lines.push(desc);
+  });
+  lines.push('');
+  lines.push('Combined meal totals: Sodium ' + meal.totalSodium + 'mg, Potassium ' + meal.totalPotassium + 'mg, Phosphorus ' + (meal.totalPhosphorus || 'unknown') + (meal.totalPhosphorus ? 'mg' : ''));
+  lines.push('');
+  lines.push('Patient conditions: ' + (condList.length ? condList.join(', ') : 'not specified'));
+  lines.push('Current medications: ' + (medNames.length ? medNames.join(', ') : 'not specified'));
+  lines.push('');
+  lines.push('INSTRUCTIONS: Re-evaluate this complete meal against the patient\'s current conditions and medications. The patient\'s profile may have changed since this meal was last evaluated. Summarize the combined nutritional load and any concerns. Begin with one indicator: \u2705 Generally fine for occasional use, \u26a0\ufe0f Worth watching, or \U0001F6AB High concern — discuss with care team. Follow with 3-4 sentences.');
+
+  // Update last evaluated date
+  var idx = savedMeals.findIndex(function(m){ return m.id == id; });
+  if (idx !== -1) {
+    savedMeals[idx].lastEvaluated = new Date().toISOString().slice(0,10);
+    try { localStorage.setItem('CLINBRIDGE_SAVED_MEALS', JSON.stringify(savedMeals)); } catch(e) {}
+  }
+
+  // Open Ask panel and submit
+  hideModal();
+  openAskPanel();
+  setTimeout(function(){
+    var inp = document.getElementById('askInput');
+    if (inp) { inp.value = lines.join('\n'); inp.style.height = '48px'; }
+    submitAskQuestion();
+  }, 300);
+}
+
+function _toggleDoNotUse(id) {
+  var idx = savedMeals.findIndex(function(m){ return m.id == id; });
+  if (idx === -1) return;
+  if (savedMeals[idx].doNotUse) {
+    savedMeals[idx].doNotUse = false;
+    savedMeals[idx].doNotUseNote = '';
+  } else {
+    var note = prompt('Optional: add a note explaining why (e.g. "Potassium spike May 2026 — Dr. Tabatabai")');
+    savedMeals[idx].doNotUse = true;
+    savedMeals[idx].doNotUseNote = note || '';
+  }
+  try { localStorage.setItem('CLINBRIDGE_SAVED_MEALS', JSON.stringify(savedMeals)); } catch(e) {}
+  _renderMealLibrary();
+}
+
+function _deleteSavedMeal(id) {
+  var meal = savedMeals.find(function(m){ return m.id == id; });
+  if (!meal) return;
+  if (!confirm('Delete "' + meal.name + '" from your Meal Library? This cannot be undone.')) return;
+  savedMeals = savedMeals.filter(function(m){ return m.id != id; });
+  try { localStorage.setItem('CLINBRIDGE_SAVED_MEALS', JSON.stringify(savedMeals)); } catch(e) {}
+  _renderMealLibrary();
 }
 
 function buildAskContext(dateFrom, dateTo) {
