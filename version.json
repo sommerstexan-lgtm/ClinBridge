@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.158",
-  "date": "2026-05-31",
-  "notes": "Service worker rewritten to network-first fetch strategy. Forces fresh content on every load. Resolves persistent cache eviction failure on iOS Safari PWA."
+  "version": "v9.10.160",
+  "date": "2026-06-01",
+  "notes": "Three fixes: Ask panel now resets tool screens on open (Meal Builder no longer persists). Meal Builder label fields changed to 2x2 grid (was 4-column, too narrow on mobile). Medicine History dropdown now sources from active medicine list instead of log entries."
 }
