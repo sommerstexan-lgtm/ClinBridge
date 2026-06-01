@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.161",
+  "version": "v9.10.162",
   "date": "2026-06-01",
-  "notes": "Ask ClinBridge blank on reopen fixed. openAskPanel now restores askThread to visible when resetting tool panels. Completes the v9.10.160 Meal Builder reopen fix."
+  "notes": "Meal Builder fields (name and type) now cleared when opening fresh. Previously stale meal name and type persisted in DOM across sessions."
 }
