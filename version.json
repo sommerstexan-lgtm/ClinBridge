@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.160",
+  "version": "v9.10.161",
   "date": "2026-06-01",
-  "notes": "Three fixes: Ask panel now resets tool screens on open (Meal Builder no longer persists). Meal Builder label fields changed to 2x2 grid (was 4-column, too narrow on mobile). Medicine History dropdown now sources from active medicine list instead of log entries."
+  "notes": "Ask ClinBridge blank on reopen fixed. openAskPanel now restores askThread to visible when resetting tool panels. Completes the v9.10.160 Meal Builder reopen fix."
 }
