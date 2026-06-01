@@ -26,7 +26,7 @@
   window.cbTrack = function(eventName, params) {
     try {
       if (typeof gtag === 'function') {
-        gtag('event', eventName, Object.assign({ app_version: 'v9.10.160' }, params || {}));
+        gtag('event', eventName, Object.assign({ app_version: 'v9.10.161' }, params || {}));
       }
     } catch(e) {}
   };
@@ -47,7 +47,7 @@
   })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
-<title>ClinBridge v9.10.160</title>
+<title>ClinBridge v9.10.161</title>
 <link rel="apple-touch-icon" href="ClinBridge-App-logo.JPG">
 <link rel="icon" type="image/jpeg" href="ClinBridge-App-logo.JPG">
 <style>
@@ -858,7 +858,7 @@ input[type="time"].modal-input,input[type="time"]{-webkit-appearance:auto;appear
     <!-- Version + clock row -->
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid rgba(255,255,255,0.15);padding-top:12px">
       <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
-        <span style="font-size:13px;font-weight:700;color:#7dd3fc">v9.10.160 · Medical Grade - Free</span>
+        <span style="font-size:13px;font-weight:700;color:#7dd3fc">v9.10.161 · Medical Grade - Free</span>
         <!-- ═══════════════════════════════════════════════════════════════════
              VERSION UPDATE CHECKLIST — update ALL 8 locations every release:
              1.  This date span below                    (format: Apr DD, YYYY)
@@ -2221,7 +2221,7 @@ Custom Range
         </div>
 
         <div style="background:#f3f4f6;border-radius:10px;padding:14px;font-size:13px;color:#6b7280;line-height:1.7">
-          ClinBridge v9.10.160 · Free &amp; Open Source · Built by a cardiac patient, for cardiac patients · clinbridge.clinic<br>
+          ClinBridge v9.10.161 · Free &amp; Open Source · Built by a cardiac patient, for cardiac patients · clinbridge.clinic<br>
           No ads · No account · No subscription · Your data stays on your device · Always free
         </div>
       </section>
@@ -2311,16 +2311,16 @@ Custom Range
         <p style="font-size:14px;color:#6b7280;margin-bottom:16px">For new features and capabilities, see the <strong>Planned Features</strong> tab.</p>
 
         <div style="background:#fef9c3;border-left:4px solid #eab308;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F41B; Fixed in v9.10.160 &mdash; June 1, 2026</strong>
+          <strong style="font-size:16px">&#x1F41B; Fixed in v9.10.161 &mdash; June 1, 2026</strong>
           <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#713f12;line-height:1.8">
-            <li><strong>Ask ClinBridge — Meal Builder persisting on reopen.</strong> If Ask was closed while Meal Builder (or Food Check) was the active screen, reopening Ask would show the tool form instead of the welcome screen or conversation thread. Fixed: <code>openAskPanel</code> now resets all tool panels (Meal Builder, Food Check, tool picker sheet) to hidden before restoring the conversation state.</li>
+            <li><strong>Ask ClinBridge — blank/non-responsive on reopen after using Meal Builder.</strong> When Meal Builder or Food Check was open, <code>askThread</code> was set to <code>display:none</code>. The v9.10.160 fix hid the tool panels on reopen but did not restore <code>askThread</code> to visible — leaving Ask blank with no input response. Fixed: <code>openAskPanel</code> now explicitly restores <code>askThread</code> to <code>display:flex</code> alongside resetting the tool panels.</li>
             <li><strong>Ask ClinBridge — Meal Builder label fields overflowing on mobile.</strong> The Serving / Sodium / Potassium / Phosphorus label value inputs were laid out in a single 4-column row (<code>grid-template-columns: 1fr 1fr 1fr 1fr</code>), causing the fields to be too narrow to use on a phone screen. Changed to a 2×2 grid (<code>grid-template-columns: 1fr 1fr</code>) so all four fields are legible and tappable.</li>
             <li><strong>Medicine History filter dropdown — source corrected.</strong> The Medicine filter in Medicines History (90 Days) was built from logged history entries instead of the medicine list. This caused two problems: discontinued medicines appeared as filter options (they have historical log entries), and newly added medicines were missing (they had no entries yet). Fixed: the dropdown now sources from <code>settings.medicineList</code> (active medicines only), then appends any historical medicine names from log entries not already in the list. Discontinued medicines are excluded from the dropdown.</li>
           </ul>
         </div>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F527; New in v9.10.160 &mdash; May 31, 2026</strong>
+          <strong style="font-size:16px">&#x1F527; New in v9.10.161 &mdash; May 31, 2026</strong>
           <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
             <li><strong>Ask ClinBridge &mdash; Food Check.</strong> A structured food evaluation form added to the Ask welcome screen. Tap &ldquo;&#x1F966; Check a food or product label&rdquo; to open a form with fields for product name, serving size, sodium, potassium, and phosphorus (optional — Ask uses its own knowledge when not on the label). On submit, Ask evaluates the food against the patient&rsquo;s logged conditions and current medication list and returns a one-line verdict (&#x2705; Safe, &#x26A0;&#xFE0F; Caution, or &#x1F6AB; Avoid) with a brief explanation specific to the patient&rsquo;s profile. No new UI section, no new data storage — fully integrated into the existing Ask infrastructure.</li>
             <li><strong>Medication Safety System &mdash; Steps 1 &amp; 2: Data model + Condition Check UI.</strong> Three new optional fields added to the medicine object: <code>conditionMetric</code> (systolic / diastolic / hr / null), <code>conditionThreshold</code> (number or null), <code>conditionDirection</code> (above / below / null). A new &ldquo;Condition Check&rdquo; section now appears at the bottom of the Add/Edit medicine screen &mdash; select Diastolic, Systolic, or Heart Rate, enter a threshold, and choose whether to block when the reading is below or above that threshold. Selecting None clears all condition fields. Existing medicines without these fields are unaffected.</li><li><strong>Time selection &mdash; over-selection bug fixed.</strong> Selecting more checkboxes than the allowed number of daily doses (e.g. checking 2 boxes for a once-daily medicine) now automatically unchecks the earliest selection, keeping the count at the correct limit. Previously the UI allowed over-selection and only caught it on Save.</li>
@@ -2328,7 +2328,7 @@ Custom Range
         </div>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x1F527; Fixed in v9.10.160 &mdash; May 28, 2026</strong>
+          <strong style="font-size:16px">&#x1F527; Fixed in v9.10.161 &mdash; May 28, 2026</strong>
           <ul style="font-size:14px;margin:6px 0 0 0;padding-left:18px;color:#065f46;line-height:1.8">
             <li><strong>Log Medicine &mdash; conditional note now visible at the moment of logging.</strong> Medicines with a <code>conditionNote</code> (e.g. &ldquo;Only when diastolic &gt;70&rdquo; or &ldquo;Only when systolic &gt;100&rdquo;) now display an amber warning banner directly under the schedule note in the Log Medicine modal. Previously the condition note only appeared in Manage Medicines, meaning it was invisible at the critical moment of deciding whether to take the medication. Affects Metoprolol, Losartan, and any medicine with a clinical condition attached. Medicines whose conditionNote is simply &ldquo;As needed&rdquo; are unaffected since the schedule line already conveys this.</li>
           </ul>
@@ -2952,7 +2952,7 @@ Custom Range
         </div>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x2705; Shipped in v9.10.160 &mdash; May 31, 2026</strong>
+          <strong style="font-size:16px">&#x2705; Shipped in v9.10.161 &mdash; May 31, 2026</strong>
           <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Food Check.</strong> Single-food nutritional awareness tool inside Ask ClinBridge. Access via the &#x1F374; tools icon in the Ask input bar. Enter food name, preparation method (19 options in 4 clinical groups), portion, and optional label values for Sodium, Potassium, and Phosphorus — each with a mg / %DV toggle. Ask evaluates the food against your logged conditions and medications and returns &#x2705; Generally fine, &#x26A0;&#xFE0F; Worth watching, or &#x1F6AB; High concern with a profile-specific summary. Last-entered values are remembered for quick re-evaluation with changed variables.</p>
           <p style="font-size:14px;margin:8px 0 0 0;color:#065f46"><strong>Meal Builder.</strong> Full-meal nutritional analysis inside Ask ClinBridge. Build complete meals item by item with the same form fields and mg/%DV toggles as Food Check. Running totals for Sodium, Potassium, and Phosphorus update live as items are added. Analyze Meal evaluates the combined load — not individual items. After analysis, a Modify &amp; Re-analyze button returns to the builder with all items intact; Save to Library saves the meal permanently. Individual item correction is done by removing and re-adding the item with corrected values.</p>
           <p style="font-size:14px;margin:8px 0 0 0;color:#065f46"><strong>Saved Meals Library &amp; Manage Meals.</strong> Saved meals are stored in ClinBridge data and included in all backups. Each saved meal records its items, combined nutritional totals, saved date, and last evaluated date. Manage Meals button on the main page (alongside Manage Medicines and Manage Symptoms) opens the library. Each meal card has four actions: &#x270F;&#xFE0F; Edit (opens in builder pre-loaded), &#x1F504; Re-evaluate (sends to Ask against current conditions/medications), &#x1F6AB; Do Not Use (flags with optional note and hides from Log Meal picker), &#x1F5D1;&#xFE0F; Delete. Saved meals also appear as a picker at the top of the Log Meal modal, organized by type, for fast pre-fill logging.</p>
@@ -2960,7 +2960,7 @@ Custom Range
         </div>
 
         <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:14px 16px;border-radius:8px;margin-bottom:12px">
-          <strong style="font-size:16px">&#x2705; Fixed in v9.10.160 &mdash; May 29, 2026</strong>
+          <strong style="font-size:16px">&#x2705; Fixed in v9.10.161 &mdash; May 29, 2026</strong>
           <p style="font-size:14px;margin:6px 0 0 0;color:#065f46"><strong>Log Medicine &mdash; conditional note shown at logging time.</strong> Medicines with a clinical condition (e.g. Metoprolol &ldquo;Only when diastolic &gt;70&rdquo;, Losartan &ldquo;Only when systolic &gt;100&rdquo;) now show an amber warning banner in the Log Medicine modal. Previously the note was only visible in Manage Medicines.</p>
         </div>
 
@@ -4572,7 +4572,7 @@ Custom Range
 // hard reload from the server so users always get the latest.
 // ============================================================
 (function(){
-  var CURRENT='v9.10.160';
+  var CURRENT='v9.10.161';
   var VKEY='CLINBRIDGE_APP_VERSION';
   try{
     var stored=localStorage.getItem(VKEY);
@@ -14915,7 +14915,7 @@ function _checkDisclaimerAccepted(){
 
 function _acceptDisclaimer(){
   try{
-    var rec = {accepted: true, ts: new Date().toISOString(), version: 'v9.10.160'};
+    var rec = {accepted: true, ts: new Date().toISOString(), version: 'v9.10.161'};
     // Checksum the acknowledgment record
     rec._cs = _cbHash(rec.ts + '|' + rec.version + '|' + CB_TAMPER_SALT);
     localStorage.setItem(CB_DISCLAIMER_KEY, JSON.stringify(rec));
@@ -19292,7 +19292,7 @@ html+=lbBadge;
 html+='<div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px">';
 html+='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">';
 html+='<div>';
-html+='<div style="font-size:16px;font-weight:700;color:#1e293b">ClinBridge <span id="settingsVersionCurrent">v9.10.160</span></div>';
+html+='<div style="font-size:16px;font-weight:700;color:#1e293b">ClinBridge <span id="settingsVersionCurrent">v9.10.161</span></div>';
 html+='<div id="settingsVersionStatus" style="font-size:13px;color:#6b7280;margin-top:3px">Tap "Check for Updates" to see if a newer version is available</div>';
 html+='</div>';
 html+='<button onclick="checkForUpdates(true)" id="checkUpdateBtn" style="background:#1d4ed8;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap">🔍 Check for Updates</button>';
@@ -30547,7 +30547,7 @@ Note: This report is based on patient self-tracked data. Clinical correlation
 and examination are essential for diagnosis and treatment decisions.
 
 ---
-ClinBridge v9.10.160 Medical Grade - Free
+ClinBridge v9.10.161 Medical Grade - Free
 Report Generated: ${reportDate}`;
 
 return text;
@@ -34466,7 +34466,7 @@ report.push(notes);
 report.push('');
 }
 report.push('═══════════════════════════════════════════════════════════');
-report.push('This report was generated by ClinBridge v9.10.160 Medical Grade - Free');
+report.push('This report was generated by ClinBridge v9.10.161 Medical Grade - Free');
 report.push('Advanced Analytics Dashboard - Phase 3 Implementation');
 report.push('═══════════════════════════════════════════════════════════');
 const blob=new Blob([report.join('\n')],{type:'text/plain'});
@@ -34556,7 +34556,7 @@ ${periodHTML}
 <h2>Key Insights</h2>
 ${insightsHTML}
 <div style="margin-top:40px;padding:20px;background:#f0f9ff;border-left:4px solid #3b82f6;border-radius:8px">
-<strong>ClinBridge v9.10.160 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
+<strong>ClinBridge v9.10.161 Medical Grade - Free</strong> - Advanced Analytics Dashboard<br>
 This report is not a substitute for professional medical advice.
 </div>
 </body>
@@ -35529,7 +35529,7 @@ alert(`🏃 Activity Summary\n\n` +
 var VERSION_JSON_URL = 'https://clinbridge.clinic/version.json';
 var VERSION_CHECK_KEY = 'CLINBRIDGE_LAST_VERSION_CHECK';
 var VERSION_DISMISSED_KEY = 'CLINBRIDGE_UPDATE_DISMISSED';
-var CURRENT_VERSION = 'v9.10.160';
+var CURRENT_VERSION = 'v9.10.161';
 var _latestVersionData = null; // cached from last fetch
 
 // Detect whether running as an installed Home Screen PWA on iOS
@@ -41132,9 +41132,11 @@ function openAskPanel(dateFrom, dateTo) {
   var _fc = document.getElementById('foodCheckForm');
   var _mb = document.getElementById('mealBuilderForm');
   var _tp = document.getElementById('toolPickerSheet');
+  var _th = document.getElementById('askThread');
   if (_fc) _fc.style.display = 'none';
   if (_mb) _mb.style.display = 'none';
   if (_tp) _tp.style.display = 'none';
+  if (_th) _th.style.display = 'flex';
   // Store date range for context — set by Deep Dive, cleared on normal open
   _askContextDateFrom = dateFrom || null;
   _askContextDateTo   = dateTo   || null;
