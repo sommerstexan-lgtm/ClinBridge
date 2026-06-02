@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.168",
+  "version": "v9.10.170",
   "date": "2026-06-02",
-  "notes": "Help tab scroll and content scroll fixed on iPhone — missing -webkit-overflow-scrolling:touch was breaking all touch interaction in the Help modal."
+  "notes": "Help scroll and tab switching on iPhone — fixed overflow:visible on help-modal-content and touch-action on chevron overlays."
 }
