@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.162",
-  "date": "2026-06-01",
-  "notes": "Meal Builder fields (name and type) now cleared when opening fresh. Previously stale meal name and type persisted in DOM across sessions."
+  "version": "v9.10.163",
+  "date": "2026-06-02",
+  "notes": "Saved Meals library now correctly reloaded after data import. Previously, importing a backup wrote the correct data to localStorage but left a stale in-memory savedMeals array active — causing subsequent meal saves to silently overwrite the restored library."
 }
