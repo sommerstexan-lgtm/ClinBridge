@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.163",
+  "version": "v9.10.165",
   "date": "2026-06-02",
-  "notes": "Saved Meals library now correctly reloaded after data import. Previously, importing a backup wrote the correct data to localStorage but left a stale in-memory savedMeals array active — causing subsequent meal saves to silently overwrite the restored library."
+  "notes": "Medication Intelligence Panel: personalized block/warn thresholds derived from 7/30/90-day personal data using mean±SD. Dual-condition safety with mip_warn, pp_warn, hr_warn caution screens. Manual Pin in Pinned Events. Help tabs updated throughout."
 }

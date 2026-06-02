@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clinbridge-v9.10.163';
+const CACHE_NAME = 'clinbridge-v9.10.165';
 const urlsToCache = ['./', './index.html', './manifest.json', './ClinBridge-App-logo.JPG'];
 
 self.addEventListener('install', event => {
@@ -15,12 +15,9 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Network-first: always try network, fall back to cache
-  // This ensures fresh content on every load
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // Cache the fresh response
         if (response && response.status === 200) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
