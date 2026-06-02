@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.167",
+  "version": "v9.10.168",
   "date": "2026-06-02",
-  "notes": "Medication Intelligence approve button now shows as grey Update Thresholds when already approved, eliminating contradictory messaging."
+  "notes": "Help tab scroll and content scroll fixed on iPhone — missing -webkit-overflow-scrolling:touch was breaking all touch interaction in the Help modal."
 }
