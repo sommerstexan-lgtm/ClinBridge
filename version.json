@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.165",
+  "version": "v9.10.167",
   "date": "2026-06-02",
-  "notes": "Medication Intelligence Panel: personalized block/warn thresholds derived from 7/30/90-day personal data using mean±SD. Dual-condition safety with mip_warn, pp_warn, hr_warn caution screens. Manual Pin in Pinned Events. Help tabs updated throughout."
+  "notes": "Medication Intelligence approve button now shows as grey Update Thresholds when already approved, eliminating contradictory messaging."
 }
