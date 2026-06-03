@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.175",
+  "version": "v9.10.176",
   "date": "2026-06-03",
-  "notes": "Document attachment in Ask ClinBridge. Help tabs fixed. MIP class headers. GLP-1 lookup added."
+  "notes": "MIP auto-sync with condition rules. Help tab updated."
 }
