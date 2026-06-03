@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clinbridge-v9.10.170';
+const CACHE_NAME = 'clinbridge-v9.10.174';
 const urlsToCache = ['./', './index.html', './manifest.json', './ClinBridge-App-logo.JPG'];
 self.addEventListener('install', event => {
   self.skipWaiting();

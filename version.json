@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.170",
-  "date": "2026-06-02",
-  "notes": "Help scroll and tab switching on iPhone — fixed overflow:visible on help-modal-content and touch-action on chevron overlays."
+  "version": "v9.10.174",
+  "date": "2026-06-03",
+  "notes": "Document attachment in Ask ClinBridge. Attach PDF, JPG, or PNG to questions. Session-only, never stored. Timeout extended to 35s for document questions. Worker updated to pass content-array messages through to Anthropic API."
 }
