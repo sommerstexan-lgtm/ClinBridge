@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.174",
+  "version": "v9.10.175",
   "date": "2026-06-03",
-  "notes": "Document attachment in Ask ClinBridge. Attach PDF, JPG, or PNG to questions. Session-only, never stored. Timeout extended to 35s for document questions. Worker updated to pass content-array messages through to Anthropic API."
+  "notes": "Document attachment in Ask ClinBridge. Help tabs fixed. MIP class headers. GLP-1 lookup added."
 }
