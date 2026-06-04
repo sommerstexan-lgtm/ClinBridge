@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.177",
+  "version": "v9.10.178",
   "date": "2026-06-04",
-  "notes": "Fix: warn-screen buttons (Log Anyway, Back) broken when event reminder active. Root cause: hideModal() was intercepting button actions and reshowing the reminder instead of proceeding. Removed hideModal() prefix from all 6 med-safety screen buttons across _showRulesWarn, _showMIPWarn, _showPPWarn, _showHRWarn, _showNoBPBlock, _showConditionBlock, _showIntervalBlock."
+  "notes": "Sentinel Help best practice callout added. My Song quick link added to Support tab."
 }
