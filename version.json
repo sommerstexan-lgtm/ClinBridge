@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.181",
+  "version": "v9.10.182",
   "date": "2026-06-05",
-  "notes": "Log Anyway button fixed on all medication warn screens."
+  "notes": "Day summary now correctly matches logged meals to library by name for all historical logs."
 }
