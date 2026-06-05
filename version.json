@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.180",
+  "version": "v9.10.181",
   "date": "2026-06-05",
-  "notes": "Nutrition Targets in Settings. Day Summary panel in Manage Meals. NUTRITION PROFILE in Ask context. savedMealId stored on log entry."
+  "notes": "Log Anyway button fixed on all medication warn screens."
 }
