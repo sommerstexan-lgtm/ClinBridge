@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.178",
-  "date": "2026-06-04",
-  "notes": "Sentinel Help best practice callout added. My Song quick link added to Support tab."
+  "version": "v9.10.179",
+  "date": "2026-06-05",
+  "notes": "Event card dismissal fix. Close button reminder loop fix. Log forms auto-select active event."
 }
