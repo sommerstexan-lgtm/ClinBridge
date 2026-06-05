@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.179",
+  "version": "v9.10.180",
   "date": "2026-06-05",
-  "notes": "Event card dismissal fix. Close button reminder loop fix. Log forms auto-select active event."
+  "notes": "Nutrition Targets in Settings. Day Summary panel in Manage Meals. NUTRITION PROFILE in Ask context. savedMealId stored on log entry."
 }
