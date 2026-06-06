@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.183",
+  "version": "v9.10.184",
   "date": "2026-06-06",
-  "notes": "Meal-BP timing correlation in Ask. Reminder audio fix. Rule delete fix. Drug class live detect. Rule limit 8. Help tabs updated."
+  "notes": "Syntax fix: Settings button broken after medicine changes. Meal-BP timing correlation in Ask. Full bug fix release."
 }
