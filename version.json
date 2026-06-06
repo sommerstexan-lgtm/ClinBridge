@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.184",
+  "version": "v9.10.185",
   "date": "2026-06-06",
-  "notes": "Syntax fix: Settings button broken after medicine changes. Meal-BP timing correlation in Ask. Full bug fix release."
+  "notes": "Full release: MIP sync fix, rule limit 8, rule delete fix, drug class live detect, audio fix, meal-BP timing in Ask, help tabs updated."
 }
