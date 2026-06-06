@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.185",
+  "version": "v9.10.186",
   "date": "2026-06-06",
-  "notes": "Full release: MIP sync fix, rule limit 8, rule delete fix, drug class live detect, audio fix, meal-BP timing in Ask, help tabs updated."
+  "notes": "MIP now shows no-rules notice for Anticoagulants and Statins, warn-only notice for Sleep Aid, and doctor-guidance reminder for all other medicines before Approve button."
 }
