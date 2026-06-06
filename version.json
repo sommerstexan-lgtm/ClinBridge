@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.186",
+  "version": "v9.10.188",
   "date": "2026-06-06",
-  "notes": "MIP now shows no-rules notice for Anticoagulants and Statins, warn-only notice for Sleep Aid, and doctor-guidance reminder for all other medicines before Approve button."
+  "notes": "Post-override correlation: BP/HR window (0-120 min) after override doses surfaces in Doctor's Report, Med Effectiveness, and Ask context."
 }
