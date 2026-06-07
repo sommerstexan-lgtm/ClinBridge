@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.188",
+  "version": "v9.10.189",
   "date": "2026-06-06",
-  "notes": "Post-override correlation: BP/HR window (0-120 min) after override doses surfaces in Doctor's Report, Med Effectiveness, and Ask context."
+  "notes": "HR warn now requires 2-of-3 readings above threshold (not average). MIP sync gap migration: missing conditionRules written for all active medicines."
 }
