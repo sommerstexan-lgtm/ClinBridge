@@ -1,5 +1,5 @@
 {
-  "version": "v9.10.189",
-  "date": "2026-06-06",
-  "notes": "HR warn now requires 2-of-3 readings above threshold (not average). MIP sync gap migration: missing conditionRules written for all active medicines."
+  "version": "v9.10.190",
+  "date": "2026-06-08",
+  "notes": "Notifications: reminderEnabled undefined now treated as enabled (was silently skipping events). Ask: fixed raw unicode escape in Nutritional Summary heading. Ask: Food Check label grid fixed to 2x2 for mobile."
 }
