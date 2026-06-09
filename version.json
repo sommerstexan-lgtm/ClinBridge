@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.193",
+  "version": "v9.10.194",
   "date": "2026-06-09",
   "whatsNew": ["Missed-Event Catch-Up: if the screen was off when an event fired, opening the app now surfaces a recovery modal listing every missed event. Run each one in order or skip — modal stays until all are addressed."],
-  "notes": "Fix: service worker update now unregisters stale SW and clears all caches on version mismatch, then hard-reloads so new index.html is fetched cleanly. Previous versions used reg.update() only which left old SW in control and blocked new version from loading."
+  "notes": "Fix: cache buster now unregisters the service worker and clears all caches BEFORE writing the new version to localStorage and reloading. Previous approach wrote localStorage first, making the SW mismatch undetectable and leaving old cached pages permanently in control."
 }
