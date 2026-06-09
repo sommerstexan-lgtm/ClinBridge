@@ -1,5 +1,6 @@
 {
-  "version": "v9.10.190",
-  "date": "2026-06-08",
-  "notes": "Notifications: reminderEnabled undefined now treated as enabled (was silently skipping events). Ask: fixed raw unicode escape in Nutritional Summary heading. Ask: Food Check label grid fixed to 2x2 for mobile."
+  "version": "v9.10.192",
+  "date": "2026-06-09",
+  "whatsNew": ["Missed-Event Catch-Up: if the screen was off when an event fired, opening the app now surfaces a recovery modal listing every missed event. Run each one in order or skip — modal stays until all are addressed."],
+  "notes": "Help tab updates: FAQ 'Will reminders fire' now explains the catch-up recovery screen. FAQ 'Do I need Wi-Fi' now includes screen-on and Low Power Mode constraint for Airplane Mode users. Privacy Airplane Mode section updated with catch-up recovery note."
 }
