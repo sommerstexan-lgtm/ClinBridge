@@ -1,6 +1,6 @@
 {
-  "version": "v9.10.194",
+  "version": "v9.10.195",
   "date": "2026-06-09",
   "whatsNew": ["Missed-Event Catch-Up: if the screen was off when an event fired, opening the app now surfaces a recovery modal listing every missed event. Run each one in order or skip — modal stays until all are addressed."],
-  "notes": "Fix: cache buster now unregisters the service worker and clears all caches BEFORE writing the new version to localStorage and reloading. Previous approach wrote localStorage first, making the SW mismatch undetectable and leaving old cached pages permanently in control."
+  "notes": "Critical fix: previous deploys (v9.10.191-194) were built from a doubled HTML file (entire app duplicated inside one file), causing two copies of every function and startup call to execute simultaneously. Rebuilt cleanly from v9.10.190 single-block base. All v9.10.191-192 features (catch-up scan, Help tab updates) reapplied correctly."
 }
