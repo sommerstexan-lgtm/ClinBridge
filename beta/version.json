@@ -1,0 +1,5 @@
+{
+  "version": "9.10.205",
+  "date": "2026-06-10",
+  "notes": "Added R19: automatic error logging (uncaught errors/rejections -> GA4 events) and a beta-build banner that activates automatically when served from a /beta path. Privacy disclosure updated to mention error diagnostics."
+}
