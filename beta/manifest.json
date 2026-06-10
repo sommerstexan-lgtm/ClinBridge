@@ -1,0 +1,21 @@
+{
+  "name": "ClinBridge (Beta)",
+  "short_name": "CB Beta",
+  "description": "Cardiac health tracking for patients, by a patient.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "../ClinBridge-App-logo.JPG",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "../ClinBridge-App-logo.JPG",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
