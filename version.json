@@ -1,6 +1,5 @@
 {
-  "version": "v9.10.196",
-  "date": "2026-06-09",
-  "whatsNew": ["Missed-Event Catch-Up: if a screen-off period causes you to miss an event, reopening the app surfaces a recovery modal listing every missed event. Run each one in order or skip — modal stays until all are addressed."],
-  "notes": "Fix: catch-up scan now also fires on iOS BFCache pageshow restore (the path used when reopening a suspended PWA from the home screen) — previously only covered cold-start and visibilitychange resume. Also corrected a Known Issues changelog entry that had been mislabeled by version-bump automation."
+  "version": "9.10.197",
+  "date": "2026-06-10",
+  "notes": "Voice input fix: BP/HR fields now strip non-digit characters on input event, preventing iOS speech recognition from inserting 'e' into numeric fields."
 }
