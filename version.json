@@ -1,5 +1,5 @@
 {
-  "version": "9.10.198",
+  "version": "9.10.199",
   "date": "2026-06-10",
-  "notes": "Voice input fix: all numeric fields now strip non-digit characters on input, covering iOS speech dictation. Help updated with FAQ voice entry and Known Issues documentation. Deploy checklist R8a added."
+  "notes": "Critical fix: JS syntax error in v9.10.198 caused app to freeze on splash screen. Fixed 4 broken oninput injections. Added mandatory JS syntax check to deploy process."
 }
