@@ -1,5 +1,5 @@
 {
-  "version": "9.10.202",
+  "version": "9.10.205",
   "date": "2026-06-10",
-  "notes": "Process improvement: added R17 to deploy checklist - mandatory keyword sweep across all 19 Help tabs before declaring a version ready, ensuring documentation stays in sync with code changes."
+  "notes": "Added R19: automatic error logging (uncaught errors/rejections -> GA4 events) and a beta-build banner that activates automatically when served from a /beta path. Privacy disclosure updated to mention error diagnostics."
 }
