@@ -1,5 +1,5 @@
 {
-  "version": "9.10.200",
+  "version": "9.10.202",
   "date": "2026-06-10",
-  "notes": "PWA update instructions rewritten: close-and-reopen tried first (current network-first SW supports this), backup/reinstall retained as fallback. Updated in both the See What's New modal and Settings > App Version & Updates."
+  "notes": "Process improvement: added R17 to deploy checklist - mandatory keyword sweep across all 19 Help tabs before declaring a version ready, ensuring documentation stays in sync with code changes."
 }
