@@ -1,5 +1,5 @@
 {
-  "version": "9.10.197",
+  "version": "9.10.198",
   "date": "2026-06-10",
-  "notes": "Voice input fix: BP/HR fields now strip non-digit characters on input event, preventing iOS speech recognition from inserting 'e' into numeric fields."
+  "notes": "Voice input fix: all numeric fields now strip non-digit characters on input, covering iOS speech dictation. Help updated with FAQ voice entry and Known Issues documentation. Deploy checklist R8a added."
 }
