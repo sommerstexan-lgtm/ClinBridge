@@ -1,5 +1,5 @@
 {
-  "version": "9.10.199",
+  "version": "9.10.200",
   "date": "2026-06-10",
-  "notes": "Critical fix: JS syntax error in v9.10.198 caused app to freeze on splash screen. Fixed 4 broken oninput injections. Added mandatory JS syntax check to deploy process."
+  "notes": "PWA update instructions rewritten: close-and-reopen tried first (current network-first SW supports this), backup/reinstall retained as fallback. Updated in both the See What's New modal and Settings > App Version & Updates."
 }
