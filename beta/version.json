@@ -1,5 +1,5 @@
 {
-  "version": "9.10.206",
+  "version": "9.10.207",
   "date": "2026-06-11",
-  "notes": "Fixed misaligned text cursor in Log Blood Pressure input fields (line-height fix on .modal-input). Fixed Log Weight voice dictation of decimal values (e.g. 180.2) being truncated/getting a stray 'e' by switching to text/inputmode=decimal with a new _sanitizeDecimalInput onblur handler."
+  "notes": "BETA: Added plain-language mean+/-1SD ranges to MIP stat lines (Systolic, Diastolic, HR, PP). Caution acknowledgements (warn-tier 'Log Anyway') are now recorded with vitals-at-dose and post-dose BP/HR correlation, surfaced in Medications log, Med Effectiveness, Doctor's Report, and Ask context -- same treatment hard-block overrides already had."
 }
