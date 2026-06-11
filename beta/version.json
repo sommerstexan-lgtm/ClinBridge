@@ -1,5 +1,5 @@
 {
-  "version": "9.10.207",
+  "version": "9.10.208",
   "date": "2026-06-11",
-  "notes": "BETA: Added plain-language mean+/-1SD ranges to MIP stat lines (Systolic, Diastolic, HR, PP). Caution acknowledgements (warn-tier 'Log Anyway') are now recorded with vitals-at-dose and post-dose BP/HR correlation, surfaced in Medications log, Med Effectiveness, Doctor's Report, and Ask context -- same treatment hard-block overrides already had."
+  "notes": "BETA: MIP Approve/Update no longer scrolls to top of panel (element-anchored scroll restore). New Weekly Threshold Review: a red action-item box on Today's Status appears when medication thresholds (or PP baseline) haven't been reviewed in 7+ days, opening a one-at-a-time queue (use suggested / keep current / edit). Every approve/keep/edit now records a per-metric history breadcrumb for future Doctor's Report trend lines."
 }
