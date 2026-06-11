@@ -1,5 +1,5 @@
-const CACHE_NAME = 'clinbridge-beta-v9.10.205';
-const urlsToCache = ['./', './index.html', './manifest.json', '../ClinBridge-App-logo.JPG'];
+const CACHE_NAME = 'clinbridge-v9.10.206';
+const urlsToCache = ['./', './index.html', './manifest.json', './ClinBridge-App-logo.JPG'];
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));

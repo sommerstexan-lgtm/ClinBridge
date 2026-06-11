@@ -1,5 +1,5 @@
 {
-  "version": "9.10.205",
-  "date": "2026-06-10",
-  "notes": "Added R19: automatic error logging (uncaught errors/rejections -> GA4 events) and a beta-build banner that activates automatically when served from a /beta path. Privacy disclosure updated to mention error diagnostics."
+  "version": "9.10.206",
+  "date": "2026-06-11",
+  "notes": "Fixed misaligned text cursor in Log Blood Pressure input fields (line-height fix on .modal-input). Fixed Log Weight voice dictation of decimal values (e.g. 180.2) being truncated/getting a stray 'e' by switching to text/inputmode=decimal with a new _sanitizeDecimalInput onblur handler."
 }
