@@ -1,5 +1,5 @@
 {
-  "version": "9.10.213",
+  "version": "9.10.214",
   "date": "2026-06-12",
-  "notes": "Beta tester: report something the moment you find it, without waiting for the weekly check-in. The purple BETA BUILD banner is now tappable (any screen), and Settings > Beta Tester has a new 'Report Something Now' button -- both open the guided feedback email immediately, independent of the weekly check-in schedule and skip counter."
+  "notes": "Beta feedback email: fixed inconsistent line spacing in the body template where two prompts collapsed onto one line in iOS Mail despite identical source spacing. Template now numbers each prompt (1-5) for robust visual separation, and the screenshot reminder is its own labeled line."
 }
