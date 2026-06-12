@@ -1,5 +1,5 @@
 {
-  "version": "9.10.211",
+  "version": "9.10.213",
   "date": "2026-06-12",
-  "notes": "Fixed Help & About search: tapping a result no longer shows a collapsed/blank section with non-functional Prev/Next (root cause was inconsistent visibility-property handling between tab navigation and search navigation). FAQ, Getting Started, and Known Issues updated to explain that iOS reminder limitations (screen-on requirement, Low Power Mode) are an iOS platform restriction -- not a ClinBridge bug -- with a direct comparison to Android's background service worker / push support."
+  "notes": "Beta tester: report something the moment you find it, without waiting for the weekly check-in. The purple BETA BUILD banner is now tappable (any screen), and Settings > Beta Tester has a new 'Report Something Now' button -- both open the guided feedback email immediately, independent of the weekly check-in schedule and skip counter."
 }
