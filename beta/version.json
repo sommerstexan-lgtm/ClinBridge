@@ -1,5 +1,5 @@
 {
-  "version": "9.10.210",
+  "version": "9.10.211",
   "date": "2026-06-12",
-  "notes": "Sentinel: every stream card (Pulse Pressure, HR Daily Spread, Symptom Frequency) now includes a 14-day inline sparkline with a dashed 'recent normal' reference line, plus an auto-generated plain-language caption comparing earlier vs. recent halves of the window against your personal variability. Direction-aware per stream (e.g. wider PP = favorable for CHF/diastolic dysfunction)."
+  "notes": "Fixed Help & About search: tapping a result no longer shows a collapsed/blank section with non-functional Prev/Next (root cause was inconsistent visibility-property handling between tab navigation and search navigation). FAQ, Getting Started, and Known Issues updated to explain that iOS reminder limitations (screen-on requirement, Low Power Mode) are an iOS platform restriction -- not a ClinBridge bug -- with a direct comparison to Android's background service worker / push support."
 }
