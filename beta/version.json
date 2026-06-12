@@ -1,5 +1,5 @@
 {
-  "version": "9.10.209",
+  "version": "9.10.210",
   "date": "2026-06-12",
-  "notes": "Medication Intelligence Panel: search bar (filter by medicine/drug class) and floating back-to-top button. Advanced Analytics: Doctor's Report and Generate Analysis are now side-by-side single-tap buttons, removing the old two-step reveal flow."
+  "notes": "Sentinel: every stream card (Pulse Pressure, HR Daily Spread, Symptom Frequency) now includes a 14-day inline sparkline with a dashed 'recent normal' reference line, plus an auto-generated plain-language caption comparing earlier vs. recent halves of the window against your personal variability. Direction-aware per stream (e.g. wider PP = favorable for CHF/diastolic dysfunction)."
 }
