@@ -1,5 +1,5 @@
 {
-  "version": "9.10.216",
+  "version": "9.10.217",
   "date": "2026-06-12",
-  "notes": "Fixed iOS auto-zoom in Meal Builder's Add Item form. Nine fields (food name, prep method, Amount, Serving, Sodium, Potassium, Phosphorus, plus meal name/type) were under 16px font, which triggers iOS auto-zoom on focus -- with several small fields in a row, the zoom compounded with each field. All nine fields now use 16px to prevent this."
+  "notes": "Help documentation accuracy update: the Meal Builder feature description (Planned Features and Ask tabs) now correctly describes the v9.10.215 save/update behavior -- editing an existing saved meal and re-evaluating updates it in place (button reads Update), while building from scratch adds a new library entry (Save to Library)."
 }
