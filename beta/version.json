@@ -1,5 +1,5 @@
 {
-  "version": "9.10.214",
+  "version": "9.10.216",
   "date": "2026-06-12",
-  "notes": "Beta feedback email: fixed inconsistent line spacing in the body template where two prompts collapsed onto one line in iOS Mail despite identical source spacing. Template now numbers each prompt (1-5) for robust visual separation, and the screenshot reminder is its own labeled line."
+  "notes": "Fixed iOS auto-zoom in Meal Builder's Add Item form. Nine fields (food name, prep method, Amount, Serving, Sodium, Potassium, Phosphorus, plus meal name/type) were under 16px font, which triggers iOS auto-zoom on focus -- with several small fields in a row, the zoom compounded with each field. All nine fields now use 16px to prevent this."
 }
