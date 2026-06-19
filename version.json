@@ -1,5 +1,7 @@
 {
-  "version": "9.10.205",
-  "date": "2026-06-10",
-  "notes": "Added R19: automatic error logging (uncaught errors/rejections -> GA4 events) and a beta-build banner that activates automatically when served from a /beta path. Privacy disclosure updated to mention error diagnostics."
+  "version": "9.10.296",
+  "date": "2026-06-19",
+  "label": "v9.10.296",
+  "build": "v9.10.296",
+  "notes": "Feedback/contact flow corrected: robert@cardiaclens.com is now a real tappable mailto link and Open Email App button, with Copy Email Address as fallback. No auto attachments, no prebuilt Gmail drafts, and no support@ or betatesting@ destination. Secure keyboard/cooldown fixes, pointer tap handling, and centered Z row retained."
 }
