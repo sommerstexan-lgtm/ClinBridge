@@ -1,5 +1,7 @@
 {
-  "version": "9.10.217",
-  "date": "2026-06-12",
-  "notes": "Help documentation accuracy update: the Meal Builder feature description (Planned Features and Ask tabs) now correctly describes the v9.10.215 save/update behavior -- editing an existing saved meal and re-evaluating updates it in place (button reads Update), while building from scratch adds a new library entry (Save to Library)."
+  "version": "9.10.296",
+  "date": "2026-06-19",
+  "label": "v9.10.296",
+  "build": "v9.10.296",
+  "notes": "Feedback/contact flow corrected: robert@cardiaclens.com is now a real tappable mailto link and Open Email App button, with Copy Email Address as fallback. No auto attachments, no prebuilt Gmail drafts, and no support@ or betatesting@ destination. Secure keyboard/cooldown fixes, pointer tap handling, and centered Z row retained."
 }
