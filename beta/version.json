@@ -1,7 +1,7 @@
 {
-  "version": "9.10.296",
-  "date": "2026-06-19",
-  "label": "v9.10.296",
-  "build": "v9.10.296",
-  "notes": "Feedback/contact flow corrected: robert@cardiaclens.com is now a real tappable mailto link and Open Email App button, with Copy Email Address as fallback. No auto attachments, no prebuilt Gmail drafts, and no support@ or betatesting@ destination. Secure keyboard/cooldown fixes, pointer tap handling, and centered Z row retained."
+  "version": "v9.10.336",
+  "build": "v9.10.336",
+  "updated": "2026-06-22T12:55:00Z",
+  "name": "CardiacLens v9.10.336",
+  "label": "KISS State Fixes"
 }
