@@ -246,8 +246,6 @@
       if(typeof settings==='object'&&settings){settings.securityProfile=null;try{localStorage.setItem('BP_TRACKER_SETTINGS',JSON.stringify(settings));}catch(e){}}
     }catch(e){}
   }
-  window._clPersistSecurityProfile=_clPersistSecurityProfile;
-  window._clRestoreSecurityProfile=_clRestoreSecurityProfile;
   window._clSecurityPersistenceCheck=function(){
     var p=_clRestoreSecurityProfile();
     return {configured:!!_clReadSecurityProfileFromKeys(),profileMirror:!!p,mode:(p&&p.mode)||'',updatedAt:(p&&p.updatedAt)||''};
@@ -8099,7 +8097,7 @@ function getJourneyFormData(activityName){
 }
 
 
-// Weather settings persistence guard (v9.10.336)
+// Weather settings persistence guard (v9.10.337)
 var CARDIACLENS_WEATHER_SETTINGS_KEY='CARDIACLENS_WEATHER_SETTINGS';
 function _clMergeDestinations(a,b){
   var out=[],seen={};
@@ -8144,7 +8142,7 @@ function _clWeatherSettingsSnapshot(){
   };}catch(e){return null;}
 }
 function _clSaveWeatherSettingsBackup(){
-  // v9.10.336: current saved settings win; backup only fills missing weather fields.
+  // v9.10.337: current saved settings win; backup only fills missing weather fields.
   try{
     var snap=_clWeatherSettingsSnapshot(); if(!snap)return;
     var prior=null;
@@ -8166,14 +8164,14 @@ function _clSaveWeatherSettingsBackup(){
   }catch(e){}
 }
 function _clRestoreWeatherSettingsBackup(){
-  // v9.10.336: restore defensively. Blank/default backup fields must not erase current settings.
+  // v9.10.337: restore defensively. Blank/default backup fields must not erase current settings.
   try{
     var raw=localStorage.getItem(CARDIACLENS_WEATHER_SETTINGS_KEY); if(!raw)return;
     var w=JSON.parse(raw); if(!w||typeof w!=='object')return;
     var fields=['activityWeatherMode','activityEnvironmentalMode','activityWeatherStoreSnapshot','activityWeatherRainThresholdPct','activityWeatherDefaultWindowMin','activityWeatherAskOnOutdoor','activityWeatherStoreCoordinates','todayWeatherPillEnabled','todayWeatherCacheMinutes','todayWeatherSavedZip','todayWeatherSource','pickupPlannerDefaultDate','activityWindows','activityDestinations'];
     fields.forEach(function(k){
       if(w[k]===undefined||w[k]===null)return;
-      // v9.10.336: current Saved ZIP settings must not be overwritten by older backup values.
+      // v9.10.337: current Saved ZIP settings must not be overwritten by older backup values.
       // Backup is only a fill-in source, not the authority when current settings are explicit.
       if(k==='todayWeatherSource'){
         var curSource=settings&&settings.todayWeatherSource;
@@ -8213,7 +8211,7 @@ function _ensureActivityEnvSettings(){
     var legacyNames={'Doctor':true,'Store':true,'Church':true,'Aggarwala':true,'HEB':true};
     settings.activityDestinations=(settings.activityDestinations||[]).filter(function(d){return d&&d.label&&!legacyNames[d.label];});
     settings.activityDestinationLegacyCleanupV309=true;
-    // v9.10.336: do not write defaults from _ensureActivityEnvSettings().
+    // v9.10.337: do not write defaults from _ensureActivityEnvSettings().
     // This function may run during startup before saved settings are loaded.
   }
   // v9.10.321: no baked-in destinations. Users add their own.
@@ -15863,7 +15861,7 @@ function _clWindCompass(deg){
 function _clGetWeatherCache(){try{var raw=localStorage.getItem(TODAY_WEATHER_CACHE_KEY);return raw?JSON.parse(raw):null;}catch(e){return null;}}
 function _clSetWeatherCache(obj){try{localStorage.setItem(TODAY_WEATHER_CACHE_KEY,JSON.stringify(obj));}catch(e){}}
 function _clResolveSavedWeatherZip(){
-  // v9.10.336: one reliable ZIP source. Settings wins, backup fills blanks, cache fills blanks, then Robert's normal ZIP.
+  // v9.10.337: one reliable ZIP source. Settings wins, backup fills blanks, cache fills blanks, then Robert's normal ZIP.
   // Today Weather must not fall back to GPS unless the user explicitly taps Use My Location.
   try{
     var z=String((settings&&settings.todayWeatherSavedZip)||'').trim();
@@ -15893,7 +15891,7 @@ function _clWeatherUpdatedLabel(c){
   return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+' ('+ageText+')';
 }
 function _clBuildWeatherUrl(lat,lon){
-  // v9.10.336: Simple, direct Open-Meteo request. No ZIP lookup, no GPS, no extra layers.
+  // v9.10.337: Simple, direct Open-Meteo request. No ZIP lookup, no GPS, no extra layers.
   // The app only needs current conditions + hourly forecast for rain/heat/wind guidance.
   return 'https://api.open-meteo.com/v1/forecast?latitude='+encodeURIComponent(lat)+'&longitude='+encodeURIComponent(lon)+
     '&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto&forecast_days=2'+
@@ -15901,7 +15899,7 @@ function _clBuildWeatherUrl(lat,lon){
     '&hourly=precipitation_probability,precipitation,rain,temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m';
 }
 
-// v9.10.336: Saved ZIP uses a direct local coordinate table first.
+// v9.10.337: Saved ZIP uses a direct local coordinate table first.
 // For Robert's normal area, 77340 always resolves directly to Huntsville coordinates.
 var CL_ZIP_COORDS={
   '77340':{lat:30.7235,lon:-95.5508,label:'Huntsville'},
@@ -16026,15 +16024,15 @@ function openTodayWeatherModal(){
   var html='<div class="modal-title" style="font-size:26px;margin-bottom:10px">☀️ Today\'s Weather</div><button type="button" onclick="hideModal();openHelpModal(\'weather\')" style="width:100%;background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;border-radius:10px;padding:10px;font-size:14px;font-weight:800;margin-bottom:12px">How to use Today\'s Weather</button><div id="todayWeatherModalBody">'+_renderTodayWeatherBody(c,null,initialState)+'</div>';
   html+='<div class="modal-actions"><button class="modal-cancel" onclick="hideModal()">Close</button><button class="modal-ok" id="todayWeatherRefreshBtn" onclick="refreshTodayWeatherFromModal()">Refresh Weather</button></div>';
   showModal(html);
-  // v9.10.336: if cached weather is older than the user's refresh threshold, refresh automatically on open.
+  // v9.10.337: if cached weather is older than the user's refresh threshold, refresh automatically on open.
   // This keeps the weather pill, planner, and activity weather on the same fresh source without requiring a manual tap.
   if(stale){setTimeout(function(){
-    // v9.10.336: stale weather auto-refresh always uses Saved ZIP. No GPS prompt, no source guessing.
+    // v9.10.337: stale weather auto-refresh always uses Saved ZIP. No GPS prompt, no source guessing.
     refreshTodayWeatherFromModal(true,'zip');
   },100);}
 }
 
-// v9.10.336: Today's Weather banner must use the real weather state, not a stale/default activity flag.
+// v9.10.337: Today's Weather banner must use the real weather state, not a stale/default activity flag.
 function _clIsTodayWeatherAutomaticEnabled(c){
   try{
     if(typeof _clRestoreWeatherSettingsBackup==='function')_clRestoreWeatherSettingsBackup();
@@ -16129,7 +16127,7 @@ function useSavedZipWeather(){
   refreshTodayWeatherFromModal(false,'zip');
 }
 function refreshTodayWeatherFromModal(silent,source){
-  // v9.10.336: Refresh Weather uses Saved ZIP by default. GPS only when explicitly requested by Use My Location.
+  // v9.10.337: Refresh Weather uses Saved ZIP by default. GPS only when explicitly requested by Use My Location.
   source=(source==='location')?'location':'zip';
   if(source==='zip'){
     try{settings.todayWeatherSource='zip';settings.todayWeatherSavedZip=_clResolveSavedWeatherZip();localStorage.setItem('BP_TRACKER_SETTINGS',JSON.stringify(settings));}catch(e){}
@@ -18287,12 +18285,11 @@ showModal(html);
       localStorage.setItem('CL_SEC_DONE',  '1');
       localStorage.setItem('CL_SEC_MODE', 'letter-symbol-recovery-v319');
       localStorage.setItem('CL_SEC_UPDATED_AT', new Date().toISOString());
-      if(window._clPersistSecurityProfile) window._clPersistSecurityProfile(); else if(typeof _clPersistSecurityProfile==='function') _clPersistSecurityProfile();
       // Verify write succeeded by reading back
       var verify = localStorage.getItem('CL_SEC_DONE');
       if(verify === '1'){
-        if(window._clSyncLockBtn) { window._clSyncLockBtn(); setTimeout(window._clSyncLockBtn,50); setTimeout(window._clSyncLockBtn,250); }
-        if(ok){ ok.textContent='\u2713 Saved! Secure Access is active now.'; ok.style.display='block'; }
+        if(window._clSyncLockBtn) window._clSyncLockBtn();
+        if(ok){ ok.textContent='\u2713 Saved! Lock button now visible bottom-left.'; ok.style.display='block'; }
       } else {
         if(err){ err.textContent='\u26a0 Save failed — browser storage may be blocked. Try a different browser.'; err.style.display='block'; }
       }
@@ -37773,11 +37770,9 @@ function _mipSave() {
 function _mipMarkWeeklyReviewComplete(){
   try{
     var stamp=new Date().toISOString();
-    var hideUntil=new Date(Date.now()+7*24*60*60*1000).toISOString();
     localStorage.setItem('CARDIACLENS_MIP_WEEKLY_REVIEWED_AT',stamp);
-    localStorage.setItem('CARDIACLENS_MIP_REVIEW_HIDE_UNTIL',hideUntil);
     if(!medIntelData||typeof medIntelData!=='object')medIntelData={};
-    medIntelData._weeklyReview={completedAt:stamp,hideUntil:hideUntil,version:'v9.10.336'};
+    medIntelData._weeklyReview={completedAt:stamp,version:'v9.10.321'};
     _mipSave();
   }catch(e){}
 }
@@ -37788,20 +37783,6 @@ function _mipLastWeeklyReviewTime(){
   var best=0;
   vals.forEach(function(v){var t=new Date(v).getTime();if(!isNaN(t)&&t>best)best=t;});
   return best||0;
-}
-function _mipReviewHiddenByCompletion(){
-  try{
-    if(typeof _clCanonicalizeMedIntelStorage==='function') medIntelData=_clCanonicalizeMedIntelStorage();
-    var vals=[];
-    var ls=localStorage.getItem('CARDIACLENS_MIP_REVIEW_HIDE_UNTIL');
-    if(ls) vals.push(ls);
-    if(medIntelData&&medIntelData._weeklyReview&&medIntelData._weeklyReview.hideUntil) vals.push(medIntelData._weeklyReview.hideUntil);
-    for(var i=0;i<vals.length;i++){
-      var t=new Date(vals[i]).getTime();
-      if(!isNaN(t)&&Date.now()<t) return true;
-    }
-  }catch(e){}
-  return false;
 }
 
 // Compute mean and SD for an array of numbers
@@ -37933,13 +37914,11 @@ function _mipRecordHistory(medName, metric, entry) {
 // or its approvedAt is 7+ days old. Returns one entry per medicine+metric,
 // plus a PP entry, in the same drug-class/name order as the MIP panel.
 function _mipDueItems() {
-  // v9.10.336: global weekly-review completion guard hardened.
+  // v9.10.321: global weekly-review completion guard.
   // The per-threshold approvedAt values are still the source of truth, but this
   // prevents the red weekly-review card from reappearing immediately after a
-  // completed review, version update, or import when the user has already
-  // completed the full queue within the last 7 days.
-  try { if(typeof _clCanonicalizeMedIntelStorage==='function') medIntelData=_clCanonicalizeMedIntelStorage(); } catch(e) {}
-  try { if (_mipReviewHiddenByCompletion()) return []; } catch(e) {}
+  // version update/import when the user has already completed the full queue
+  // within the last 7 days.
   try {
     var lastReviewTime = _mipLastWeeklyReviewTime();
     if (lastReviewTime) {
@@ -38368,7 +38347,6 @@ function mipApprove(medName, metric) {
   _mipApplyMedThresholds(medName, metric, blockVal, warnVal, actionType);
 
   showToast('\u2705 Thresholds approved and synced to condition rules for ' + medName);
-  try{ if(_mipDueItems().length===0){ _mipMarkWeeklyReviewComplete(); if(typeof showTodayZone==='function') setTimeout(showTodayZone,100); } }catch(e){}
   _mipPreserveScroll('mip-metric-' + medName.replace(/\s/g,'_') + '_' + metric, openMedIntel);
 }
 
@@ -38391,7 +38369,6 @@ function mipApprovePP() {
   var synced = _mipApplyPPThresholds(warnVal, targetVal, ppActionType);
 
   showToast('\u2705 PP thresholds approved' + (synced > 0 ? ' \u2014 PP warn rule synced to ' + synced + ' medicine(s)' : ''));
-  try{ if(_mipDueItems().length===0){ _mipMarkWeeklyReviewComplete(); if(typeof showTodayZone==='function') setTimeout(showTodayZone,100); } }catch(e){}
   _mipPreserveScroll('mip-ppcard', openMedIntel);
 }
 
@@ -38552,7 +38529,6 @@ function _mipQueueAction(action) {
 
 function _mipRenderQueueSummary() {
   _mipMarkWeeklyReviewComplete();
-  try{ if(typeof showTodayZone==='function') setTimeout(showTodayZone,100); }catch(e){}
   var html = '<div class="modal-title">\u2705 Weekly Review Complete</div>';
   html += '<div style="font-size:14px;color:#6b7280;margin-bottom:14px;line-height:1.5">Reviewed ' + _mipQueueChanges.length + ' threshold' + (_mipQueueChanges.length === 1 ? '' : 's') + '. These won\u2019t come up again until next week.</div>';
   _mipQueueChanges.forEach(function (c) {
@@ -45049,7 +45025,7 @@ function _showAskClarifyChips(options) {
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,100);});else setTimeout(boot,100);setTimeout(boot,1000);setTimeout(boot,4000);
 })();
 
-// ── v9.10.336: Weather hardening override ─────────────────────────────
+// ── v9.10.337: Weather hardening override ─────────────────────────────
 // Purpose: keep Today's Weather simple and predictable: Saved ZIP -> coordinates -> Open-Meteo -> render.
 // No GPS unless Use My Location is explicitly tapped. Older weather code remains below this override but these
 // same global function names take precedence for buttons, modal open, planner, and activity weather.
