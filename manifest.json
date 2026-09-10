@@ -1,21 +1,30 @@
 {
-  "name": "CardiacLens v9.10.347.10",
-  "short_name": "CL v347.10",
-  "description": "Cardiac health tracking for patients, by a patient.",
+  "name": "Texans HQ \u2014 Personal v15.18",
+  "short_name": "Texans HQ",
+  "description": "Personal Houston Texans PWA \u2014 play-by-play, game center, schedule, training camp & notes. Privacy-first, offline-friendly.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#1e3a5f",
+  "orientation": "portrait",
+  "background_color": "#03202F",
+  "theme_color": "#03202F",
+  "lang": "en-US",
+  "categories": [
+    "sports",
+    "entertainment"
+  ],
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "version": "15.17"
 }
