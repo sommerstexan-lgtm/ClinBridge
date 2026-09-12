@@ -1,13 +1,19 @@
-/* Texans HQ PWA — Service Worker v15.18
-   Network-first app shell (cache: no-store) so deploys are visible after one reload.
-   skipWaiting on install + on message; claim clients on activate.
+/* KJV Study PWA – Service Worker  v6.26.0
+   Network-first for app shell so updates apply on the first reload.
+   IndexedDB data is never cached by the SW.
 */
-const CACHE_NAME = 'texans-hq-v15.18';
-const APP_SHELL = [
+const CACHE_NAME = 'kjv-study-v6.26.0';
+const SHELL = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './storage.js',
+  './bible.js',
+  './analyze.js',
+  './kjv-english.js',
+  './context-data.js',
+  './sample-genesis.json',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
@@ -15,8 +21,9 @@ const APP_SHELL = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL))
   );
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -33,50 +40,24 @@ self.addEventListener('message', (event) => {
   }
 });
 
-function isAppShell(url) {
-  const path = url.pathname;
-  return (
-    path.endsWith('/') ||
-    path.endsWith('/index.html') ||
-    path.endsWith('/app.js') ||
-    path.endsWith('/hq.css') ||
-    path.endsWith('/styles.css') ||
-    path.endsWith('/manifest.json') ||
-    path.endsWith('/sw.js') ||
-    path.endsWith('/icon-192.png') ||
-    path.endsWith('/icon-512.png')
-  );
-}
-
+// Network-first: try live files, fall back to cache (offline / flaky network)
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
-  const url = new URL(req.url);
-
-  if (url.origin === self.location.origin && isAppShell(url)) {
-    event.respondWith(
-      fetch(req, { cache: 'no-store' })
-        .then((res) => {
-          if (res && res.ok) {
-            const clone = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
-          }
-          return res;
-        })
-        .catch(() => caches.match(req).then((c) => c || caches.match('./index.html')))
-    );
-    return;
-  }
 
   event.respondWith(
-    fetch(req, { cache: 'no-store' })
-      .then((res) => {
-        if (res.ok && (url.hostname.includes('espn') || url.hostname.includes('nfldata'))) {
-          const clone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+    fetch(req)
+      .then((response) => {
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            try { cache.put(req, copy); } catch (_) {}
+          });
         }
-        return res;
+        return response;
       })
-      .catch(() => caches.match(req))
+      .catch(() =>
+        caches.match(req).then((cached) => cached || caches.match('./index.html'))
+      )
   );
 });

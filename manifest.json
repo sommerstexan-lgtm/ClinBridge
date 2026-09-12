@@ -1,17 +1,13 @@
 {
-  "name": "Texans HQ \u2014 Personal v15.18",
-  "short_name": "Texans HQ",
-  "description": "Personal Houston Texans PWA \u2014 play-by-play, game center, schedule, training camp & notes. Privacy-first, offline-friendly.",
+  "name": "KJV Study (Private)",
+  "short_name": "KJV Study",
+  "description": "Private Bible study app for free public-domain KJV. Personal data stays on your device only.",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#03202F",
-  "theme_color": "#03202F",
-  "lang": "en-US",
-  "categories": [
-    "sports",
-    "entertainment"
-  ],
+  "orientation": "any",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "lang": "en",
   "icons": [
     {
       "src": "icon-192.png",
@@ -25,6 +21,5 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "version": "15.17"
+  ]
 }
