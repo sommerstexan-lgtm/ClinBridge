@@ -1,4 +1,4 @@
-/* app.js – Main application controller. KJV Study PWA v6.26.0
+/* app.js – Main application controller. KJV Study PWA v6.38.0
    Client-side only. Personal data never leaves the device.
    Highlight system: solid background fills + mandatory pure black/white contrast text.
 */
@@ -7,7 +7,10 @@ import * as storage from './storage.js';
 import * as bible from './bible.js';
 import * as analyze from './analyze.js';
 import { getChapterContext } from './context-data.js';
+import { buildThenKindNow } from './then-kind-now.js';
 import { kjvEnglishSense, phraseUnitAt } from './kjv-english.js';
+import { suggestSubjectHeadings, getSubjectHeading, formatSubjectRef } from './subject-aliases.js';
+import { lookupPackTopics, packTopicCount } from './topics-search.js';
 
 // ---------- Password gate (client-side only) ----------
 const APP_PASSWORD = 'KJV-Study-Private';
@@ -68,6 +71,25 @@ let currentBookId = null;
 let currentChapter = 1;
 let settings = { fontSize: 1.35, lineHeight: 1.75, highContrast: false };
 let navStack = []; // origin stack for Search + Cross-ref back navigation
+/** Last Search overlay session (query + which list you were in). Memory + sessionStorage only. */
+let searchSession = {
+  query: '',
+  viewMode: 'books',
+  selectedBookId: null,
+  selectedSubjectId: null
+};
+/** Ordered study trail workbench. Session only. Named saves go to IndexedDB. */
+let studyTrail = { nodes: [], undo: [] };
+try {
+  const rawS = sessionStorage.getItem('kjv-search-session');
+  if (rawS) Object.assign(searchSession, JSON.parse(rawS));
+  const rawT = sessionStorage.getItem('kjv-study-trail');
+  if (rawT) {
+    const parsed = JSON.parse(rawT);
+    if (parsed && Array.isArray(parsed.nodes)) studyTrail.nodes = parsed.nodes;
+    if (parsed && Array.isArray(parsed.undo)) studyTrail.undo = parsed.undo;
+  }
+} catch (_) {}
 /** In-memory verse-number suggestions. Not saved until Keep. */
 let verseSuggestPreview = null; // { key, items: [{start,end,colorId,reason,keep}] }
 
@@ -115,7 +137,7 @@ async function init() {
       });
 
       // updateViaCache:'none' + version query force iOS/Safari to re-fetch sw.js
-      const reg = await navigator.serviceWorker.register('./sw.js?v=6.26.0', {
+      const reg = await navigator.serviceWorker.register('./sw.js?v=6.38.0', {
         updateViaCache: 'none'
       });
       if (reg.waiting) {
@@ -180,10 +202,16 @@ function renderShell() {
         <button type="button" id="btn-prev-ch" aria-label="Previous chapter">◀</button>
         <button type="button" id="btn-next-ch" aria-label="Next chapter">▶</button>
       </div>
-      <div class="version-bar">v6.26.0</div>
+      <div class="version-bar">v6.38.0</div>
     </div>
     <button type="button" id="chrome-reveal" class="chrome-reveal" aria-label="Show controls" hidden>☰ Controls</button>
     <button type="button" id="nav-back" class="nav-back" aria-label="Back to previous verse" hidden>← Back</button>
+    <div id="chain-read-bar" class="chain-read-bar" hidden>
+      <button type="button" id="chain-bar-list">List</button>
+      <span id="chain-bar-label">Chain</span>
+      <button type="button" id="chain-bar-next">Next</button>
+      <button type="button" id="chain-bar-x" aria-label="Close chain">×</button>
+    </div>
     <main id="main"></main>
   `;
 
@@ -212,9 +240,17 @@ function renderShell() {
   $('#btn-next-ch').onclick = () => changeChapter(1);
   $('#chrome-reveal').onclick = () => showChrome();
   $('#nav-back').onclick = () => goNavBack();
+  const listBtn = document.getElementById('chain-bar-list');
+  const nextBtn = document.getElementById('chain-bar-next');
+  const xBtn = document.getElementById('chain-bar-x');
+  if (listBtn) listBtn.onclick = () => { if (chainRead.id) openSavedChainReader(chainRead.id); };
+  if (nextBtn) nextBtn.onclick = () => goChainNext();
+  if (xBtn) xBtn.onclick = () => dismissChainRead();
 
   installChromeAutoHide();
   updateNavBackButton();
+  updateTrailChip();
+  updateChainReadBar();
 }
 
 let chromeHidden = false;
@@ -264,6 +300,807 @@ function updateNavBackButton() {
   } else {
     btn.hidden = true;
   }
+}
+
+function persistSearchSession() {
+  try { sessionStorage.setItem('kjv-search-session', JSON.stringify(searchSession)); } catch (_) {}
+}
+
+function persistTrail() {
+  try {
+    sessionStorage.setItem('kjv-study-trail', JSON.stringify({
+      nodes: studyTrail.nodes,
+      undo: studyTrail.undo.slice(-24)
+    }));
+  } catch (_) {}
+}
+
+let chainRead = { id: null, index: 0, title: '' };
+try {
+  const rawC = sessionStorage.getItem('kjv-chain-read');
+  if (rawC) {
+    const p = JSON.parse(rawC);
+    if (p && p.id) chainRead = { id: p.id, index: p.index || 0, title: p.title || '', count: p.count || 0, active: !!p.active };
+  }
+} catch (_) {}
+
+
+function persistChainRead() {
+  try { sessionStorage.setItem('kjv-chain-read', JSON.stringify(chainRead)); } catch (_) {}
+}
+
+function setOpenChain(chain, index) {
+  if (!chain || !chain.id) return;
+  const nodes = Array.isArray(chain.nodes) ? chain.nodes : [];
+  let idx = (typeof index === 'number') ? index : (chainRead.id === chain.id ? (chainRead.index || 0) : 0);
+  if (idx < 0 || (nodes.length && idx >= nodes.length)) idx = 0;
+  chainRead = {
+    id: chain.id,
+    index: idx,
+    title: chain.title || 'Untitled chain',
+    count: nodes.length,
+    active: true
+  };
+  persistChainRead();
+  updateChainReadBar();
+}
+
+function makeHop(key, source) {
+  return {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    key,
+    label: formatKeyLabel(key),
+    source: source || 'add',
+    note: ''
+  };
+}
+
+async function touchChainUsed(chain) {
+  if (!chain || !chain.id) return chain;
+  return storage.saveChain(chain);
+}
+
+async function addKeyToSavedChain(chain, key, source) {
+  if (!chain) return { chain: null, added: false, duplicate: false };
+  if (!Array.isArray(chain.nodes)) chain.nodes = [];
+  if (chain.nodes.some((n) => n && n.key === key)) {
+    return { chain, added: false, duplicate: true };
+  }
+  chain.nodes.push(makeHop(key, source || 'add'));
+  const saved = await storage.saveChain(chain);
+  return { chain: saved, added: true, duplicate: false };
+}
+
+function chainMatchesFilter(chain, q) {
+  if (!q) return true;
+  const hay = [
+    chain.title || '',
+    chain.note || '',
+    ...((chain.nodes || []).map((n) => (n.label || '') + ' ' + (n.key || '')))
+  ].join(' ').toLowerCase();
+  return hay.includes(q);
+}
+
+
+function updateChainReadBar() {
+  const bar = document.getElementById('chain-read-bar');
+  if (!bar) return;
+  if (!chainRead.id || !chainRead.active) {
+    bar.hidden = true;
+    return;
+  }
+  bar.hidden = false;
+  const n = chainRead.count || 0;
+  const hop = (chainRead.index || 0) + 1;
+  const label = document.getElementById('chain-bar-label');
+  if (label) label.textContent = (chainRead.title || 'Chain') + ' · hop ' + hop + ' of ' + n;
+  const nextBtn = document.getElementById('chain-bar-next');
+  if (nextBtn) nextBtn.disabled = n > 0 && hop >= n;
+}
+
+function dismissChainRead() {
+  chainRead.active = false;
+  persistChainRead();
+  updateChainReadBar();
+}
+
+async function goChainNext() {
+  if (!chainRead.id) return;
+  const chain = await storage.getChain(chainRead.id);
+  if (!chain || !Array.isArray(chain.nodes) || !chain.nodes.length) return;
+  const next = Math.min(chain.nodes.length - 1, (chainRead.index || 0) + 1);
+  chainRead.index = next;
+  chainRead.active = true;
+  chainRead.count = chain.nodes.length;
+  chainRead.title = chain.title || chainRead.title;
+  persistChainRead();
+  updateChainReadBar();
+  await jumpToRef(chain.nodes[next].key);
+}
+
+function formatKeyLabel(key) {
+  if (!key) return '';
+  try {
+    const p = bible.parseKey(key);
+    const book = books.find((b) => b.id === p.bookId);
+    return (book ? book.name : p.bookId) + ' ' + p.chapter + ':' + p.verse;
+  } catch (_) {
+    return key;
+  }
+}
+
+function updateTrailChip() {
+  const btn = document.getElementById('btn-trail');
+  if (!btn) return;
+  const n = studyTrail.nodes.length;
+  btn.textContent = n ? ('Trail · ' + n) : 'Trail';
+}
+
+function trailPush(key, source) {
+  if (!key) return;
+  const last = studyTrail.nodes[studyTrail.nodes.length - 1];
+  if (last && last.key === key) return;
+  studyTrail.undo.push({ type: 'push' });
+  studyTrail.nodes.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    key,
+    label: formatKeyLabel(key),
+    source: source || 'open'
+  });
+  persistTrail();
+  updateTrailChip();
+}
+
+function trailRemove(id) {
+  const idx = studyTrail.nodes.findIndex((n) => n.id === id);
+  if (idx < 0) return;
+  const node = studyTrail.nodes[idx];
+  studyTrail.undo.push({ type: 'remove', index: idx, node });
+  studyTrail.nodes.splice(idx, 1);
+  persistTrail();
+  updateTrailChip();
+}
+
+function trailReplace(id, newKey) {
+  const idx = studyTrail.nodes.findIndex((n) => n.id === id);
+  if (idx < 0 || !newKey) return;
+  const prev = studyTrail.nodes[idx];
+  studyTrail.undo.push({ type: 'replace', index: idx, node: prev });
+  studyTrail.nodes[idx] = {
+    id: prev.id,
+    key: newKey,
+    label: formatKeyLabel(newKey),
+    source: 'edit'
+  };
+  persistTrail();
+  updateTrailChip();
+}
+
+function trailUndo() {
+  const act = studyTrail.undo.pop();
+  if (!act) return false;
+  if (act.type === 'push') {
+    studyTrail.nodes.pop();
+  } else if (act.type === 'remove' && act.node) {
+    const i = Math.min(act.index, studyTrail.nodes.length);
+    studyTrail.nodes.splice(i, 0, act.node);
+  } else if (act.type === 'replace' && act.node != null && act.index != null) {
+    studyTrail.nodes[act.index] = act.node;
+  } else if (act.type === 'clear' && Array.isArray(act.nodes)) {
+    studyTrail.nodes = act.nodes.slice();
+  }
+  persistTrail();
+  updateTrailChip();
+  return true;
+}
+
+function openStudyTrail() {
+  const overlay = showOverlay(`
+    <div class="panel trail-panel">
+      <div class="search-header-top">
+        <h2 class="search-title" style="margin:0">Study trail</h2>
+        <button type="button" class="close search-close" aria-label="Close">×</button>
+      </div>
+      <p style="color:var(--text-dim);font-size:0.92em;margin:0.4rem 0 0.8rem">
+        Today&rsquo;s workbench. Save a named copy to keep your explanation and share it. Opening a saved chain to read does not replace this list.
+      </p>
+      <div id="trail-list"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.9rem">
+        <button type="button" id="trail-add-here">Add current verse</button>
+        <button type="button" id="trail-save">Save as chain…</button>
+        <button type="button" id="trail-saved">Saved chains</button>
+        <button type="button" id="trail-undo">Undo last edit</button>
+        <button type="button" id="trail-clear">Clear trail</button>
+      </div>
+    </div>
+  `);
+  $('.search-close', overlay).onclick = () => closeOverlay(overlay);
+
+  function renderList() {
+    const el = $('#trail-list', overlay);
+    if (!studyTrail.nodes.length) {
+      el.innerHTML = '<p style="color:var(--text-dim)">Empty. Open a search hit or add the verse you are reading.</p>';
+      return;
+    }
+    el.innerHTML = studyTrail.nodes.map((n, i) => `
+      <div class="trail-row" data-id="${escapeHtml(n.id)}">
+        <button type="button" class="trail-open" data-key="${escapeHtml(n.key)}">
+          <span class="trail-idx">${i + 1}</span>
+          <span class="trail-label">${escapeHtml(n.label || n.key)}</span>
+          <span class="trail-src">${escapeHtml(n.source || '')}</span>
+        </button>
+        <button type="button" class="trail-edit" data-id="${escapeHtml(n.id)}" title="Replace">Replace</button>
+        <button type="button" class="trail-del" data-id="${escapeHtml(n.id)}" title="Remove">✕</button>
+      </div>
+    `).join('');
+    $$('.trail-open', overlay).forEach((btn) => {
+      btn.onclick = async () => {
+        closeOverlay(overlay);
+        await jumpToRef(btn.dataset.key);
+      };
+    });
+    $$('.trail-del', overlay).forEach((btn) => {
+      btn.onclick = () => {
+        trailRemove(btn.dataset.id);
+        renderList();
+      };
+    });
+    $$('.trail-edit', overlay).forEach((btn) => {
+      btn.onclick = () => {
+        const raw = prompt('Replace with verse (John 3:16 or jhn.3.16)');
+        if (!raw) return;
+        const parsed = parseUserRef(raw.trim());
+        if (!parsed) {
+          alert('Could not parse that reference.');
+          return;
+        }
+        trailReplace(btn.dataset.id, parsed.key);
+        renderList();
+      };
+    });
+  }
+  renderList();
+
+  $('#trail-add-here', overlay).onclick = () => {
+    const key = getNearestVerseKey();
+    if (!key) {
+      alert('No verse in view.');
+      return;
+    }
+    trailPush(key, 'pin');
+    renderList();
+  };
+  $('#trail-undo', overlay).onclick = () => {
+    if (!trailUndo()) alert('Nothing to undo.');
+    renderList();
+  };
+  $('#trail-clear', overlay).onclick = () => {
+    if (!studyTrail.nodes.length) return;
+    if (!confirm('Clear the whole trail? Original search results stay as they were.')) return;
+    studyTrail.undo.push({ type: 'clear', nodes: studyTrail.nodes.slice() });
+    studyTrail.nodes = [];
+    persistTrail();
+    updateTrailChip();
+    renderList();
+  };
+  $('#trail-save', overlay).onclick = () => {
+    closeOverlay(overlay);
+    openSaveChainDialog();
+  };
+  $('#trail-saved', overlay).onclick = () => {
+    closeOverlay(overlay);
+    openSavedChainsList();
+  };
+}
+
+function snapshotTrailNodes() {
+  return studyTrail.nodes.map((n) => ({
+    id: n.id,
+    key: n.key,
+    label: n.label || formatKeyLabel(n.key),
+    source: n.source || '',
+    note: n.note || ''
+  }));
+}
+
+function formatChainLetter(chain) {
+  const title = (chain && chain.title) ? chain.title : 'Untitled chain';
+  const lines = [title, ''];
+  if (chain && chain.note && String(chain.note).trim()) {
+    lines.push(String(chain.note).trim(), '');
+  }
+  const nodes = (chain && Array.isArray(chain.nodes)) ? chain.nodes : [];
+  nodes.forEach((n, i) => {
+    lines.push((i + 1) + '. ' + (n.label || formatKeyLabel(n.key) || n.key));
+    if (n.note && String(n.note).trim()) lines.push(String(n.note).trim());
+  });
+  return lines.join('\n').trim() + '\n';
+}
+
+async function copyText(text) {
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (_) {}
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch (_) {
+    return false;
+  }
+}
+
+function openSaveChainDialog(existing) {
+  const isUpdate = !!(existing && existing.id);
+  const seedTitle = existing ? (existing.title || '') : '';
+  const seedNote = existing ? (existing.note || '') : '';
+  const overlay = showOverlay(`
+    <div class="panel trail-panel">
+      <div class="search-header-top">
+        <h2 class="search-title" style="margin:0">${isUpdate ? 'Save chain' : 'Save as chain'}</h2>
+        <button type="button" class="close search-close" aria-label="Close">×</button>
+      </div>
+      <p style="color:var(--text-dim);font-size:0.92em;margin:0.4rem 0 0.7rem">
+        Snapshot of the current trail. Your explanation stays with the package. Later trail edits do not change this copy until you save again.
+      </p>
+      <label style="display:block;margin:0.4rem 0 0.25rem">Title</label>
+      <input id="chain-title" class="search-box" value="${escapeHtml(seedTitle)}" placeholder="Name this chain">
+      <label style="display:block;margin:0.7rem 0 0.25rem">Your explanation</label>
+      <textarea id="chain-note" class="note-input" placeholder="What this chain shows you">${escapeHtml(seedNote)}</textarea>
+      <div style="display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.9rem">
+        <button type="button" id="chain-save-go">${isUpdate ? 'Save' : 'Save chain'}</button>
+        ${isUpdate ? '<button type="button" id="chain-save-as">Save as new</button>' : ''}
+      </div>
+    </div>
+  `);
+  $('.search-close', overlay).onclick = () => closeOverlay(overlay);
+  const go = async (asNew) => {
+    const title = ($('#chain-title', overlay).value || '').trim() || 'Untitled chain';
+    const note = ($('#chain-note', overlay).value || '').trim();
+    const nodes = snapshotTrailNodes();
+    if (!nodes.length) {
+      alert('The trail is empty. Add a verse first.');
+      return;
+    }
+    const rec = {
+      id: (!asNew && isUpdate) ? existing.id : undefined,
+      title,
+      note,
+      nodes,
+      createdAt: (!asNew && existing && existing.createdAt) ? existing.createdAt : undefined
+    };
+    try {
+      await storage.saveChain(rec);
+      closeOverlay(overlay);
+      alert('Saved: ' + title);
+      if (currentBookId) await renderChapter(currentBookId, currentChapter, { preserveScroll: true });
+    } catch (err) {
+      alert('Could not save the chain.');
+    }
+  };
+  $('#chain-save-go', overlay).onclick = () => go(false);
+  const asBtn = $('#chain-save-as', overlay);
+  if (asBtn) asBtn.onclick = () => go(true);
+}
+
+async function openSavedChainsList() {
+  let list = [];
+  try { list = await storage.getAllChains(); } catch (_) { list = []; }
+  list.sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+  const overlay = showOverlay(`
+    <div class="panel trail-panel">
+      <div class="search-header-top">
+        <h2 class="search-title" style="margin:0">Saved chains</h2>
+        <button type="button" class="close search-close" aria-label="Close">×</button>
+      </div>
+      <input id="chain-filter" class="search-box" type="search" placeholder="Filter chains" autocomplete="off" style="margin:0.5rem 0 0.4rem">
+      <p style="color:var(--text-dim);font-size:0.92em;margin:0.2rem 0 0.7rem">
+        Tap a title to read. Edit or Work on this from the row.
+      </p>
+      <div id="saved-chain-list"></div>
+    </div>
+  `);
+  $('.search-close', overlay).onclick = () => closeOverlay(overlay);
+  const el = $('#saved-chain-list', overlay);
+  const filterBox = $('#chain-filter', overlay);
+
+  function renderList() {
+    const q = ((filterBox && filterBox.value) || '').trim().toLowerCase();
+    const shown = list.filter((c) => chainMatchesFilter(c, q));
+    if (!list.length) {
+      el.innerHTML = '<p style="color:var(--text-dim)">None yet. Open a verse and tap Chains → Start a chain with this verse.</p>';
+      return;
+    }
+    if (!shown.length) {
+      el.innerHTML = '<p style="color:var(--text-dim)">No chain matches</p><button type="button" id="chain-filter-clear">Clear</button>';
+      const clr = $('#chain-filter-clear', overlay);
+      if (clr) clr.onclick = () => { filterBox.value = ''; renderList(); };
+      return;
+    }
+    el.innerHTML = shown.map((c) => `
+      <div class="saved-chain-row">
+        <button type="button" class="xref-item saved-chain-open" data-id="${escapeHtml(c.id)}">
+          <strong>${escapeHtml(c.title || 'Untitled chain')}</strong>
+          <div class="trail-src">${(c.nodes || []).length} verse${(c.nodes || []).length === 1 ? '' : 's'}</div>
+        </button>
+        <div class="saved-chain-actions">
+          <button type="button" class="saved-chain-edit" data-id="${escapeHtml(c.id)}">Edit</button>
+          <button type="button" class="saved-chain-work" data-id="${escapeHtml(c.id)}">Work on this</button>
+        </div>
+      </div>
+    `).join('');
+    $$('.saved-chain-open', overlay).forEach((btn) => {
+      btn.onclick = () => {
+        closeOverlay(overlay);
+        openSavedChainReader(btn.dataset.id);
+      };
+    });
+    $$('.saved-chain-edit', overlay).forEach((btn) => {
+      btn.onclick = () => {
+        closeOverlay(overlay);
+        openChainWorkshop(btn.dataset.id);
+      };
+    });
+    $$('.saved-chain-work', overlay).forEach((btn) => {
+      btn.onclick = () => workOnSavedChain(btn.dataset.id, overlay);
+    });
+  }
+  if (filterBox) filterBox.oninput = () => renderList();
+  renderList();
+}
+
+async function workOnSavedChain(id, overlay) {
+  const chain = await storage.getChain(id);
+  if (!chain) {
+    alert('That chain is no longer saved.');
+    return;
+  }
+  try { await touchChainUsed(chain); } catch (_) {}
+  setOpenChain(chain);
+  if (overlay) closeOverlay(overlay);
+  openSavedChainReader(chain.id);
+}
+
+async function openSavedChainReader(id) {
+  const chain = await storage.getChain(id);
+  if (!chain) {
+    alert('That chain is no longer saved.');
+    chainRead = { id: null, index: 0, title: '' };
+    persistChainRead();
+    updateChainReadBar();
+    return;
+  }
+  const nodes = Array.isArray(chain.nodes) ? chain.nodes : [];
+  if (chainRead.id === id) {
+    if (chainRead.index < 0 || chainRead.index >= nodes.length) chainRead.index = 0;
+    chainRead.title = chain.title || 'Untitled chain';
+    chainRead.count = nodes.length;
+    persistChainRead();
+    updateChainReadBar();
+  } else {
+    chainRead = { id: chain.id, index: 0, title: chain.title || 'Untitled chain', count: nodes.length };
+    persistChainRead();
+  }
+
+  const overlay = showOverlay(`
+    <div class="panel search-panel chain-reader">
+      <div class="search-header">
+        <div class="search-header-top">
+          <h2 class="search-title">${escapeHtml(chain.title || 'Untitled chain')}</h2>
+          <button type="button" class="close search-close" aria-label="Close">×</button>
+        </div>
+        <div class="chain-nav-row">
+          <button type="button" id="chain-prev">Previous</button>
+          <span class="chain-pos">${nodes.length ? ((chainRead.index || 0) + 1) + ' of ' + nodes.length : '0'}</span>
+          <button type="button" id="chain-next">Next</button>
+        </div>
+      </div>
+      <div class="search-body" id="chain-read-list"></div>
+      <div class="chain-reader-foot">
+        <button type="button" id="chain-copy">Copy for message</button>
+        <button type="button" id="chain-edit">Edit</button>
+        <button type="button" id="chain-del">Delete</button>
+      </div>
+    </div>
+  `);
+  $('.search-close', overlay).onclick = () => closeOverlay(overlay);
+  const list = $('#chain-read-list', overlay);
+  const expl = chain.note
+    ? `<details class="chain-expl-box"><summary>Explanation</summary><p class="chain-expl">${escapeHtml(chain.note)}</p></details>`
+    : '';
+
+  async function openHop(i) {
+    if (i < 0 || i >= nodes.length) return;
+    chainRead.id = chain.id;
+    chainRead.index = i;
+    chainRead.title = chain.title || 'Untitled chain';
+    chainRead.count = nodes.length;
+    chainRead.active = true;
+    persistChainRead();
+    updateChainReadBar();
+    closeOverlay(overlay);
+    await jumpToRef(nodes[i].key);
+  }
+
+  if (!nodes.length) {
+    list.innerHTML = expl + '<p style="color:var(--text-dim)">This chain has no verses.</p>';
+  } else {
+    list.innerHTML = expl + nodes.map((n, i) => `
+      <button type="button" class="xref-item chain-hop${i === chainRead.index ? ' is-current' : ''}" data-i="${i}">
+        <span class="trail-idx">${i + 1}</span>
+        ${escapeHtml(n.label || n.key)}
+        ${n.note ? '<div class="trail-src">' + escapeHtml(n.note) + '</div>' : ''}
+      </button>
+    `).join('');
+    $$('.chain-hop', overlay).forEach((btn) => {
+      btn.onclick = () => openHop(+btn.dataset.i);
+    });
+  }
+  $('#chain-prev', overlay).onclick = () => openHop(Math.max(0, (chainRead.index || 0) - 1));
+  $('#chain-next', overlay).onclick = () => openHop(Math.min(nodes.length - 1, (chainRead.index || 0) + 1));
+  $('#chain-copy', overlay).onclick = async () => {
+    const ok = await copyText(formatChainLetter(chain));
+    alert(ok ? 'Copied. Paste into Gmail or Messages.' : 'Could not copy.');
+  };
+  $('#chain-edit', overlay).onclick = () => {
+    closeOverlay(overlay);
+    openChainWorkshop(chain.id);
+  };
+  $('#chain-del', overlay).onclick = async () => {
+    if (!confirm('Delete this saved chain? The verses themselves stay in the Bible.')) return;
+    await storage.deleteChain(chain.id);
+    if (chainRead.id === chain.id) {
+      chainRead = { id: null, index: 0, title: '' };
+      persistChainRead();
+      updateChainReadBar();
+    }
+    closeOverlay(overlay);
+    if (currentBookId) await renderChapter(currentBookId, currentChapter, { preserveScroll: true });
+  };
+}
+
+async function openChainWorkshop(id) {
+  const chain = await storage.getChain(id);
+  if (!chain) {
+    alert('That chain is no longer saved.');
+    return;
+  }
+  if (!Array.isArray(chain.nodes)) chain.nodes = [];
+  const overlay = showOverlay(`
+    <div class="panel trail-panel">
+      <div class="search-header-top">
+        <h2 class="search-title" style="margin:0">Edit chain</h2>
+        <button type="button" class="close search-close" aria-label="Close">×</button>
+      </div>
+      <label style="display:block;margin:0.4rem 0 0.25rem">Title</label>
+      <input id="chain-title" class="search-box" value="${escapeHtml(chain.title || '')}" placeholder="Name this chain">
+      <label style="display:block;margin:0.7rem 0 0.25rem">Your explanation</label>
+      <textarea id="chain-note" class="note-input">${escapeHtml(chain.note || '')}</textarea>
+      <p style="margin:0.8rem 0 0.35rem;font-weight:700">Hops</p>
+      <div id="ws-hops"></div>
+      <div class="ws-add-row">
+        <button type="button" id="ws-add-current">Add current verse</button>
+      </div>
+      <label style="display:block;margin:0.7rem 0 0.25rem">Add a reference</label>
+      <div class="ws-add-row">
+        <input id="ws-ref" class="search-box" placeholder="John 3:16 or jhn.3.16" autocomplete="off">
+        <button type="button" id="ws-add-ref">Add</button>
+      </div>
+      <p id="ws-msg" style="color:var(--text-dim);font-size:0.9em;min-height:1.2em"></p>
+      <div style="margin-top:0.6rem"><button type="button" id="chain-save-meta">Save</button></div>
+    </div>
+  `);
+  $('.search-close', overlay).onclick = () => closeOverlay(overlay);
+  const hopsEl = $('#ws-hops', overlay);
+  const msg = $('#ws-msg', overlay);
+  function setMsg(s) { if (msg) msg.textContent = s || ''; }
+
+  function drawHops() {
+    if (!chain.nodes.length) {
+      hopsEl.innerHTML = '<p style="color:var(--text-dim)">No verses in this chain.</p>';
+      return;
+    }
+    hopsEl.innerHTML = chain.nodes.map((n, i) => `
+      <div class="ws-hop-row">
+        <span class="trail-idx">${i + 1}</span>
+        <span class="ws-hop-label">${escapeHtml(n.label || n.key)}</span>
+        <button type="button" class="ws-hop-remove" data-i="${i}">Remove</button>
+      </div>
+    `).join('');
+    $$('.ws-hop-remove', overlay).forEach((btn) => {
+      btn.onclick = () => {
+        const i = +btn.dataset.i;
+        chain.nodes.splice(i, 1);
+        setMsg('');
+        drawHops();
+      };
+    });
+  }
+  drawHops();
+
+  $('#ws-add-current', overlay).onclick = () => {
+    const key = getNearestVerseKey();
+    if (!key) { setMsg('No verse is in view.'); return; }
+    if (chain.nodes.some((n) => n.key === key)) { setMsg('Already in the chain.'); return; }
+    chain.nodes.push(makeHop(key, 'workshop'));
+    setMsg('');
+    drawHops();
+  };
+  $('#ws-add-ref', overlay).onclick = () => {
+    const raw = ($('#ws-ref', overlay).value || '').trim();
+    if (!raw) return;
+    const parsed = parseUserRef(raw);
+    if (!parsed || !parsed.key) { setMsg('Could not read that reference.'); return; }
+    if (chain.nodes.some((n) => n.key === parsed.key)) { setMsg('Already in the chain.'); return; }
+    chain.nodes.push(makeHop(parsed.key, 'workshop'));
+    $('#ws-ref', overlay).value = '';
+    setMsg('');
+    drawHops();
+  };
+  $('#chain-save-meta', overlay).onclick = async () => {
+    chain.title = ($('#chain-title', overlay).value || '').trim() || 'Untitled chain';
+    chain.note = ($('#chain-note', overlay).value || '').trim();
+    await storage.saveChain(chain);
+    setOpenChain(chain);
+    closeOverlay(overlay);
+    openSavedChainReader(chain.id);
+  };
+}
+
+function openStartChainFromVerse(key) {
+  const label = formatKeyLabel(key);
+  const overlay = showOverlay(`
+    <div class="panel trail-panel">
+      <div class="search-header-top">
+        <h2 class="search-title" style="margin:0">New chain</h2>
+        <button type="button" class="close search-close" aria-label="Close">×</button>
+      </div>
+      <p style="color:var(--text-dim);font-size:0.92em;margin:0.4rem 0 0.7rem">
+        This chain begins at <strong>${escapeHtml(label)}</strong>. Name it and add what it shows you. You can add more verses later.
+      </p>
+      <label style="display:block;margin:0.4rem 0 0.25rem">Title</label>
+      <input id="chain-title" class="search-box" value="" placeholder="Name this chain">
+      <label style="display:block;margin:0.7rem 0 0.25rem">Your explanation</label>
+      <textarea id="chain-note" class="note-input" placeholder="What this chain shows you"></textarea>
+      <div style="margin-top:0.9rem"><button type="button" id="chain-start-go">Save chain</button></div>
+    </div>
+  `);
+  $('.search-close', overlay).onclick = () => closeOverlay(overlay);
+  $('#chain-start-go', overlay).onclick = async () => {
+    const title = ($('#chain-title', overlay).value || '').trim() || 'Untitled chain';
+    const note = ($('#chain-note', overlay).value || '').trim();
+    const node = makeHop(key, 'start');
+    try {
+      const saved = await storage.saveChain({ title, note, nodes: [node] });
+      setOpenChain(saved, 0);
+      closeOverlay(overlay);
+      if (currentBookId) await renderChapter(currentBookId, currentChapter, { preserveScroll: true });
+      openSavedChainReader(saved.id);
+    } catch (err) {
+      alert('Could not save the chain.');
+    }
+  };
+}
+
+async function pickChainThenAdd(key, parentOverlay) {
+  let all = [];
+  try { all = await storage.getAllChains(); } catch (_) { all = []; }
+  all.sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+  const pick = showOverlay(`
+    <div class="panel trail-panel">
+      <div class="search-header-top">
+        <h2 class="search-title" style="margin:0">Add to which chain?</h2>
+        <button type="button" class="close search-close" aria-label="Close">×</button>
+      </div>
+      <div id="pick-list"></div>
+      <div style="margin-top:0.7rem">
+        <button type="button" id="pick-start-new" class="btn-import-testament">Start a new chain with this verse</button>
+      </div>
+    </div>
+  `);
+  $('.search-close', pick).onclick = () => closeOverlay(pick);
+  if (!all.length) {
+    $('#pick-list', pick).innerHTML = '<p style="color:var(--text-dim)">No saved chain yet.</p>';
+  } else {
+    $('#pick-list', pick).innerHTML = all.map((c) => `
+      <button type="button" class="xref-item pick-chain" data-id="${escapeHtml(c.id)}">${escapeHtml(c.title || 'Untitled chain')}</button>
+    `).join('');
+    $$('.pick-chain', pick).forEach((btn) => {
+      btn.onclick = async () => {
+        const chain = await storage.getChain(btn.dataset.id);
+        if (!chain) return;
+        const result = await addKeyToSavedChain(chain, key, 'add');
+        setOpenChain(result.chain);
+        closeOverlay(pick);
+        if (parentOverlay) closeOverlay(parentOverlay);
+        if (currentBookId) await renderChapter(currentBookId, currentChapter, { preserveScroll: true });
+      };
+    });
+  }
+  $('#pick-start-new', pick).onclick = () => {
+    closeOverlay(pick);
+    if (parentOverlay) closeOverlay(parentOverlay);
+    openStartChainFromVerse(key);
+  };
+}
+
+async function addThisVerseToOpenChain(key, parentOverlay) {
+  if (!chainRead.id) {
+    await pickChainThenAdd(key, parentOverlay);
+    return;
+  }
+  const chain = await storage.getChain(chainRead.id);
+  if (!chain) {
+    chainRead = { id: null, index: 0, title: '' };
+    persistChainRead();
+    updateChainReadBar();
+    await pickChainThenAdd(key, parentOverlay);
+    return;
+  }
+  const result = await addKeyToSavedChain(chain, key, 'add');
+  setOpenChain(result.chain);
+  if (parentOverlay) closeOverlay(parentOverlay);
+  if (currentBookId) await renderChapter(currentBookId, currentChapter, { preserveScroll: true });
+}
+
+async function openVerseChains(key) {
+  let mine = [];
+  let all = [];
+  try {
+    all = await storage.getAllChains();
+    mine = all.filter((c) => Array.isArray(c.nodes) && c.nodes.some((n) => n && n.key === key));
+  } catch (_) {}
+  const overlay = showOverlay(`
+    <div class="panel trail-panel">
+      <div class="search-header-top">
+        <h2 class="search-title" style="margin:0">Chains · ${escapeHtml(formatKeyLabel(key))}</h2>
+        <button type="button" class="close search-close" aria-label="Close">×</button>
+      </div>
+      <p style="color:var(--text-dim);font-size:0.92em;margin:0.4rem 0 0.6rem">
+        Chains that contain this verse. Add uses the open chain.
+      </p>
+      <div id="verse-chain-list"></div>
+      <div style="display:flex;flex-direction:column;gap:0.45rem;margin-top:0.8rem">
+        <button type="button" id="vc-add-open" class="btn-import-testament">Add this verse</button>
+        <button type="button" id="vc-add-other">Add to a different chain…</button>
+        <button type="button" id="vc-start">Start a chain with this verse</button>
+      </div>
+    </div>
+  `);
+  $('.search-close', overlay).onclick = () => closeOverlay(overlay);
+  const el = $('#verse-chain-list', overlay);
+  if (!mine.length) {
+    el.innerHTML = '<p style="color:var(--text-dim)">Not in a saved chain yet.</p>';
+  } else {
+    el.innerHTML = mine.map((c) => `
+      <button type="button" class="xref-item vc-open" data-id="${escapeHtml(c.id)}">
+        <strong>${escapeHtml(c.title || 'Untitled chain')}</strong>
+        <div class="trail-src">${(c.nodes || []).length} verses</div>
+      </button>
+    `).join('');
+    $$('.vc-open', overlay).forEach((btn) => {
+      btn.onclick = () => {
+        closeOverlay(overlay);
+        openSavedChainReader(btn.dataset.id);
+      };
+    });
+  }
+  $('#vc-add-open', overlay).onclick = () => addThisVerseToOpenChain(key, overlay);
+  $('#vc-add-other', overlay).onclick = () => pickChainThenAdd(key, overlay);
+  $('#vc-start', overlay).onclick = () => {
+    closeOverlay(overlay);
+    openStartChainFromVerse(key);
+  };
 }
 
 /** Nearest verse currently near the top of the main scroll viewport (for Search origin). */
@@ -682,6 +1519,7 @@ async function renderChapter(bookId, chapterNum, opts = {}) {
   const noteMap = {};
   const xrefMap = {};
   const wordMarkMap = {};
+  const chainCountMap = {};
   // Lexicon presence enables Tap-a-word wrappers (fully offline); outlines only on user marks
   const [lexPack] = await Promise.all([
     storage.getLexiconPack(),
@@ -710,6 +1548,17 @@ async function renderChapter(bookId, chapterNum, opts = {}) {
     if (pack && pack.verses) {
       for (const k of keys) {
         if (pack.verses[k] && pack.verses[k].length) xrefMap[k] = true;
+      }
+    }
+  } catch (_) {}
+  try {
+    const savedChains = await storage.getAllChains();
+    for (const c of savedChains) {
+      const seen = new Set();
+      for (const n of (c.nodes || [])) {
+        if (!n || !n.key || seen.has(n.key)) continue;
+        seen.add(n.key);
+        chainCountMap[n.key] = (chainCountMap[n.key] || 0) + 1;
       }
     }
   } catch (_) {}
@@ -755,6 +1604,8 @@ async function renderChapter(bookId, chapterNum, opts = {}) {
         <button type="button" data-act="color" data-key="${key}">Color</button>
         <button type="button" data-act="note" data-key="${key}" class="${noteCls.trim()}">Note</button>
         <button type="button" data-act="xref" data-key="${key}" class="${xrefCls.trim()}">Cross-refs</button>
+        <button type="button" data-act="chains" data-key="${key}" class="${(chainCountMap[key] ? 'has-content' : '')}">Chains${chainCountMap[key] ? ' ' + chainCountMap[key] : ''}</button>
+        <button type="button" data-act="tkn" data-key="${key}">Then-Now</button>
       </div>
     `;
     main.appendChild(verseEl);
@@ -868,6 +1719,8 @@ async function renderChapter(bookId, chapterNum, opts = {}) {
     else if (act === 'color') openColorPicker(key);
     else if (act === 'note') openNote(key);
     else if (act === 'xref') openCrossRefs(key);
+    else if (act === 'chains') openVerseChains(key);
+    else if (act === 'tkn') openThenKindNow(key);
   };
 
   installSelectionWatchers(main);
@@ -901,8 +1754,8 @@ function showEmptyState() {
   $('#main').innerHTML = `
     <div class="empty-state">
       <p><strong>No books loaded yet.</strong></p>
-      <p>Use <strong>Menu → Import Book</strong> to load a book JSON,<br>
-      or the included public-domain Genesis sample will appear after first load.</p>
+      <p>Open the book list and tap <strong>Import missing Old Testament</strong> or <strong>Import missing New Testament</strong>.<br>
+      That loads the bundled public-domain KJV for books not already on this device.</p>
       <p style="margin-top:1.5rem">This app never sends data anywhere.<br>All study data stays on this device only.</p>
     </div>
   `;
@@ -944,9 +1797,15 @@ async function openBookNav() {
                background:var(--bg);color:var(--text);margin-bottom:0.75rem;min-height:48px;box-sizing:border-box"
         autocomplete="off" enterkeyhint="search">
       <p id="book-search-hint" style="font-size:0.88em;color:var(--text-dim);margin-bottom:0.75rem;line-height:1.45">
-        Canonical order. Tap a loaded book to open chapters. Use <strong>Import</strong> to load a JSON book file.
+        Canonical order. Tap a loaded book to open chapters. Use <strong>Import missing Old Testament</strong> or <strong>Import missing New Testament</strong> to load the rest from the bundled KJV. Single-book Import still accepts a file.
       </p>
       <div id="book-list">
+        <div class="testament-import-bar">
+          <p id="testament-import-status" class="testament-import-status">Tap once to load every missing book in that testament from the bundled KJV on this site. Already loaded books stay as they are.</p>
+          <button type="button" class="btn-import-testament" id="btn-import-ot">Import missing Old Testament</button>
+          <button type="button" class="btn-import-testament" id="btn-import-nt">Import missing New Testament</button>
+          <button type="button" class="btn-import-testament-retry" id="btn-import-retry" hidden>Try again</button>
+        </div>
         <h3 class="testament-heading" data-test="OT">Old Testament</h3>
         <ul class="nav-list" data-test="OT">${ot}</ul>
         <h3 class="testament-heading" data-test="NT">New Testament</h3>
@@ -1094,7 +1953,7 @@ async function openBookNav() {
           ? 'No books match “' + q + '”.'
           : total + ' book' + (total === 1 ? '' : 's') + ' match.';
       } else {
-        hintEl.innerHTML = 'Canonical order. Tap a loaded book to open chapters. Use <strong>Import</strong> to load a JSON book file.';
+        hintEl.innerHTML = 'Canonical order. Tap a loaded book to open chapters. Use <strong>Import missing Old Testament</strong> or <strong>Import missing New Testament</strong> to load the rest from the bundled KJV. Single-book Import still accepts a file.';
       }
     }
   }
@@ -1137,37 +1996,128 @@ async function openBookNav() {
   });
 
   const fileInput = $('#nav-file-input', overlay);
+  const statusEl = $('#testament-import-status', overlay);
+  let pendingTestament = null;
+  let pendingSingle = null;
+
+  function setImportStatus(kind, text) {
+    if (!statusEl) return;
+    statusEl.classList.remove('ok', 'fail');
+    if (kind === 'ok') statusEl.classList.add('ok');
+    if (kind === 'fail') statusEl.classList.add('fail');
+    statusEl.textContent = text;
+  }
+
+  function countLoaded(testament) {
+    return books.filter((b) => bible.bookTestament(b.id) === testament).length;
+  }
+
+  const retryBtn = $('#btn-import-retry', overlay);
+  let lastFailedTestament = null;
+
+  function refreshLoadedCounts() {
+    const otNeed = bible.expectedTestamentCount('OT');
+    const ntNeed = bible.expectedTestamentCount('NT');
+    const otMissing = bible.missingTestamentBooks(books, 'OT').length;
+    const ntMissing = bible.missingTestamentBooks(books, 'NT').length;
+    const otN = otNeed - otMissing;
+    const ntN = ntNeed - ntMissing;
+    if (otMissing === 0 && ntMissing === 0) {
+      setImportStatus('ok', '✓ Old and New Testament books are loaded on this device.');
+    } else {
+      setImportStatus('', 'On this device: OT ' + otN + ' of ' + otNeed + ', NT ' + ntN + ' of ' + ntNeed + '. Tap a button to load the missing books.');
+    }
+  }
+  refreshLoadedCounts();
+
+  fileInput.onchange = async () => {
+    const file = fileInput.files && fileInput.files[0];
+    fileInput.value = '';
+    if (!file) return;
+    const testament = pendingTestament;
+    const single = pendingSingle;
+    pendingTestament = null;
+    pendingSingle = null;
+    try {
+      setImportStatus('', 'Loading “' + file.name + '”…');
+      const json = JSON.parse(await file.text());
+      if (testament) {
+        const imported = await bible.importTestamentJSON(json, testament);
+        books = await storage.getAllBooks();
+        const need = bible.expectedTestamentCount(testament);
+        const have = countLoaded(testament);
+        const label = testament === 'OT' ? 'Old Testament' : 'New Testament';
+        setImportStatus('ok', '✓ ' + label + ' loaded: ' + imported.length + ' book(s) from file. Now ' + have + ' of ' + need + ' on this device.');
+        closeOverlay(overlay);
+        openBookNav();
+        return;
+      }
+      const imported = await bible.importBookJSON(json);
+      books = await storage.getAllBooks();
+      const expectId = single && single.id;
+      const expectName = single && single.name;
+      const match = imported.find(b => b.id === expectId) ||
+        imported.find(b => (b.name || '').toLowerCase() === (expectName || '').toLowerCase()) ||
+        imported[0];
+      if (!match) {
+        setImportStatus('fail', 'Not completed. This file did not contain ' + (expectName || 'that book') + '. Try again.');
+        return;
+      }
+      closeOverlay(overlay);
+      openBookNav();
+    } catch (err) {
+      console.error(err);
+      setImportStatus('fail', 'Not completed. ' + (err.message || err) + ' Try again.');
+    }
+  };
+
+  async function startTestamentImport(testament) {
+    pendingTestament = null;
+    pendingSingle = null;
+    lastFailedTestament = testament;
+    const label = testament === 'OT' ? 'Old Testament' : 'New Testament';
+    const missing = bible.missingTestamentBooks(books, testament);
+    if (!missing.length) {
+      setImportStatus('ok', '✓ ' + label + ' already loaded. Nothing more to import.');
+      if (retryBtn) retryBtn.hidden = true;
+      return;
+    }
+    if (otBtn) otBtn.disabled = true;
+    if (ntBtn) ntBtn.disabled = true;
+    setImportStatus('', 'Loading ' + missing.length + ' missing ' + label + ' book(s) from bundled KJV…');
+    if (retryBtn) retryBtn.hidden = true;
+    try {
+      const result = await bible.loadBundledTestament(testament, books);
+      books = await storage.getAllBooks();
+      const still = bible.missingTestamentBooks(books, testament).length;
+      const need = bible.expectedTestamentCount(testament);
+      setImportStatus('ok', '✓ ' + label + ': added ' + result.imported.length + ' book(s). Now ' + (need - still) + ' of ' + need + ' on this device.');
+      lastFailedTestament = null;
+      closeOverlay(overlay);
+      openBookNav();
+    } catch (err) {
+      console.error(err);
+      setImportStatus('fail', 'Not completed. ' + (err.message || err));
+      if (retryBtn) retryBtn.hidden = false;
+    } finally {
+      if (otBtn) otBtn.disabled = false;
+      if (ntBtn) ntBtn.disabled = false;
+    }
+  }
+
+  const otBtn = $('#btn-import-ot', overlay);
+  const ntBtn = $('#btn-import-nt', overlay);
+  if (otBtn) otBtn.onclick = () => startTestamentImport('OT');
+  if (ntBtn) ntBtn.onclick = () => startTestamentImport('NT');
+  if (retryBtn) retryBtn.onclick = () => {
+    if (lastFailedTestament) startTestamentImport(lastFailedTestament);
+  };
 
   $$('#book-list .btn-import-book', overlay).forEach(btn => {
     btn.onclick = (e) => {
       e.stopPropagation();
-      const expectId = btn.dataset.book;
-      const expectName = btn.dataset.name;
-      fileInput.onchange = async () => {
-        const file = fileInput.files && fileInput.files[0];
-        fileInput.value = '';
-        if (!file) return;
-        try {
-          const json = JSON.parse(await file.text());
-          const imported = await bible.importBookJSON(json);
-          books = await storage.getAllBooks();
-          const match = imported.find(b => b.id === expectId) ||
-            imported.find(b => (b.name || '').toLowerCase() === expectName.toLowerCase()) ||
-            imported[0];
-          if (!match) {
-            alert('Import finished, but this file did not contain ' + expectName + '.');
-            closeOverlay(overlay);
-            openBookNav();
-            return;
-          }
-          alert('Imported ' + (match.name || expectName) + ' successfully.');
-          closeOverlay(overlay);
-          openBookNav();
-        } catch (err) {
-          console.error(err);
-          alert('Import failed: ' + (err.message || err));
-        }
-      };
+      pendingTestament = null;
+      pendingSingle = { id: btn.dataset.book, name: btn.dataset.name };
       fileInput.click();
     };
   });
@@ -1907,6 +2857,7 @@ async function openCrossRefs(key) {
           label
         });
         updateNavBackButton();
+        trailPush(btn.dataset.target, 'xref');
         closeOverlay(overlay);
         await jumpToRef(btn.dataset.target);
       };
@@ -1942,6 +2893,7 @@ async function openCrossRefs(key) {
                 label: `${currentBookId} ${currentChapter}`
               });
               updateNavBackButton();
+              trailPush(target, 'tsk');
               closeOverlay(overlay);
               await jumpToRef(target);
               return;
@@ -1959,6 +2911,7 @@ async function openCrossRefs(key) {
           label: `${currentBookId} ${currentChapter}`
         });
         updateNavBackButton();
+        trailPush(parsed.key, 'tsk');
         closeOverlay(overlay);
         await jumpToRef(parsed.key);
       };
@@ -1993,6 +2946,8 @@ async function openCrossRefs(key) {
     }
     refs.push({ target: parsed.key, label: parsed.label });
     await storage.setCrossRefs(key, refs);
+    trailPush(key, 'from');
+    trailPush(parsed.key, 'xref');
     $('#new-xref', overlay).value = '';
     $('#xref-list', overlay).innerHTML = renderPersonalHtml(refs);
     bindList();
@@ -2122,22 +3077,30 @@ function openSearch() {
     <div class="panel search-panel">
       <div class="search-header">
         <div class="search-header-top">
-          <h2 class="search-title">Search (loaded books only)</h2>
+          <h2 class="search-title">Search (loaded books + subjects)</h2>
           <button type="button" class="close search-close" aria-label="Close">×</button>
         </div>
-        <input type="search" class="search-box" id="search-input" placeholder="Type at least 2 characters…" autocomplete="off" enterkeyhint="search">
+        <input type="search" class="search-box" id="search-input" placeholder="Word or subject (funeral, pray…)" autocomplete="off" enterkeyhint="search">
       </div>
       <div id="search-results" class="search-body"></div>
     </div>
   `);
-  $('.search-close', overlay).onclick = () => closeOverlay(overlay);
+  $('.search-close', overlay).onclick = () => {
+    searchSession.query = ($('#search-input', overlay).value || '').trim();
+    persistSearchSession();
+    closeOverlay(overlay);
+  };
 
   const input = $('#search-input', overlay);
   const resultsEl = $('#search-results', overlay);
   let timer = null;
-  let lastResults = [];   // flat matches from last search
-  let viewMode = 'books'; // 'books' | 'verses'
+  let lastResults = [];   // flat matches from last word search
+  let lastSubjects = [];  // pack topics first, then Step A aliases
+  let topicsPack = null;
+  storage.getTopicsPack().then((p) => { topicsPack = p; }).catch(() => {});
+  let viewMode = 'books'; // 'books' | 'verses' | 'subject'
   let selectedBookId = null;
+  let selectedSubjectId = null;
 
   // Canonical order index for stable sorting
   const canonIndex = new Map(bible.CANONICAL_BOOKS.map((b, i) => [b.id, i]));
@@ -2176,35 +3139,111 @@ function openSearch() {
           });
           updateNavBackButton();
         }
+        searchSession.query = input.value.trim();
+        searchSession.viewMode = viewMode;
+        searchSession.selectedBookId = selectedBookId;
+        searchSession.selectedSubjectId = selectedSubjectId;
+        persistSearchSession();
+        trailPush(row.dataset.key, 'search');
         closeOverlay(overlay);
         await jumpToRef(row.dataset.key);
       };
     });
   }
 
+  function subjectBlockHtml() {
+    if (!lastSubjects.length) return '';
+    const rows = lastSubjects.map(h => `
+      <div class="search-book-row subject-heading-row" data-subject-id="${escapeHtml(h.id)}" role="button" tabindex="0">
+        <span class="book-name">${escapeHtml(h.name)}</span>
+        <span class="match-count">${h.refs.length}</span>
+      </div>
+    `).join('');
+    return `<p class="subject-section-label">Subject headings</p>${rows}`;
+  }
+
+  function bindSubjectRows(container) {
+    $$('.subject-heading-row', container).forEach(row => {
+      const go = () => {
+        selectedSubjectId = row.dataset.subjectId;
+        searchSession.viewMode = 'subject';
+        searchSession.selectedSubjectId = selectedSubjectId;
+        persistSearchSession();
+        renderSubjectRefs();
+      };
+      row.onclick = go;
+      row.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } };
+    });
+  }
+
   function renderBookList() {
     viewMode = 'books';
     selectedBookId = null;
+    selectedSubjectId = null;
     const groups = groupByBook(lastResults);
-    if (!groups.length) {
-      const q = input.value.trim();
+    const q = input.value.trim();
+    const subHtml = subjectBlockHtml();
+    if (!groups.length && !lastSubjects.length) {
       resultsEl.innerHTML = q.length >= 2 ? '<p style="color:var(--text-dim);padding:0.5rem 0">No matches.</p>' : '';
       return;
     }
-    resultsEl.innerHTML = groups.map(g => `
+    let wordHtml = '';
+    if (groups.length) {
+      wordHtml = `<p class="subject-section-label">Word in loaded KJV</p>` + groups.map(g => `
       <div class="search-book-row" data-book-id="${escapeHtml(g.bookId)}" role="button" tabindex="0">
         <span class="book-name">${escapeHtml(g.bookName)}</span>
         <span class="match-count">${g.matches.length}</span>
       </div>
     `).join('');
-    $$('.search-book-row', resultsEl).forEach(row => {
+    } else if (q.length >= 2 && lastSubjects.length) {
+      wordHtml = '<p style="color:var(--text-dim);padding:0.4rem 0 0.8rem;font-size:0.92em">No word matches in loaded books.</p>';
+    }
+    resultsEl.innerHTML = subHtml + wordHtml;
+    bindSubjectRows(resultsEl);
+    $$('.search-book-row[data-book-id]', resultsEl).forEach(row => {
       const go = () => {
         selectedBookId = row.dataset.bookId;
+        searchSession.viewMode = 'verses';
+        searchSession.selectedBookId = selectedBookId;
+        persistSearchSession();
         renderVerseList();
       };
       row.onclick = go;
       row.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } };
     });
+  }
+
+  function renderSubjectRefs() {
+    viewMode = 'subject';
+    const heading = lastSubjects.find(h => h.id === selectedSubjectId) || getSubjectHeading(selectedSubjectId);
+    if (!heading) {
+      renderBookList();
+      return;
+    }
+    const note = heading.note
+      ? `<p class="subject-scope-note">${escapeHtml(heading.note)}</p>`
+      : '';
+    const verseHtml = heading.refs.map(key => {
+      const info = formatSubjectRef(key);
+      const loaded = books.find(b => b.id === info.bookId);
+      const snippet = loaded ? (bible.getVerseText(books, info.bookId, info.chapter, info.verse) || '') : '';
+      const short = snippet.length > 90 ? snippet.slice(0, 87) + '…' : snippet;
+      return `
+      <div class="search-result" data-key="${escapeHtml(key)}">
+        <span class="ref">${escapeHtml(info.label)}</span>
+        ${escapeHtml(short)}
+      </div>`;
+    }).join('');
+    resultsEl.innerHTML = `
+      <div class="search-back-row">
+        <button type="button" class="search-back-btn" id="search-back">← Back to headings</button>
+      </div>
+      <p style="font-size:0.9em;color:var(--text-dim);margin:0 0 0.5rem">${escapeHtml(heading.name)} · ${heading.refs.length} verse${heading.refs.length === 1 ? '' : 's'}</p>
+      ${note}
+      ${verseHtml}
+    `;
+    $('#search-back', resultsEl).onclick = () => renderBookList();
+    bindVerseClicks(resultsEl);
   }
 
   function renderVerseList() {
@@ -2236,13 +3275,55 @@ function openSearch() {
     clearTimeout(timer);
     timer = setTimeout(async () => {
       const q = input.value.trim();
+      if (q.length >= 2) {
+        if (!topicsPack) {
+          try { topicsPack = await storage.getTopicsPack(); } catch (_) { topicsPack = null; }
+        }
+        const packHits = lookupPackTopics(q, topicsPack, 8);
+        const aliasHits = suggestSubjectHeadings(q);
+        const seen = new Set(packHits.map((h) => (h.name || '').toLowerCase()));
+        lastSubjects = packHits.concat(aliasHits.filter((h) => !seen.has((h.name || '').toLowerCase())));
+      } else {
+        lastSubjects = [];
+      }
       lastResults = await bible.searchBooks(q, books);
+      searchSession.query = q;
+      searchSession.viewMode = 'books';
+      searchSession.selectedBookId = null;
+      searchSession.selectedSubjectId = null;
+      persistSearchSession();
       // Any new search returns to book-list view
       renderBookList();
     }, 220);
   };
 
-  setTimeout(() => { try { input.focus(); } catch (_) {} }, 100);
+  async function restoreLastSearch() {
+    const q = (searchSession.query || '').trim();
+    if (q.length < 2) return;
+    input.value = q;
+    if (!topicsPack) {
+      try { topicsPack = await storage.getTopicsPack(); } catch (_) { topicsPack = null; }
+    }
+    const packHits = lookupPackTopics(q, topicsPack, 8);
+    const aliasHits = suggestSubjectHeadings(q);
+    const seen = new Set(packHits.map((h) => (h.name || '').toLowerCase()));
+    lastSubjects = packHits.concat(aliasHits.filter((h) => !seen.has((h.name || '').toLowerCase())));
+    lastResults = await bible.searchBooks(q, books);
+    if (searchSession.viewMode === 'subject' && searchSession.selectedSubjectId) {
+      selectedSubjectId = searchSession.selectedSubjectId;
+      renderSubjectRefs();
+    } else if (searchSession.viewMode === 'verses' && searchSession.selectedBookId) {
+      selectedBookId = searchSession.selectedBookId;
+      renderVerseList();
+    } else {
+      renderBookList();
+    }
+  }
+
+  setTimeout(() => {
+    try { input.focus(); } catch (_) {}
+    restoreLastSearch().catch(() => {});
+  }, 80);
 }
 
 
@@ -2254,11 +3335,15 @@ function openMenu() {
         <h2 style="margin:0;border:none;padding:0">Menu</h2>
         <button type="button" class="close" style="float:none;min-width:52px;min-height:52px;font-size:1.5rem">×</button>
       </div>
+      <button type="button" id="menu-chains" style="width:100%;margin-bottom:0.5rem;min-height:52px">Chains</button>
       <button type="button" id="menu-help" style="width:100%;margin-bottom:0.5rem;min-height:52px">Help / How to use</button>
       <button type="button" id="menu-export" style="width:100%;margin-bottom:0.5rem;min-height:52px">Export study data</button>
       <button type="button" id="menu-import-data" style="width:100%;margin-bottom:0.5rem;min-height:52px">Import study data</button>
       <button type="button" id="menu-import-lex" style="width:100%;margin-bottom:0.5rem;min-height:52px">Import Dictionary (Strong's)</button>
       <button type="button" id="menu-import-tsk" style="width:100%;margin-bottom:0.5rem;min-height:52px">Load More Cross-References (optional)</button>
+      <button type="button" id="menu-import-topics" style="width:100%;margin-bottom:0.5rem;min-height:52px">Load Topical Pack (optional)</button>
+      <button type="button" id="menu-import-ot" style="width:100%;margin-bottom:0.5rem;min-height:52px">Import Old Testament (JSON)</button>
+      <button type="button" id="menu-import-nt" style="width:100%;margin-bottom:0.5rem;min-height:52px">Import New Testament (JSON)</button>
       <button type="button" id="menu-import" style="width:100%;margin-bottom:0.5rem;min-height:52px">Import Book (JSON)</button>
       <button type="button" id="menu-settings" style="width:100%;margin-bottom:0.5rem;min-height:52px">Settings</button>
       <button type="button" id="menu-about" style="width:100%;margin-bottom:0.5rem;min-height:52px">About / Privacy</button>
@@ -2267,11 +3352,15 @@ function openMenu() {
     </div>
   `);
   $('.close', overlay).onclick = () => closeOverlay(overlay);
+  $('#menu-chains', overlay).onclick = () => { closeOverlay(overlay); openSavedChainsList(); };
   $('#menu-help', overlay).onclick = () => { closeOverlay(overlay); openHelp(); };
   $('#menu-export', overlay).onclick = () => { closeOverlay(overlay); doExportData(); };
   $('#menu-import-data', overlay).onclick = () => { closeOverlay(overlay); openImportData(); };
   $('#menu-import-lex', overlay).onclick = () => { closeOverlay(overlay); openImportLexicon(); };
   $('#menu-import-tsk', overlay).onclick = () => { closeOverlay(overlay); openImportTsk(); };
+  $('#menu-import-topics', overlay).onclick = () => { closeOverlay(overlay); openImportTopics(); };
+  $('#menu-import-ot', overlay).onclick = () => { closeOverlay(overlay); openBookNav(); };
+  $('#menu-import-nt', overlay).onclick = () => { closeOverlay(overlay); openBookNav(); };
   $('#menu-import', overlay).onclick = () => { closeOverlay(overlay); openImport(); };
   $('#menu-settings', overlay).onclick = () => { closeOverlay(overlay); openSettings(); };
   $('#menu-about', overlay).onclick = () => { closeOverlay(overlay); openAbout(); };
@@ -2620,6 +3709,102 @@ async function loadCrossRefsForBook(bookId, bookName) {
   return count;
 }
 
+async function openImportTopics() {
+  const existing = await storage.getTopicsPack().catch(() => null);
+  const n = packTopicCount(existing);
+  const status0 = n
+    ? `<p id="topics-status" class="testament-import-status ok">✓ Topical pack loaded (${n.toLocaleString()} topics). It stays loaded. You can load it again if needed.</p>`
+    : `<p id="topics-status" class="testament-import-status">Not loaded. Tap once to load <code>topics-torrey.json</code> from this site (verse references only). The app still works without it.</p>`;
+
+  const overlay = showOverlay(`
+    <div class="panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem">
+        <h2 style="margin:0;border:none;padding:0">Load Topical Pack</h2>
+        <button type="button" class="close" style="float:none;min-width:52px;min-height:52px;font-size:1.5rem">×</button>
+      </div>
+      ${status0}
+      <button type="button" id="topics-load-btn" class="btn-import-testament">${n ? '✓ Loaded — load again' : 'Load Topical Pack'}</button>
+      <button type="button" id="topics-retry-btn" class="btn-import-testament-retry" hidden>Try again</button>
+      <p style="margin-top:0.9rem;font-size:0.92em;color:var(--text-dim);line-height:1.45">
+        File name: <code>topics-torrey.json</code> in the repo root. Or choose the file here.
+      </p>
+      <div class="import-zone" style="margin-top:0.6rem">
+        <p style="font-size:1.05em;margin-bottom:0.5rem">Optional: choose the file</p>
+        <input type="file" id="topics-file" accept=".json,application/json" style="font-size:1.05em">
+      </div>
+    </div>
+  `);
+  $('.close', overlay).onclick = () => closeOverlay(overlay);
+  const statusEl = $('#topics-status', overlay);
+  const loadBtn = $('#topics-load-btn', overlay);
+  const retryBtn = $('#topics-retry-btn', overlay);
+
+  function setStatus(kind, text) {
+    statusEl.classList.remove('ok', 'fail');
+    if (kind === 'ok') statusEl.classList.add('ok');
+    if (kind === 'fail') statusEl.classList.add('fail');
+    statusEl.innerHTML = text;
+  }
+
+  function validatePack(json) {
+    if (!json || !Array.isArray(json.topics)) {
+      throw new Error('Not a valid topical pack for this app (need topics[]).');
+    }
+    const clean = [];
+    for (const t of json.topics) {
+      if (!t || !t.name || !Array.isArray(t.refs) || !t.refs.length) continue;
+      clean.push({ name: String(t.name), refs: t.refs.map(String).slice(0, 24) });
+    }
+    if (!clean.length) throw new Error('This pack has no usable topics.');
+    return {
+      source: json.source || "Torrey's New Topical Textbook",
+      version: json.version || 1,
+      topics: clean
+    };
+  }
+
+  async function installPack(json) {
+    const pack = validatePack(json);
+    await storage.saveTopicsPack(pack);
+    setStatus('ok', '✓ Topical pack loaded (' + pack.topics.length.toLocaleString() + ' topics). It stays loaded.');
+    loadBtn.textContent = '✓ Loaded';
+    loadBtn.style.background = '#2ecc71';
+    retryBtn.hidden = true;
+  }
+
+  async function loadBundled() {
+    loadBtn.disabled = true;
+    setStatus('', 'Loading topics-torrey.json…');
+    retryBtn.hidden = true;
+    try {
+      const resp = await fetch('./topics-torrey.json');
+      if (!resp.ok) throw new Error('topics-torrey.json was not found next to index.html.');
+      const json = await resp.json();
+      await installPack(json);
+    } catch (err) {
+      setStatus('fail', 'Not completed. ' + (err.message || err));
+      retryBtn.hidden = false;
+    } finally {
+      loadBtn.disabled = false;
+    }
+  }
+
+  loadBtn.onclick = loadBundled;
+  retryBtn.onclick = loadBundled;
+  $('#topics-file', overlay).onchange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      setStatus('', 'Loading “' + file.name + '”…');
+      const json = JSON.parse(await file.text());
+      await installPack(json);
+    } catch (err) {
+      setStatus('fail', 'Not completed. ' + (err.message || err));
+      retryBtn.hidden = false;
+    }
+  };
+}
+
 async function openImportTsk() {
   const existing = await storage.getTskPack();
   const status = existing && existing.verses
@@ -2751,7 +3936,7 @@ function bindOccClicks(overlay) {
 }
 
 /**
- * Tap-a-word (v6.26.0)
+ * Tap-a-word (v6.27.0)
  * 1) KJV 1611 English sense first when the English is the trap
  * 2) this word in this book, then this word in the whole loaded KJV
  * 3) Strong's second (if lexicon imported)
@@ -3005,6 +4190,49 @@ function mountSuggestBar(main) {
     const scrollTop = main.scrollTop;
     await renderChapter(currentBookId, currentChapter, { preserveScroll: scrollTop });
   };
+}
+
+// ---------- Then / Kind / Now (offline prompts only) ----------
+function openThenKindNow(key) {
+  const parsed = bible.parseKey(key);
+  const text = bible.getVerseText(books, parsed.bookId, parsed.chapter, parsed.verse);
+  if (!text) return;
+  const bookMeta = books.find(b => b.id === parsed.bookId) || bible.CANONICAL_BOOKS.find(b => b.id === parsed.bookId);
+  const ctx = getChapterContext(parsed.bookId, parsed.chapter);
+  const pack = buildThenKindNow({
+    text,
+    bookId: parsed.bookId,
+    bookName: bookMeta ? bookMeta.name : parsed.bookId,
+    chapter: parsed.chapter,
+    verse: parsed.verse,
+    purpose: ctx.purpose,
+    themes: ctx.themes
+  });
+
+  const qList = (arr) => '<ol class="tkn-q">' + arr.map(q => `<li>${escapeHtml(q)}</li>`).join('') + '</ol>';
+  const kindLine = pack.kind
+    ? `${escapeHtml(pack.kind.label)} — ${escapeHtml(pack.kind.why)}`
+    : 'No kind named. The verse does not make one obvious.';
+
+  const overlay = showOverlay(`
+    <div class="panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem">
+        <h2 style="margin:0;border:none;padding:0">Then · Kind · Now</h2>
+        <button type="button" class="close" style="float:none;min-width:52px;min-height:52px;font-size:1.5rem">×</button>
+      </div>
+      <p style="font-weight:700;color:var(--accent);margin:0 0 0.35rem">${escapeHtml(pack.ref)}</p>
+      <p style="line-height:1.5;margin:0 0 0.9rem">${escapeHtml(pack.text)}</p>
+      <p class="tkn-disclaimer">Questions only. Not a sermon. Not an answer key. Nothing is saved.</p>
+      <h3 class="tkn-h">Then</h3>
+      ${qList(pack.thenQs)}
+      <h3 class="tkn-h">Kind</h3>
+      <p class="tkn-kind">${kindLine}</p>
+      ${qList(pack.kindQs)}
+      <h3 class="tkn-h">Now</h3>
+      ${qList(pack.nowQs)}
+    </div>
+  `);
+  $('.close', overlay).onclick = () => closeOverlay(overlay);
 }
 
 // ---------- Context panel (offline book/chapter overview) ----------
@@ -3316,6 +4544,16 @@ function openHelp() {
         Tap <strong>Research</strong> while viewing a chapter. Choose Adam Clarke or Tyndale Open Study Notes.
         Notes are fetched from the free bible.helloao.org API and cached on this device so they work offline afterward.</p>
 
+        <p style="margin-bottom:1rem"><strong>Import a whole testament</strong><br>
+        Open Books. Tap <strong>Import missing Old Testament</strong> or <strong>Import missing New Testament</strong>. The app reads the bundled KJV files on this site (<code>kjv-ot.json</code> / <code>kjv-nt.json</code>) and stores only books that are not already loaded. Green when done. Red <strong>Not completed</strong> plus <strong>Try again</strong> if a pack file is missing. Per-book Import still accepts your own JSON.</p>
+
+        <p style="margin-bottom:1rem"><strong>Subject search</strong><br>
+        In Search, type a topic or everyday word. Order: exact topic name from the loaded pack, then Step A aliases, then word hits in loaded KJV.
+        Tap a heading for KJV verse references, then tap a reference to open the reader.</p>
+        <p style="margin-bottom:1rem"><strong>Topical pack (Step B, optional)</strong><br>
+        Menu → <strong>Load Topical Pack</strong>. One action. Green when loaded. Red <strong>Not completed</strong> and <strong>Try again</strong> if it fails.
+        Place <code>topics-torrey.json</code> in the repo root (same folder as index.html), same pattern as the TSK pack. The app still works if that file is missing.</p>
+
         <p style="margin-bottom:1rem"><strong>Tap-a-word</strong><br>
         Tap a word: KJV 1611 English sense first when modern English is the trap, then this word in this book, then this word in the loaded KJV. Strong’s stays second if the dictionary is installed.<br>
         Use <strong>Mark this word</strong> inside the panel to put a thin outline on that occurrence only.<br>
@@ -3324,11 +4562,13 @@ function openHelp() {
         Tap a verse number for faint word-level color suggestions with a one-line reason. Nothing is saved until Keep or Clear. Speech frames may be blue; the rest of the verse is not washed.</p>
         <p style="margin-bottom:1rem"><strong>Phrase as a unit</strong><br>
         If you tap a word that belongs to a known phrase (meal offering, burnt offering, holy convocation), the phrase is treated first: one sense, then that phrase in this book, then in the loaded KJV.</p>
+        <p style="margin-bottom:1rem"><strong>Then · Kind · Now</strong><br>
+        On a verse tap <strong>Then-Now</strong>. You get Then / Kind / Now questions only. Close returns to the verse. Nothing is saved.</p>
 
         <p style="margin-bottom:1rem"><strong>Backup</strong><br>
         Menu → Export / Import study data.</p>
 
-        <p style="margin-bottom:0.5rem"><strong>Version</strong> 6.26.0</p>
+        <p style="margin-bottom:0.5rem"><strong>Version</strong> 6.38.0</p>
       </div>
     </div>
   `);
@@ -3339,7 +4579,7 @@ function openAbout() {
   showOverlay(`
     <div class="panel">
       <button class="close" type="button">×</button>
-      <h2>About – KJV Study v6.26.0</h2>
+      <h2>About – KJV Study v6.38.0</h2>
       <p style="line-height:1.65;margin-bottom:0.8rem">
         Strictly private, local-only Progressive Web App for personal Bible study.
         Designed for comfortable long sessions and deep color-index thematic study.
@@ -3364,7 +4604,7 @@ function openAbout() {
         Chromebook) use the browser’s “Add to Home Screen” / “Install app” option
         for a full-screen, offline-capable experience.
       </p>
-      <p style="font-size:0.9em;color:var(--text-dim)">Version 6.26.0 – personal data stays on device</p>
+      <p style="font-size:0.9em;color:var(--text-dim)">Version 6.38.0 – personal data stays on device</p>
     </div>
   `).querySelector('.close').onclick = function () {
     closeOverlay(this.closest('.overlay'));
